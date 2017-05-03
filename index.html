@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>ЕМИАС</title>
+	<meta charset="utf-8">
+	<!-- <link rel="stylesheet" href="bower_components/angular-bootstrap/ui-bootstrap-csp.css" type="text/css"> -->
+	<link rel="stylesheet" href="css/bootstrap.css" type="text/css">
+	<link rel="stylesheet" href="css/perfect-scrollbar.min.css" type="text/css">
+	<link rel="stylesheet" href="css/main.css" type="text/css">
+</head>
+<body ng-app="root">
+
+		<div class="col-md-3 col-sm-3 p-left">
+
+			<!-- #Блок пациента -->
+			<div class="p-block b-patient" ng-controller="PatientController as patient">
+				<div class="b-block__title">
+					<label>Пациент</label>
+					<div class="p-block__r-btns" ng-controller="DropdownCtrl">
+						<div class="btn-group" dropdown>
+							<button type="button" class="btn btn-success btn-sm {{patient.btnDisabled}} " dropdown-toggle>
+								<span class="glyphicon glyphicon-user"></span>
+								<span class="caret"></span>
+								<span class="sr-only">Split button!</span>
+							</button>
+							<ul class="dropdown-menu" role="menu" aria-labelledby="split-button">
+								<li role="menuitem" ng-click="patient.relogUser()"><a href="">Завершить работу с пациентом</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="b-cntnt">
+					<div class="b-patient__search" ng-if="!patient.user">
+						<label for=""></label>
+						<div class="input-group">
+							<input type="text" class="form-control" placeholder="Введите текст для поиска" ng-change="patient.inputChange()" ng-model="patient.inputSearch">
+							<div class="input-group-addon"><span class="glyphicon glyphicon-search"></span></div>
+						</div>
+						<div class="b-patient__search-result" ng-if="patient.listRes">
+							<div class="b-patient__search-result-placeholder">Нет совпадений</div>
+							<div class="b-patient__search-result-item"
+								 ng-repeat="item in patient.listRes | filter:patient.inputSearch"
+								 ng-click="patient.selectedUser(item)">
+								{{item.surname + ' ' + item.name}}
+							</div>
+						</div>
+					</div>
+					<div class="b-patient__user" ng-if="patient.user">
+						{{patient.user.surname}} {{patient.user.name}} {{patient.user.patron}} <br>
+						{{patient.user.dateBD}} г.р. <br>
+						Полис ОМС: {{patient.user.numPolicOMS}}
+					</div>
+				</div>
+			</div>
+			<!-- /Блок пациента -->
+
+
+			<!-- #Блок даты записи -->
+			<div class="p-block b-date" ng-controller="DatepickerCtrl">
+				<div class="b-block__title">
+					<label>Дата записи</label>
+				</div>
+				<div class="b-cntnt">
+					<label for=""></label>
+					<div class="input-group">
+						<input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="dt" is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
+						<div id="split-button" class="btn input-group-addon" ng-click="open($event)">
+							<span class="glyphicon glyphicon-calendar"></span>
+							<span class="caret"></span>
+							<span class="sr-only">Split button!</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- /Блок даты записи -->
+
+
+			<!-- #Блок специалиста -->
+			<div class="p-block b-spec b-last" ng-controller="specialist as special">
+				<div class="b-block__title">
+					<label>Специалисты</label>
+					<div class="p-block__r-btns"  ng-controller="DropdownCtrl">
+						<div class="btn-group" dropdown>
+							<button type="button" class="btn btn-success btn-sm" dropdown-toggle>
+								<span class="glyphicon glyphicon-filter"></span>
+								<span class="caret"></span>
+								<span class="sr-only">Split button!</span>
+							</button>
+							<ul class="dropdown-menu" role="menu" aria-labelledby="split-button">
+								<li role="menuitem"><a href="#">Action</a></li>
+								<li role="menuitem"><a href="#">Another action</a></li>
+								<li role="menuitem"><a href="#">Something else here</a></li>
+								<!-- <li class="divider"></li> -->
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="b-cntnt">
+					<label for=""></label>
+					<div class="input-group">
+						<input type="text" class="form-control">
+						<div class="input-group-addon"><span class="glyphicon glyphicon-search"></span></div>
+					</div>
+					<div class="b-spec__list" id="Demo">
+						<label class="b-spec__list-item" ng-repeat="item in special.list">
+								<input type="checkbox" ng-model="item.checked"> {{item.name}}
+						</label>
+					</div>
+				</div>
+			</div>
+			<!-- /Блок специалиста -->
+
+		</div>
+		<div class="col-md-9 col-sm-9 p-center">
+
+			<!-- #Блок заголовка сетки расписния -->
+			<div class="p-block">
+				<div class="btn-group p-block__r-btns" style="float:right;">
+			        <label class="btn btn-success" ng-model="radioModel" btn-radio="'Left'" uncheckable>1 день</label>
+			        <label class="btn btn-success" ng-model="radioModel" btn-radio="'Middle'" uncheckable>2 дня</label>
+			        <label class="btn btn-success" ng-model="radioModel" btn-radio="'Right'" uncheckable>Неделя</label>
+			    </div>
+				<div class="b-block__title">
+					<label>Расписане специалистов</label>
+				</div>
+			</div>
+			<!-- /Блок заголовка сетки расписния -->
+
+
+			<!-- #Блок сетки расписния -->
+			<div class="p-block b-last b-schedule {{scheduleList.classBlock}}" ng-controller="ScheduleController as scheduleList">
+				<div class="b-schedule__empty-list" ng-show="!showList">
+					<div>Для просмотра расписания выберите хотя бы один Доступный ресурс.</div>
+				</div>
+
+				<div class="b-schedule__item"  ng-repeat="item in scheduleList.list">
+					<div class="b-schedule__item-head">
+						Пт. 16 сен.
+					</div>
+					<div class="b-schedule__item-name">
+						{{item.name}}
+					</div>
+					<div class="b-schedule__item-spec">
+						Ольфтальмолог
+					</div>
+					<div class="b-schedule__item-adrec">
+						ГП №128б (к140)
+					</div>
+					<div class="b-schedule__item-graf">
+						08:00-18:00
+					</div>
+					<div class="b-schedule__item-cntnt">
+						<div class="b-schedule__item-step">
+							<label>10:00</label>
+						</div>
+						<div class="b-schedule__item-step-notrec">
+							<label>Нет записи</label>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- /Блок сетки расписния -->
+
+		</div>
+
+
+	<script type="text/javascript" src="js/jquery/jquery.min.js"></script>
+	<script type="text/javascript" src="js/angular.js"></script>
+	<script type="text/javascript" src="js/angular-route.js"></script>
+	<script type="text/javascript" src="js/perfect-scrollbar.js"></script>
+	<script type="text/javascript" src="js/ui-bootstrap-tpls-0.13.4.min.js"></script>
+	<script type="text/javascript" src="js/app.js"></script>
+
+</body>
+</html>

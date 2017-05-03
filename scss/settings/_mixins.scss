@@ -1,0 +1,175 @@
+﻿@charset "UTF-8";
+
+
+
+/// шрифт и начертание
+	@mixin font( $family: $font-family, $bold: 400 ) {
+		font-family: $family;
+		font-weight: $bold;
+	}
+
+
+
+
+/// Цвет ссылок
+	@mixin link-color( $this-color, $hover: $this-color, $visited: $this-color, $active: $this-color ) {
+		&:link { color: $this-color; }
+		&:hover { color: $hover; }
+		&:visited { color: $visited; }
+		&:active { color: $active; }
+	}
+
+
+
+/// clearfix
+	@mixin clearfix {
+		&:before,
+		&:after {
+		   content: "";
+		   display: table;
+		}
+		&:after {
+		   clear: both;
+		}
+	}
+
+
+/// Justify List
+	@mixin justify-box {
+		text-align: justify;
+	    &:after {
+	    	display: inline-block;
+			content: "";
+			width: 100%;
+			height: 0;
+			visibility: hidden;
+            overflow: hidden;
+	    }
+	}
+	@mixin justify-item {
+		display: inline-block;
+		vertical-align: top;
+	}
+
+
+
+/// отступ сверху
+	@mixin margin-top( $top, $first: 0 ) {
+		margin-top: $top * 1px;
+		&:first-child {
+			margin-top: $first * 1px;
+		}
+	}
+
+
+
+
+/// underline
+	@mixin underline( $type: first, $border-color: false, $border-size: 1px, $child-elem: '' ) {
+		//подчеркиванием
+		@if $border-color == false {
+			@if $type == first { text-decoration: underline; }
+			@else { text-decoration: none; }
+			@if $type == last { &:hover { text-decoration: underline; } }
+			@else { &:hover { text-decoration: none; } }
+		}
+		//бордером
+		@if $border-color != false {
+			& #{$child-elem}, &:hover #{$child-elem} { text-decoration: none; }
+			@if $type == first { & #{$child-elem} { border-bottom: $border-size solid $border-color; }}
+			@else { & #{$child-elem} { border-bottom-color: transparent; } }
+			@if $type == last { &:hover #{$child-elem} { border-bottom: $border-size solid $border-color; } }
+			@else { &:hover #{$child-elem} { border-bottom-color: transparent; } }
+		}
+	}
+
+
+
+
+/// box-sizing
+	@mixin box-sizing( $type ) {
+		-webkit-box-sizing: #{$type}-box;
+		-moz-box-sizing: #{$type}-box;
+		box-sizing: #{$type}-box;
+	}
+
+
+
+
+/// box-shadow
+	@mixin box-shadow( $shadow ) {
+		-webkit-box-shadow: $shadow;
+		-moz-box-shadow: $shadow;
+		box-shadow: $shadow;
+	}
+
+
+
+/// обнуление списка
+	@mixin ul-reset {
+		list-style-type: none;
+		list-style-image: none;
+		padding: 0;
+		margin: 0;
+	}
+
+
+
+
+/// inline-block удалить отступы
+	@mixin inline-box {
+		font-size: 0;
+		line-height: 0;
+		letter-spacing: -1px;
+	}
+	@mixin inline-item {
+		display: inline-block;
+		vertical-align: top;
+		font-size: $base-font-size;
+		line-height: $base-line-height;
+		letter-spacing: normal;
+	}
+
+
+
+
+/// градиент
+	@mixin linear-gradient( $dir: right, $colors... ) {
+		$first: nth(nth($colors, 1), 1);
+		$last: nth(nth($colors, length($colors)), 1);
+		background: $first;
+		background: -moz-linear-gradient($dir,  $colors);
+		background: -webkit-linear-gradient($dir,  $colors);
+		background: -o-linear-gradient($dir,  $colors);
+	    background: -ms-linear-gradient($dir,  $colors);
+		background: linear-gradient($dir,  $colors);
+		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#{$first}', endColorstr='#{$last}',GradientType=1 );
+	}
+
+	// background: -moz-linear-gradient(top, #e2e2e2 0%, #dbdbdb 50%, #d1d1d1 51%, #fefefe 100%);
+	//     background: -webkit-linear-gradient(top, #e2e2e2 0%,#dbdbdb 50%,#d1d1d1 51%,#fefefe 100%);
+	//     background: -o-linear-gradient(top, #e2e2e2 0%,#dbdbdb 50%,#d1d1d1 51%,#fefefe 100%);
+	//     background: -ms-linear-gradient(top, #e2e2e2 0%,#dbdbdb 50%,#d1d1d1 51%,#fefefe 100%);
+	//     background: linear-gradient(top, #e2e2e2 0%,#dbdbdb 50%,#d1d1d1 51%,#fefefe 100%);
+
+
+
+/// делает фиксированную ячейку таблицы
+	@mixin nowrap-cell {
+		width: 1%;
+		white-space: nowrap;
+	}
+
+/// Размеры изображения внутри блока с заданной шириной
+	@mixin img-auto-size {
+		display: block;
+		width: 100%;
+		height: auto;
+	}
+
+
+
+///*
+// * Фронтендер, пиши плиз стили только в файлах /scss/*.scss
+// * Иначе они перегенерируются и сотрутся потом
+// */

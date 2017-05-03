@@ -1,0 +1,88 @@
+@charset "UTF-8";
+
+.p-center {
+	padding: 0;
+	z-index: 1;
+
+	width: calc( 100% - 250px );
+}
+
+.b-schedule {
+	height: calc( 100vh - 62px );
+	background: #fff;
+
+	&.emptyBlock {
+		background: #efefef;
+	}
+}
+.b-schedule__item {
+	width: 150px;
+	border-radius: 3px;
+	text-align: center;
+	display: inline-block;
+	overflow: hidden;
+	margin-right: 10px;
+
+	&-head {
+		color: #fff;
+		background-color: #000;
+		padding: 5px;
+	}
+	&-name {
+		@extend .b-schedule__item-head;
+		background-color: #949494;
+		border-bottom: 1px solid #fff;
+	}
+
+	&-spec {
+		@extend .b-schedule__item-head;
+		background-color: #949494;
+		border-bottom: 1px solid #949494;
+	}
+
+	&-adrec {
+		background-color: #8ec8d6;
+		padding: 5px 3px 8px;
+		border-bottom: 1px solid #8ec8d6;
+	}
+
+	&-graf {
+		background-color: #a4c589;
+		padding: 5px 3px 8px;
+		border-bottom: 1px solid #a4c589;
+	}
+
+	&-cntnt {
+		text-align: left;
+	}
+	&-step {
+		padding: 3px 5px 0;
+		background-color: #e8e8eb;
+		border-bottom: 1px dashed #000;
+		height: 25px;
+
+		label {
+			font-weight: normal;
+		}
+
+		&-notrec {
+			padding: 3px 5px 0;
+			background-color: #949494;
+			border-bottom: 1px dashed #000;
+			height: 50px;
+		}
+	}
+}
+
+.b-schedule__empty-list {
+	height: 100%;
+	display: table;
+	width: 100%;
+	background: #efefef;
+}
+	.b-schedule__empty-list div {
+		display: table-cell;
+		vertical-align: middle;
+		text-align: center;
+		color: #777;
+	}

@@ -1,0 +1,14 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "target": "es5",
+        "removeComments": true,
+        "outFile": "js/app.js"
+    },
+    "files":[
+        "js/app/main.ts",
+        "js/app/patient.ts",
+        "js/app/schedule.ts",
+        "js/app/dataService.ts"
+    ]
+}
