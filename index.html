@@ -40,33 +40,34 @@
 					</div>
 					<div class="b-patient__search-result" ng-if="patient.listRes">
 						<div class="b-patient__search-result-placeholder">Нет совпадений</div>
-						<div class="b-patient__search-result-item"
-								 ng-repeat="item in patient.listRes | filter:patient.inputSearch"
-								 ng-click="patient.selectedUser(item)">
+						<div class="b-patient__search-result-item" ng-repeat="item in patient.listRes | filter:patient.inputSearch" ng-click="patient.selectedUser(item)">
 							{{item.surname + ' ' + item.name}}
 						</div>
 					</div>
 				</div>
 				<div class="b-patient__user" ng-if="patient.user">
-					{{patient.user.surname}} {{patient.user.name}} {{patient.user.patron}} <br>
-						{{patient.user.dateBD}} г.р. <br>
-						Полис ОМС: {{patient.user.numPolicOMS}}
+					{{patient.user.surname}} {{patient.user.name}} {{patient.user.patron}} <br> {{patient.user.dateBD}} г.р. <br> Полис
+					ОМС: {{patient.user.numPolicOMS}}
 				</div>
 			</div>
 		</div>
 		<!-- /Блок пациента -->
 
 
+
 		<!-- #Блок даты записи -->
-		<div class="p-block b-date" ng-controller="DatepickerCtrl">
+		<div class="p-block b-date" ng-controller="DatepickerCtrl as dpicker">
 			<div class="b-block__title">
 				<label>Дата записи</label>
 			</div>
 			<div class="b-cntnt">
 				<label for=""></label>
 				<div class="input-group">
-					<input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="dt" is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
-					<div id="split-button" class="btn input-group-addon" ng-click="open($event)">
+					<input type="text" class="form-control" placeholder="ДД.ММ.ГГГГ" datepicker-popup="{{dpicker.format}}" ng-model="dpicker.dt"
+					 is-open="dpicker.status.opened" min-date="dpicker.minDate" max-date="dpicker.maxDate" datepicker-options="dpicker.dateOptions"
+					 date-disabled="dpicker.disabled(date, mode)" ng-required="true" close-on-date-selection="false" close-text="Закрыть"
+					/>
+					<div id="split-button" class="btn input-group-addon" ng-click="dpicker.open($event)">
 						<span class="glyphicon glyphicon-calendar"></span>
 						<span class="caret"></span>
 						<span class="sr-only">Split button!</span>
@@ -74,8 +75,6 @@
 				</div>
 			</div>
 		</div>
-		<!-- /Блок даты записи -->
-
 
 		<!-- #Блок специалиста -->
 		<div class="p-block b-spec b-last" ng-controller="specialistController as special">
@@ -117,8 +116,11 @@
 			</div>
 		</div>
 		<!-- /Блок специалиста -->
-
 	</div>
+	<!-- /Блок даты записи -->
+
+
+
 	<div class="col-md-9 col-sm-9 p-center">
 
 		<!-- #Блок заголовка сетки расписния -->
@@ -141,7 +143,7 @@
 				<div>Для просмотра расписания выберите хотя бы один Доступный ресурс.</div>
 			</div>
 
-			<div class="b-schedule__item"  ng-repeat="item in scheduleList.list">
+			<div class="b-schedule__item" ng-repeat="item in scheduleList.list">
 				<div class="b-schedule__item-head">
 					Пт. 16 сен.
 				</div>

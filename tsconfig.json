@@ -6,12 +6,6 @@
         "outFile": "js/app.js",
         "watch": true
     },
-    // "files":[
-    //     "js/app/main.ts",
-    //     "js/app/patient.ts",
-    //     "js/app/schedule.ts",
-    //     "js/app/dataService.ts"
-    // ],
     "include": [
         "js/app/**/*",
         "js/app/app.config.ts"
