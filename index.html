@@ -64,6 +64,7 @@
 					<label for=""></label>
 					<div class="input-group">
 						<input type="text" class="form-control" placeholder="ДД.ММ.ГГГГ"
+							ng-change="dpicker.select('change')"
 							datepicker-popup="{{dpicker.format}}"
 							ng-model="dpicker.dt"
 							is-open="dpicker.status.opened"
@@ -72,9 +73,10 @@
 							datepicker-options="dpicker.dateOptions"
 							date-disabled="dpicker.disabled(date, mode)"
 							ng-required="true"
+							custom-class="dpicker.dayClass(date, mode)"
 							close-on-date-selection="false"
-							close-text="Закрыть" />
-						<div id="split-button" class="btn input-group-addon" ng-click="dpicker.open($event)">
+							close-text="Ok" />
+						<div id="split-button" class="btn input-group-addon {{dpicker.btnDisabled}}" ng-click="dpicker.open($event)" title="{{dpicker.btnDisabledTitle}}">
 							<span class="glyphicon glyphicon-calendar"></span>
 							<span class="caret"></span>
 							<span class="sr-only">Split button!</span>
