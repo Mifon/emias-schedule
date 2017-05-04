@@ -8,6 +8,7 @@
     "files":[
         "js/app/main.ts",
         "js/app/patient.ts",
+        "js/app/datepicker.ts",
         "js/app/schedule.ts",
         "js/app/dataService.ts"
     ]
