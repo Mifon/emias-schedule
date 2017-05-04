@@ -17,8 +17,8 @@ angular.module('root').service('dataService', function() {
 		{id:5, name:'Василий', surname:'Васильев', patron:'Васильевич', dateBD:'09.09.1949', numPolicOMS:5555555555555555}
 	];
 
-	data.listDr = {
-		1:{
+	data.listDr = [
+		{
 			id:1,
 			name: 'Григорьева Г.Г.',
 			specialty: 'Терапевт',
@@ -36,7 +36,7 @@ angular.module('root').service('dataService', function() {
 			],
 			checked: false
 		},
-		2:{
+		{
 			id:2,
 			name: 'Сидорова С.С.',
 			specialty: 'Терапевт',
@@ -53,8 +53,63 @@ angular.module('root').service('dataService', function() {
 				{name:'Врач не работает', start:14, end:15},
 			],
 			checked: false
+		},
+		{
+			id:3,
+			name: 'Сидорова С.С.',
+			specialty: 'Терапевт',
+			institution: 'ГП №128', // Муниципальное Учреждение
+			room: '130',
+			start: 14,
+			end: 18,
+			startWD: 1,
+			endWD: 5,
+			stepSchedule: 10*60, // 30 минут
+			quots: [
+				{name:'Запись на прием', start:10, end:14},
+				{name:'Запись на прием', start:15, end:20},
+				{name:'Врач не работает', start:14, end:15},
+			],
+			checked: false
+		},
+		{
+			id:4,
+			name: 'Елисеева Е.Е.',
+			specialty: 'Терапевт',
+			institution: 'ГП №128', // Муниципальное Учреждение
+			room: '130',
+			start: 14,
+			end: 18,
+			startWD: 1,
+			endWD: 5,
+			stepSchedule: 10*60, // 30 минут
+			quots: [
+				{name:'Запись на прием', start:10, end:14},
+				{name:'Запись на прием', start:15, end:20},
+				{name:'Врач не работает', start:14, end:15},
+			],
+			checked: false
+		},
+		{
+			id:4,
+			name: 'Елисеева Е.Е.',
+			specialty: 'Терапевт',
+			institution: 'ГП №128', // Муниципальное Учреждение
+			room: '130',
+			start: 14,
+			end: 18,
+			startWD: 1,
+			endWD: 5,
+			stepSchedule: 10*60, // 30 минут
+			quots: [
+				{name:'Запись на прием', start:10, end:14},
+				{name:'Запись на прием', start:15, end:20},
+				{name:'Врач не работает', start:14, end:15},
+			],
+			checked: false
 		}
-	};
+
+	];
 
 	// data.listRecord =
 
