@@ -55,7 +55,7 @@ angular.module('root').controller('PatientController', function (dataService) {
         dataService.set('listOption', option);
     };
 });
-angular.module('root').controller('DatepickerCtrl', function (dataService) {
+angular.module('root').controller('DatepickerCtrl', function ($scope, dataService) {
     var dpicker = this;
     dpicker.dateOptions = {
         formatYear: 'yyyy',
@@ -71,8 +71,7 @@ angular.module('root').controller('DatepickerCtrl', function (dataService) {
         console.log(dpicker.dt);
         dpicker.dt = null;
     };
-    dpicker.select = function ($event, string) {
-        console.log($event);
+    dpicker.select = function (string) {
         console.log(string);
     };
     dpicker.disabled = function (date, mode) {
@@ -80,6 +79,20 @@ angular.module('root').controller('DatepickerCtrl', function (dataService) {
     };
     dpicker.open = function ($event) {
         dpicker.status.opened = true;
+        setTimeout(function () {
+            var btnClear = $('.b-date ul.dropdown-menu .btn-group button[ng-click="select(null)"]').clone();
+            var block = $('.b-date ul.dropdown-menu .btn-group button[ng-click="select(null)"]').parent();
+            $(btnClear).attr('ng-click', 'dpicker.select(null)');
+            $(btnClear).click(dpicker.select);
+            $('.b-date ul.dropdown-menu .btn-group button[ng-click="select(null)"]').remove();
+            $(block).append(btnClear);
+        });
+    };
+    dpicker.clear = function ($event) {
+        console.log('close');
+    };
+    $scope.clear = function ($event) {
+        console.log('close2');
     };
     var tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -109,6 +122,10 @@ angular.module('root').controller('DatepickerCtrl', function (dataService) {
         }
         return '';
     };
+    console.log($('b-date ul.dropdown-menu .btn-group button[ng-click="select(null)"]'));
+    $('body').delegate('.btn-group', 'click', function () {
+        console.log('clear');
+    });
 });
 angular.module('root').controller('ScheduleController', function (dataService) {
     var scheduleList = this;

@@ -18,8 +18,7 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, dataServic
 		console.log(dpicker.dt);
 		dpicker.dt = null;
 	};
-	dpicker.select = function($event, string){
-		console.log($event);
+	dpicker.select = function(string){
 		console.log(string);
 	}
 
@@ -30,7 +29,21 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, dataServic
 
 	dpicker.open = function($event) {
 		dpicker.status.opened = true;
+		setTimeout(function(){
+			let btnClear = $('.b-date ul.dropdown-menu .btn-group button[ng-click="select(null)"]').clone();
+			let block = $('.b-date ul.dropdown-menu .btn-group button[ng-click="select(null)"]').parent();
+			$(btnClear).attr('ng-click', 'dpicker.select(null)');
+			$(btnClear).click(dpicker.select);
+			$('.b-date ul.dropdown-menu .btn-group button[ng-click="select(null)"]').remove();
+			$(block).append(btnClear);
+		});
 	};
+	dpicker.clear = function($event){
+		console.log('close');
+	}
+	$scope.clear = function($event){
+		console.log('close2');
+	}
 
 	var tomorrow = new Date();
 	tomorrow.setDate(tomorrow.getDate() + 1);
@@ -64,4 +77,10 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, dataServic
 
 		return '';
 	};
+
+	console.log($('b-date ul.dropdown-menu .btn-group button[ng-click="select(null)"]'));
+
+	$('body').delegate('.btn-group', 'click', function(){
+		console.log('clear');
+	})
 });
