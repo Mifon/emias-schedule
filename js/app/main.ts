@@ -1,8 +1,5 @@
 'use strict';
 
-angular.module('root', ['ui.bootstrap']);
-
-
 // селекты
 angular.module('root').controller('DropdownCtrl', function ($scope, $log) {
 	$scope.items = [
@@ -27,12 +24,6 @@ angular.module('root').controller('DropdownCtrl', function ($scope, $log) {
 });
 
 
-
-// блок доступного ресурса
-angular.module('root').controller('specialist', function(dataService) {
-	var special = this;
-	special.list = dataService.get('listDr');
-})
 
 
 
