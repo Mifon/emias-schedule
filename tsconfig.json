@@ -7,9 +7,9 @@
     },
     "files":[
         "js/app/main.ts",
-        "js/app/patient.ts",
-        "js/app/datepicker.ts",
-        "js/app/schedule.ts",
-        "js/app/dataService.ts"
+        "js/app/controllers/patient.ts",
+        "js/app/controllers/datepicker.ts",
+        "js/app/controllers/schedule.ts",
+        "js/app/services/dataService.ts"
     ]
 }
