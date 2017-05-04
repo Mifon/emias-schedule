@@ -5,7 +5,8 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, dataServic
 
 	dpicker.dateOptions = {
 		formatYear: 'yyyy',
-		startingDay: 1
+		startingDay: 1,
+		showWeeks: false
 	};
 	dpicker.status = {
 		opened: false
@@ -61,14 +62,15 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, dataServic
 
 	dpicker.dayClass = function(date, mode) {
 		let timeDate = date.getTime();
-		if (timeDate > (new Date().getTime() + (60000*60*24*14))) {
-			return 'js-date-disabled';
+		let now      = new Date().getTime();
+		let strClass = 'b-date__select';
+		if (timeDate > (now + (60000*60*24*14)) || timeDate < (now - (60000*60*24))) {
+			strClass += ' disabled js-date-disabled';
+		} else if (date.getDay() === 0 || date.getDay() === 6) {
+			strClass += ' disabled-day-off';
+		} else {
+			strClass += ' js-date-select';
 		}
-		return 'js-date-select';
+		return strClass;
 	}
-
-
-	$('body').delegate('.js-date-select', 'click', function(){
-		dpicker.select();
-	})
 });

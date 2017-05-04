@@ -6,4 +6,8 @@ angular.module('root').controller('ScheduleController', function(dataService) {
 
 	scheduleList.list = {};
 	scheduleList.classBlock = "emptyBlock";
+
+	function renderList() {
+
+	}
 })

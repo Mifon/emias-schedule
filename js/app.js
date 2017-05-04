@@ -1,5 +1,9 @@
 'use strict';
-angular.module('root', ['ui.bootstrap']);
+angular.module('root', ['ui.bootstrap'])
+    .constant('CONFIG', {
+    DebugMode: true,
+    StepCounter: 0,
+});
 angular.module('root').controller('DropdownCtrl', function ($scope, $log) {
     $scope.items = [
         'The first choice!',
@@ -18,104 +22,14 @@ angular.module('root').controller('DropdownCtrl', function ($scope, $log) {
         $scope.status.isopen = !$scope.status.isopen;
     };
 });
-angular.module('root').controller('DatepickerCtrl', function ($scope) {
-    $scope.today = function () {
-        $scope.dt = new Date();
-    };
-    $scope.today();
-    $scope.clear = function () {
-        $scope.dt = null;
-    };
-    $scope.disabled = function (date, mode) {
-        return (mode === 'day' && (date.getDay() === 0 || date.getDay() === 6));
-    };
-    $scope.toggleMin = function () {
-        $scope.minDate = $scope.minDate ? null : new Date();
-    };
-    $scope.toggleMin();
-    $scope.maxDate = new Date(2020, 5, 22);
-    $scope.open = function ($event) {
-        $scope.status.opened = true;
-    };
-    $scope.dateOptions = {
-        formatYear: 'yy',
-        startingDay: 1
-    };
-    $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
-    $scope.format = $scope.formats[0];
-    $scope.status = {
-        opened: false
-    };
-    var tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    var afterTomorrow = new Date();
-    afterTomorrow.setDate(tomorrow.getDate() + 2);
-    $scope.events =
-        [
-            {
-                date: tomorrow,
-                status: 'full'
-            },
-            {
-                date: afterTomorrow,
-                status: 'partially'
-            }
-        ];
-    $scope.getDayClass = function (date, mode) {
-        if (mode === 'day') {
-            var dayToCheck = new Date(date).setHours(0, 0, 0, 0);
-            for (var i = 0; i < $scope.events.length; i++) {
-                var currentDay = new Date($scope.events[i].date).setHours(0, 0, 0, 0);
-                if (dayToCheck === currentDay) {
-                    return $scope.events[i].status;
-                }
-            }
-        }
-        return '';
-    };
-});
-angular.module('root').controller('specialist', function (dataService) {
-    var special = this;
-    special.list = dataService.get('listDr');
-});
 var el = document.querySelector('.b-spec__list');
 Ps.initialize(el);
-angular.module('root').controller('PatientController', function (dataService) {
-    var patient = this;
-    patient.user = '';
-    patient.list = dataService.get('listUser');
-    patient.listRes = '';
-    patient.btnDisabled = 'disabled';
-    patient.inputChange = function (e) {
-        if (patient.inputSearch.length >= 3) {
-            patient.listRes = patient.list;
-        }
-        else {
-            patient.listRes = '';
-        }
-    };
-    patient.selectedUser = function (item) {
-        var option = dataService.get('listOption');
-        patient.user = item;
-        patient.btnDisabled = '';
-        patient.listRes = '';
-        patient.inputSearch = '';
-        option.user = item;
-        dataService.set('listOption', option);
-    };
-    patient.relogUser = function () {
-        var option = dataService.get('listOption');
-        patient.user = '';
-        patient.btnDisabled = 'disabled';
-        option.user = '';
-        dataService.set('listOption', option);
-    };
-});
 angular.module('root').controller('DatepickerCtrl', function ($scope, dataService) {
     var dpicker = this;
     dpicker.dateOptions = {
         formatYear: 'yyyy',
-        startingDay: 1
+        startingDay: 1,
+        showWeeks: false
     };
     dpicker.status = {
         opened: false
@@ -126,8 +40,6 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, dataServic
     dpicker.btnDisabled = 'disabled';
     dpicker.btnDisabledTitle = 'Выберите доступный ресурс';
     dpicker.selectedDate = '';
-    dpicker.btnDisabled = '';
-    dpicker.btnDisabledTitle = '';
     dpicker.select = function (str) {
         var option = dataService.get('listOption');
         option.date = dpicker.dt;
@@ -166,20 +78,76 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, dataServic
     };
     dpicker.dayClass = function (date, mode) {
         var timeDate = date.getTime();
-        if (timeDate > (new Date().getTime() + (60000 * 60 * 24 * 14))) {
-            return 'js-date-disabled';
+        var now = new Date().getTime();
+        var strClass = 'b-date__select';
+        if (timeDate > (now + (60000 * 60 * 24 * 14)) || timeDate < (now - (60000 * 60 * 24))) {
+            strClass += ' disabled js-date-disabled';
         }
-        return 'js-date-select';
+        else if (date.getDay() === 0 || date.getDay() === 6) {
+            strClass += ' disabled-day-off';
+        }
+        else {
+            strClass += ' js-date-select';
+        }
+        return strClass;
     };
-    $('body').delegate('.js-date-select', 'click', function () {
-        dpicker.select();
-    });
+});
+angular.module('root').controller('PatientController', function (dataService) {
+    var patient = this;
+    patient.user = '';
+    patient.list = dataService.get('listUser');
+    patient.listRes = '';
+    patient.btnDisabled = 'disabled';
+    patient.inputChange = function (e) {
+        if (patient.inputSearch.length >= 3) {
+            patient.listRes = patient.list;
+        }
+        else {
+            patient.listRes = '';
+        }
+    };
+    patient.selectedUser = function (item) {
+        var option = dataService.get('listOption');
+        patient.user = item;
+        patient.btnDisabled = '';
+        patient.listRes = '';
+        patient.inputSearch = '';
+        option.user = item;
+        dataService.set('listOption', option);
+    };
+    patient.relogUser = function () {
+        var option = dataService.get('listOption');
+        patient.user = '';
+        patient.btnDisabled = 'disabled';
+        option.user = '';
+        dataService.set('listOption', option);
+    };
 });
 angular.module('root').controller('ScheduleController', function (dataService) {
     var scheduleList = this;
     var showList = false;
     scheduleList.list = {};
     scheduleList.classBlock = "emptyBlock";
+    function renderList() {
+    }
+});
+angular.module('root')
+    .controller('specialistController', function specialistController(dataService) {
+    var special = this;
+    special.list = dataService.get('listDr');
+    special.checkAll = function () {
+        setStateItems(true);
+    };
+    special.uncheckAll = function () {
+        setStateItems(false);
+    };
+    function setStateItems(checked) {
+        if (!special.list && typeof special.list !== typeof [])
+            return;
+        special.list.forEach(function (element) {
+            element.checked = checked;
+        });
+    }
 });
 angular.module('root').service('dataService', function () {
     var self = this;
@@ -187,7 +155,12 @@ angular.module('root').service('dataService', function () {
         listUser: [],
         listDr: {},
         listRecord: [],
-        listOption: {},
+        listOption: {
+            user: '',
+            date: '',
+            listDr: '',
+            step: 1
+        },
     };
     data.listUser = [
         { id: 1, name: 'Иван', surname: 'Иванов', patron: 'Иванович', dateBD: '11.11.2011', numPolicOMS: 1111111111111111 },
@@ -196,8 +169,8 @@ angular.module('root').service('dataService', function () {
         { id: 4, name: 'Сергей', surname: 'Сергеев', patron: 'Сергеевич', dateBD: '02.02.2002', numPolicOMS: 4444444444444444 },
         { id: 5, name: 'Василий', surname: 'Васильев', patron: 'Васильевич', dateBD: '09.09.1949', numPolicOMS: 5555555555555555 }
     ];
-    data.listDr = {
-        1: {
+    data.listDr = [
+        {
             id: 1,
             name: 'Григорьева Г.Г.',
             specialty: 'Терапевт',
@@ -215,7 +188,7 @@ angular.module('root').service('dataService', function () {
             ],
             checked: false
         },
-        2: {
+        {
             id: 2,
             name: 'Сидорова С.С.',
             specialty: 'Терапевт',
@@ -232,8 +205,62 @@ angular.module('root').service('dataService', function () {
                 { name: 'Врач не работает', start: 14, end: 15 },
             ],
             checked: false
+        },
+        {
+            id: 3,
+            name: 'Сидорова С.С.',
+            specialty: 'Терапевт',
+            institution: 'ГП №128',
+            room: '130',
+            start: 14,
+            end: 18,
+            startWD: 1,
+            endWD: 5,
+            stepSchedule: 10 * 60,
+            quots: [
+                { name: 'Запись на прием', start: 10, end: 14 },
+                { name: 'Запись на прием', start: 15, end: 20 },
+                { name: 'Врач не работает', start: 14, end: 15 },
+            ],
+            checked: false
+        },
+        {
+            id: 4,
+            name: 'Елисеева Е.Е.',
+            specialty: 'Терапевт',
+            institution: 'ГП №128',
+            room: '130',
+            start: 14,
+            end: 18,
+            startWD: 1,
+            endWD: 5,
+            stepSchedule: 10 * 60,
+            quots: [
+                { name: 'Запись на прием', start: 10, end: 14 },
+                { name: 'Запись на прием', start: 15, end: 20 },
+                { name: 'Врач не работает', start: 14, end: 15 },
+            ],
+            checked: false
+        },
+        {
+            id: 4,
+            name: 'Елисеева Е.Е.',
+            specialty: 'Терапевт',
+            institution: 'ГП №128',
+            room: '130',
+            start: 14,
+            end: 18,
+            startWD: 1,
+            endWD: 5,
+            stepSchedule: 10 * 60,
+            quots: [
+                { name: 'Запись на прием', start: 10, end: 14 },
+                { name: 'Запись на прием', start: 15, end: 20 },
+                { name: 'Врач не работает', start: 14, end: 15 },
+            ],
+            checked: false
         }
-    };
+    ];
     this.get = function (nameData) {
         return data[nameData];
     };

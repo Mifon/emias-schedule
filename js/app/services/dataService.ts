@@ -6,7 +6,12 @@ angular.module('root').service('dataService', function() {
 		listUser: [],
 		listDr: {},
 		listRecord: [],
-		listOption: {},
+		listOption: {
+			user: '',
+			date: '',
+			listDr: '',
+			step: 1
+		},
 	};
 
 	data.listUser = [

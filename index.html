@@ -62,7 +62,7 @@
 			<div class="b-cntnt">
 				<label for=""></label>
 				<div class="input-group">
-					<input type="text" class="form-control" placeholder="ДД.ММ.ГГГГ"
+					<input type="text" class="form-control" placeholder="ДД.ММ.ГГГГ" readonly=""
 						ng-change="dpicker.select('change')"
 						datepicker-popup="{{dpicker.format}}"
 						ng-model="dpicker.dt"
@@ -83,6 +83,7 @@
 				</div>
 			</div>
 		</div>
+		<!-- /Блок даты записи -->
 
 		<!-- #Блок специалиста -->
 		<div class="p-block b-spec b-last" ng-controller="specialistController as special">
@@ -125,7 +126,6 @@
 		</div>
 		<!-- /Блок специалиста -->
 	</div>
-	<!-- /Блок даты записи -->
 
 
 
@@ -184,6 +184,7 @@
 
 	<script type="text/javascript" src="js/jquery/jquery.min.js"></script>
 	<script type="text/javascript" src="js/angular.js"></script>
+	<script type="text/javascript" src="js/angular-locale_ru-ru.js"></script>
 	<script type="text/javascript" src="js/angular-route.js"></script>
 	<script type="text/javascript" src="js/perfect-scrollbar.js"></script>
 	<script type="text/javascript" src="js/ui-bootstrap-tpls-0.13.4.min.js"></script>
