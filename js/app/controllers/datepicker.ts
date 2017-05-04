@@ -17,9 +17,6 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, dataServic
 	dpicker.btnDisabledTitle = 'Выберите доступный ресурс';
 	dpicker.selectedDate = '';
 
-	dpicker.btnDisabled = '';
-	dpicker.btnDisabledTitle = '';
-
 	dpicker.select = function(str){
 		let option = dataService.get('listOption');
 		option.date = dpicker.dt;
