@@ -24,7 +24,7 @@ angular.module('root').controller('DropdownCtrl', function ($scope, $log) {
 });
 var el = document.querySelector('.b-spec__list');
 Ps.initialize(el);
-angular.module('root').controller('DatepickerCtrl', function ($scope, dataService) {
+angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope, dataService) {
     var dpicker = this;
     dpicker.dateOptions = {
         formatYear: 'yyyy',
@@ -40,6 +40,7 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, dataServic
     dpicker.btnDisabled = 'disabled';
     dpicker.btnDisabledTitle = 'Выберите доступный ресурс';
     dpicker.selectedDate = '';
+    dpicker.dt = '';
     dpicker.select = function (str) {
         var option = dataService.get('listOption');
         option.date = dpicker.dt;
@@ -48,6 +49,7 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, dataServic
             $('.b-date ul.dropdown-menu').remove();
         }
         dataService.set('listOption', option);
+        $rootScope.$broadcast('renderSchedule');
     };
     dpicker.dateReset = function () {
         var option = dataService.get('listOption');
@@ -91,6 +93,20 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, dataServic
         }
         return strClass;
     };
+    $scope.$on('updateDatepicker', function () {
+        var options = dataService.get('listOption');
+        if (options.listDr && options.listDr.length > 0) {
+            dpicker.btnDisabled = '';
+            dpicker.btnDisabledTitle = '';
+            dpicker.dt = dpicker.dt == '' ? new Date() : dpicker.dt;
+        }
+        else {
+            dpicker.btnDisabled = 'disabled';
+            dpicker.btnDisabledTitle = 'Выберите доступный ресурс';
+            dpicker.dt = '';
+        }
+        dpicker.select();
+    });
 });
 angular.module('root').controller('PatientController', function (dataService) {
     var patient = this;
@@ -123,16 +139,26 @@ angular.module('root').controller('PatientController', function (dataService) {
         dataService.set('listOption', option);
     };
 });
-angular.module('root').controller('ScheduleController', function (dataService) {
+angular.module('root').controller('ScheduleController', function ($scope, dataService) {
     var scheduleList = this;
-    var showList = false;
+    scheduleList.showList = false;
     scheduleList.list = {};
     scheduleList.classBlock = "emptyBlock";
+    scheduleList.update = function () {
+        console.log('ok');
+    };
     function renderList() {
+        var options = dataService.get('listOption');
+        console.log(options);
+        scheduleList.list = options.listDr;
+        scheduleList.showList = scheduleList.list && scheduleList.list.length > 0;
     }
+    $scope.$on('renderSchedule', function () {
+        renderList();
+    });
 });
 angular.module('root')
-    .controller('specialistController', function specialistController(dataService) {
+    .controller('specialistController', function specialistController($rootScope, dataService) {
     var special = this;
     special.list = dataService.get('listDr');
     special.checkAll = function () {
@@ -147,7 +173,20 @@ angular.module('root')
         special.list.forEach(function (element) {
             element.checked = checked;
         });
+        special.selected();
     }
+    special.selected = function () {
+        var options = dataService.get('listOption');
+        var selectedDr = [];
+        for (var key in special.list) {
+            if (special.list[key].checked) {
+                selectedDr.push(special.list[key]);
+            }
+        }
+        options.listDr = selectedDr.length > 0 ? selectedDr : '';
+        dataService.set('options');
+        $rootScope.$broadcast('updateDatepicker');
+    };
 });
 angular.module('root').service('dataService', function () {
     var self = this;
@@ -199,60 +238,6 @@ angular.module('root').service('dataService', function () {
             startWD: 1,
             endWD: 5,
             stepSchedule: 30 * 60,
-            quots: [
-                { name: 'Запись на прием', start: 10, end: 14 },
-                { name: 'Запись на прием', start: 15, end: 20 },
-                { name: 'Врач не работает', start: 14, end: 15 },
-            ],
-            checked: false
-        },
-        {
-            id: 3,
-            name: 'Сидорова С.С.',
-            specialty: 'Терапевт',
-            institution: 'ГП №128',
-            room: '130',
-            start: 14,
-            end: 18,
-            startWD: 1,
-            endWD: 5,
-            stepSchedule: 10 * 60,
-            quots: [
-                { name: 'Запись на прием', start: 10, end: 14 },
-                { name: 'Запись на прием', start: 15, end: 20 },
-                { name: 'Врач не работает', start: 14, end: 15 },
-            ],
-            checked: false
-        },
-        {
-            id: 4,
-            name: 'Елисеева Е.Е.',
-            specialty: 'Терапевт',
-            institution: 'ГП №128',
-            room: '130',
-            start: 14,
-            end: 18,
-            startWD: 1,
-            endWD: 5,
-            stepSchedule: 10 * 60,
-            quots: [
-                { name: 'Запись на прием', start: 10, end: 14 },
-                { name: 'Запись на прием', start: 15, end: 20 },
-                { name: 'Врач не работает', start: 14, end: 15 },
-            ],
-            checked: false
-        },
-        {
-            id: 4,
-            name: 'Елисеева Е.Е.',
-            specialty: 'Терапевт',
-            institution: 'ГП №128',
-            room: '130',
-            start: 14,
-            end: 18,
-            startWD: 1,
-            endWD: 5,
-            stepSchedule: 10 * 60,
             quots: [
                 { name: 'Запись на прием', start: 10, end: 14 },
                 { name: 'Запись на прием', start: 15, end: 20 },

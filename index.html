@@ -119,7 +119,7 @@
 				</div>-->
 				<div class="b-spec__list" id="Demo">
 					<label class="b-spec__list-item" ng-repeat="item in special.list">
-								<input type="checkbox" ng-model="item.checked"> {{item.name + ' (' + item.specialty + ')'}}
+								<input type="checkbox" ng-model="item.checked" ng-change="special.selected()"> {{item.name + ' (' + item.specialty + ')'}}
 						</label>
 				</div>
 			</div>
@@ -147,7 +147,7 @@
 
 		<!-- #Блок сетки расписния -->
 		<div class="p-block b-last b-schedule {{scheduleList.classBlock}}" ng-controller="ScheduleController as scheduleList">
-			<div class="b-schedule__empty-list" ng-show="!showList">
+			<div class="b-schedule__empty-list" ng-show="!scheduleList.showList">
 				<div>Для просмотра расписания выберите хотя бы один Доступный ресурс.</div>
 			</div>
 

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('root').controller('DatepickerCtrl', function ($scope, dataService) {
+angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope, dataService) {
 	let dpicker = this;
 
 	dpicker.dateOptions = {
@@ -17,6 +17,7 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, dataServic
 	dpicker.btnDisabled = 'disabled';
 	dpicker.btnDisabledTitle = 'Выберите доступный ресурс';
 	dpicker.selectedDate = '';
+	dpicker.dt = '';
 
 	dpicker.select = function(str){
 		let option = dataService.get('listOption');
@@ -26,6 +27,7 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, dataServic
 			$('.b-date ul.dropdown-menu').remove();
 		}
 		dataService.set('listOption', option);
+		$rootScope.$broadcast('renderSchedule');
 	}
 	dpicker.dateReset = function() {
 		let option = dataService.get('listOption');
@@ -73,4 +75,18 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, dataServic
 		}
 		return strClass;
 	}
+
+	$scope.$on('updateDatepicker', function(){
+		let options = dataService.get('listOption');
+		if (options.listDr && options.listDr.length > 0) {
+			dpicker.btnDisabled = '';
+			dpicker.btnDisabledTitle = '';
+			dpicker.dt = dpicker.dt == '' ? new Date() : dpicker.dt;
+		} else {
+			dpicker.btnDisabled = 'disabled';
+			dpicker.btnDisabledTitle = 'Выберите доступный ресурс';
+			dpicker.dt = '';
+		}
+		dpicker.select();
+	});
 });
