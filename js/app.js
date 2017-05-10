@@ -159,39 +159,37 @@ angular.module('root').controller('ScheduleController', function ($scope, dataSe
         scheduleList.showList = scheduleList.list && scheduleList.list.length > 0;
         console.log(options.date);
         options.viewDays;
-        for (var i = 0; i < options.viewDays; i++) {
-            for (var key in scheduleList.list) {
-                var item = scheduleList.list[key];
-                item.schCells = [];
-                item.timeWorking = getTimeWorcking(item);
-                for (var k in item.quots) {
-                    var qoute = item.quots[k];
-                    if (qoute.name == 'Запись на прием') {
-                        for (var i = qoute.start; i < qoute.end; i += item.stepSchedule) {
-                            var time = (i * 1000) + (new Date((i * 1000)).getTimezoneOffset() * 60 * 1000);
-                            var nameClass = qoute.name != 'Запись на прием' ? 'b-schedule__item-step-notrec' : 'b-schedule__item-step';
-                            var cellA = Object.create(cell);
-                            cellA.hour = new Date(time).getHours();
-                            cellA.minute = new Date(time).getMinutes();
-                            cellA.label = cellA.hour + ':' + (cellA.minute < 10 ? '0' + cellA.minute : cellA.minute);
-                            cellA.elemClass = nameClass;
-                            item.schCells.push(cellA);
-                        }
-                    }
-                    else {
-                        var time = (qoute.start * 1000) + (new Date((qoute.start * 1000)).getTimezoneOffset() * 60 * 1000);
-                        var nameClass = 'b-schedule__item-step-notrec';
-                        var cellB = Object.create(cell);
-                        cellB.hour = new Date(time).getHours();
-                        cellB.minute = new Date(time).getMinutes();
-                        cellB.label = qoute.name;
-                        cellB.elemClass = nameClass;
-                        item.schCells.push(cellB);
+        for (var key in scheduleList.list) {
+            var item = scheduleList.list[key];
+            item.schCells = [];
+            item.timeWorking = getTimeWorcking(item);
+            for (var k in item.quots) {
+                var qoute = item.quots[k];
+                if (qoute.name == 'Запись на прием') {
+                    for (var i = qoute.start; i < qoute.end; i += item.stepSchedule) {
+                        var time = (i * 1000) + (new Date((i * 1000)).getTimezoneOffset() * 60 * 1000);
+                        var nameClass = qoute.name != 'Запись на прием' ? 'b-schedule__item-step-notrec' : 'b-schedule__item-step';
+                        var cellA = Object.create(cell);
+                        cellA.hour = new Date(time).getHours();
+                        cellA.minute = new Date(time).getMinutes();
+                        cellA.label = cellA.hour + ':' + (cellA.minute < 10 ? '0' + cellA.minute : cellA.minute);
+                        cellA.elemClass = nameClass;
+                        item.schCells.push(cellA);
                     }
                 }
-                item.schCells.sort(scheduleCellsSort);
-                scheduleList.list[key] = item;
+                else {
+                    var time = (qoute.start * 1000) + (new Date((qoute.start * 1000)).getTimezoneOffset() * 60 * 1000);
+                    var nameClass = 'b-schedule__item-step-notrec';
+                    var cellB = Object.create(cell);
+                    cellB.hour = new Date(time).getHours();
+                    cellB.minute = new Date(time).getMinutes();
+                    cellB.label = qoute.name;
+                    cellB.elemClass = nameClass;
+                    item.schCells.push(cellB);
+                }
             }
+            item.schCells.sort(scheduleCellsSort);
+            scheduleList.list[key] = item;
         }
     }
     function scheduleCellsSort(a, b) {
@@ -303,16 +301,15 @@ angular.module('root').service('dataService', function () {
             name: 'Сидорова С.С.',
             specialty: 'Терапевт',
             institution: 'ГП №128',
-            room: '110',
-            start: 10,
-            end: 20,
+            room: '120',
+            start: (60 * 60 * 8),
+            end: (60 * 60 * 15),
             startWD: 1,
             endWD: 5,
             stepSchedule: 30 * 60,
             quots: [
-                { name: 'Запись на прием', start: (60 * 60 * 10), end: (60 * 60 * 14) },
-                { name: 'Запись на прием', start: (60 * 60 * 15), end: (60 * 60 * 20) },
-                { name: 'Врач не работает', start: (60 * 60 * 14), end: (60 * 60 * 15) },
+                { name: 'Запись на прием', start: (60 * 60 * 10), end: (60 * 60 * 15) },
+                { name: 'Обучение', start: (60 * 60 * 10), end: (60 * 60 * 15) },
             ],
             checked: false
         },

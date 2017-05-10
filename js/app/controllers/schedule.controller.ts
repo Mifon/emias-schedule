@@ -28,7 +28,7 @@ angular.module('root').controller('ScheduleController', function($scope, dataSer
 		options.viewDays;
 
 		// по дням
-		for (var i = 0; i < options.viewDays; i++) {
+		// for (var i = 0; i < options.viewDays; i++) {
 
 			// по специалистам
 			for (var key in scheduleList.list) {
@@ -68,7 +68,7 @@ angular.module('root').controller('ScheduleController', function($scope, dataSer
 				item.schCells.sort(scheduleCellsSort);
 				scheduleList.list[key] = item;
 			}
-		}
+		// }
 	}
 
 	function scheduleCellsSort(a, b) {
