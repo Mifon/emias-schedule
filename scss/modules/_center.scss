@@ -15,6 +15,12 @@
 		background: #efefef;
 	}
 }
+.b-schedule__list {
+	height: 100%;
+	width: 100%;
+	overflow: hidden;
+	position: relative;
+}
 .b-schedule__item {
 	width: 150px;
 	border-radius: 3px;
@@ -23,19 +29,19 @@
 	overflow: hidden;
 	margin-right: 10px;
 
-	&-head {
+	&-date {
 		color: #fff;
 		background-color: #000;
 		padding: 5px;
 	}
 	&-name {
-		@extend .b-schedule__item-head;
+		@extend .b-schedule__item-date;
 		background-color: #949494;
 		border-bottom: 1px solid #fff;
 	}
 
 	&-spec {
-		@extend .b-schedule__item-head;
+		@extend .b-schedule__item-date;
 		background-color: #949494;
 		border-bottom: 1px solid #949494;
 	}

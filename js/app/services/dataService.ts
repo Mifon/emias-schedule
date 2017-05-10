@@ -10,7 +10,7 @@ angular.module('root').service('dataService', function() {
 			user: '',
 			date: '',
 			listDr: '',
-			step: 1
+			viewDays: 1
 		},
 	};
 
@@ -29,15 +29,15 @@ angular.module('root').service('dataService', function() {
 			specialty: 'Терапевт',
 			institution: 'ГП №128', // Муниципальное Учреждение
 			room: '110',
-			start: 10,
-			end: 20,
+			start: (60*60*10),
+			end: (60*60*20),
 			startWD: 1,
 			endWD: 5,
-			stepSchedule: 30*60, // 30 минут
+			stepSchedule: (30*60), // 30 минут
 			quots: [
-				{name:'Запись на прием', start:10, end:14},
-				{name:'Запись на прием', start:15, end:20},
-				{name:'Врач не работает', start:14, end:15},
+				{name:'Запись на прием', start:(60*60*10), end:(60*60*14)},
+				{name:'Запись на прием', start:(60*60*15), end:(60*60*20)},
+				{name:'Врач не работает', start:(60*60*14), end:(60*60*15)},
 			],
 			checked: false
 		},
@@ -53,12 +53,12 @@ angular.module('root').service('dataService', function() {
 			endWD: 5,
 			stepSchedule: 30*60, // 30 минут
 			quots: [
-				{name:'Запись на прием', start:10, end:14},
-				{name:'Запись на прием', start:15, end:20},
-				{name:'Врач не работает', start:14, end:15},
+				{name:'Запись на прием', start:(60*60*10), end:(60*60*14)},
+				{name:'Запись на прием', start:(60*60*15), end:(60*60*20)},
+				{name:'Врач не работает', start:(60*60*14), end:(60*60*15)},
 			],
 			checked: false
-		}
+		},
 
 	];
 

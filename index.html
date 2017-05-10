@@ -151,28 +151,29 @@
 				<div>Для просмотра расписания выберите хотя бы один Доступный ресурс.</div>
 			</div>
 
-			<div class="b-schedule__item" ng-repeat="item in scheduleList.list">
-				<div class="b-schedule__item-head">
-					Пт. 16 сен.
-				</div>
-				<div class="b-schedule__item-name">
-					{{item.name}}
-				</div>
-				<div class="b-schedule__item-spec">
-					Ольфтальмолог
-				</div>
-				<div class="b-schedule__item-adrec">
-					ГП №128б (к140)
-				</div>
-				<div class="b-schedule__item-graf">
-					08:00-18:00
-				</div>
-				<div class="b-schedule__item-cntnt">
-					<div class="b-schedule__item-step">
-						<label>10:00</label>
+			<div class="b-schedule__list" ng-show="scheduleList.showList">
+				<div class="b-schedule__item" ng-repeat="item in scheduleList.list">
+					<div class="b-schedule__item-head">
+						<div class="b-schedule__item-date">
+							Пт. 16 сен.
+						</div>
+						<div class="b-schedule__item-name">
+							{{item.name}}
+						</div>
+						<div class="b-schedule__item-spec">
+							{{item.specialty}}
+						</div>
+						<div class="b-schedule__item-adrec">
+							{{item.institution}} (к{{item.room}})
+						</div>
+						<div class="b-schedule__item-graf">
+							{{item.timeWorking}}
+						</div>
 					</div>
-					<div class="b-schedule__item-step-notrec">
-						<label>Нет записи</label>
+					<div class="b-schedule__item-cntnt">
+						<div ng-repeat="cell in item.schCells" class="{{cell.elemClass}}">
+							<label>{{cell.label}}</label>
+						</div>
 					</div>
 				</div>
 			</div>

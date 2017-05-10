@@ -149,13 +149,84 @@ angular.module('root').controller('ScheduleController', function ($scope, dataSe
     };
     function renderList() {
         var options = dataService.get('listOption');
-        console.log(options);
+        var cell = {
+            hour: 0,
+            minute: 0,
+            label: '',
+            elemClass: ''
+        };
         scheduleList.list = options.listDr;
         scheduleList.showList = scheduleList.list && scheduleList.list.length > 0;
+        console.log(options.date);
+        options.viewDays;
+        for (var i = 0; i < options.viewDays; i++) {
+            for (var key in scheduleList.list) {
+                var item = scheduleList.list[key];
+                item.schCells = [];
+                item.timeWorking = getTimeWorcking(item);
+                for (var k in item.quots) {
+                    var qoute = item.quots[k];
+                    if (qoute.name == 'Запись на прием') {
+                        for (var i = qoute.start; i < qoute.end; i += item.stepSchedule) {
+                            var time = (i * 1000) + (new Date((i * 1000)).getTimezoneOffset() * 60 * 1000);
+                            var nameClass = qoute.name != 'Запись на прием' ? 'b-schedule__item-step-notrec' : 'b-schedule__item-step';
+                            var cellA = Object.create(cell);
+                            cellA.hour = new Date(time).getHours();
+                            cellA.minute = new Date(time).getMinutes();
+                            cellA.label = cellA.hour + ':' + (cellA.minute < 10 ? '0' + cellA.minute : cellA.minute);
+                            cellA.elemClass = nameClass;
+                            item.schCells.push(cellA);
+                        }
+                    }
+                    else {
+                        var time = (qoute.start * 1000) + (new Date((qoute.start * 1000)).getTimezoneOffset() * 60 * 1000);
+                        var nameClass = 'b-schedule__item-step-notrec';
+                        var cellB = Object.create(cell);
+                        cellB.hour = new Date(time).getHours();
+                        cellB.minute = new Date(time).getMinutes();
+                        cellB.label = qoute.name;
+                        cellB.elemClass = nameClass;
+                        item.schCells.push(cellB);
+                    }
+                }
+                item.schCells.sort(scheduleCellsSort);
+                scheduleList.list[key] = item;
+            }
+        }
+    }
+    function scheduleCellsSort(a, b) {
+        if (a.hour < b.hour)
+            return -1;
+        else if (a.hour > b.hour)
+            return 1;
+        if (a.minute < b.minute)
+            return -1;
+        else if (a.minute > b.minute)
+            return 1;
+        return 0;
+    }
+    function getTimeWorcking(spec) {
+        var strTime = '';
+        var start = (spec.start * 1000) + (new Date((spec.start * 1000)).getTimezoneOffset() * 60 * 1000);
+        var end = (spec.end * 1000) + (new Date((spec.end * 1000)).getTimezoneOffset() * 60 * 1000);
+        var startHour = new Date(start).getHours();
+        var startMinute = new Date(start).getMinutes();
+        var endHour = new Date(end).getHours();
+        var endMinute = new Date(end).getMinutes();
+        strTime += addZIONTime(startHour);
+        strTime += ':' + addZIONTime(startMinute);
+        strTime += '-' + addZIONTime(endHour);
+        strTime += ':' + addZIONTime(endMinute);
+        return strTime;
+    }
+    function addZIONTime(time) {
+        return time < 10 ? '0' + time : time;
     }
     $scope.$on('renderSchedule', function () {
         renderList();
     });
+    var el = document.querySelector('.b-schedule__list');
+    Ps.initialize(el);
 });
 angular.module('root')
     .controller('specialistController', function specialistController($rootScope, dataService) {
@@ -198,7 +269,7 @@ angular.module('root').service('dataService', function () {
             user: '',
             date: '',
             listDr: '',
-            step: 1
+            viewDays: 1
         },
     };
     data.listUser = [
@@ -215,15 +286,15 @@ angular.module('root').service('dataService', function () {
             specialty: 'Терапевт',
             institution: 'ГП №128',
             room: '110',
-            start: 10,
-            end: 20,
+            start: (60 * 60 * 10),
+            end: (60 * 60 * 20),
             startWD: 1,
             endWD: 5,
-            stepSchedule: 30 * 60,
+            stepSchedule: (30 * 60),
             quots: [
-                { name: 'Запись на прием', start: 10, end: 14 },
-                { name: 'Запись на прием', start: 15, end: 20 },
-                { name: 'Врач не работает', start: 14, end: 15 },
+                { name: 'Запись на прием', start: (60 * 60 * 10), end: (60 * 60 * 14) },
+                { name: 'Запись на прием', start: (60 * 60 * 15), end: (60 * 60 * 20) },
+                { name: 'Врач не работает', start: (60 * 60 * 14), end: (60 * 60 * 15) },
             ],
             checked: false
         },
@@ -239,12 +310,12 @@ angular.module('root').service('dataService', function () {
             endWD: 5,
             stepSchedule: 30 * 60,
             quots: [
-                { name: 'Запись на прием', start: 10, end: 14 },
-                { name: 'Запись на прием', start: 15, end: 20 },
-                { name: 'Врач не работает', start: 14, end: 15 },
+                { name: 'Запись на прием', start: (60 * 60 * 10), end: (60 * 60 * 14) },
+                { name: 'Запись на прием', start: (60 * 60 * 15), end: (60 * 60 * 20) },
+                { name: 'Врач не работает', start: (60 * 60 * 14), end: (60 * 60 * 15) },
             ],
             checked: false
-        }
+        },
     ];
     this.get = function (nameData) {
         return data[nameData];

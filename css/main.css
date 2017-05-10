@@ -583,6 +583,12 @@ html, * {
   .b-schedule.emptyBlock {
     background: #efefef; }
 
+.b-schedule__list {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  position: relative; }
+
 .b-schedule__item {
   width: 150px;
   border-radius: 3px;
@@ -590,7 +596,7 @@ html, * {
   display: inline-block;
   overflow: hidden;
   margin-right: 10px; }
-  .b-schedule__item-head, .b-schedule__item-name, .b-schedule__item-spec {
+  .b-schedule__item-date, .b-schedule__item-name, .b-schedule__item-spec {
     color: #fff;
     background-color: #000;
     padding: 5px; }
