@@ -177,6 +177,7 @@
 					</div>
 					<div class="b-schedule__item-cntnt">
 						<div ng-repeat="cell in item.listCells" class="{{cell.elemClass}}" ng-click="schedule.cellOpen(item, cell, $event)"
+							title="{{cell.title}}"
 							data-date="{{cell.date}}"
 							popover-template="schedule.dataPopup.templateUrl"
 							popover-animation="false"
@@ -226,6 +227,7 @@
 					</div>
 				</div>
 				<div class="s-popover s-popup-view-record" ng-if="schedule.dataPopup.isViewUser">
+					<a href="" ng-click="schedule.dataPopup.closePopup()">X</a>
 					<div class="s-popup__head">
 						<div class="s-popup__head-icon"><i class="glyphicon glyphicon-list-alt"></i></div>
 						<div class="s-popup__head-title">{{cell.recordUser.surname + ' ' + cell.recordUser.name.charAt(0) + '.' + cell.recordUser.patron.charAt(0) + '.'}}</div>

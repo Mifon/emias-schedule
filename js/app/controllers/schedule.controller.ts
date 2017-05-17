@@ -9,11 +9,7 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 	schedule.openedCell = '';
 	schedule.defaultInfoTextEmptySchedule = 'Для просмотра расписания выберите хотя бы один Доступный ресурс.';
 	schedule.infoTextEmptySchedule = schedule.defaultInfoTextEmptySchedule;
-
-	schedule.update = function() {
-		console.log('ok');
-		// renderList();
-	}
+	schedule.textError = '';
 
 	schedule.openModalOk = function() {
 		var modalInstance = $modal.open({
@@ -74,7 +70,8 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 			schedule.dataPopup.isIconUser = true;
 		}
 
-		schedule.dataPopup.btnCreateRecord.isView = (!cell.records || cell.records.length < 2) && options.user != '';
+		// Проверка на доступность записи на выбранный интервал
+		schedule.dataPopup.btnCreateRecord.isView = ckeckAllowedCreateRecord(cell, item, options);
 		schedule.dataPopup.btnDeleteRecord.isView = (cell.records && cell.records.length > 0);
 		schedule.dataPopup.btnViewRecord.isView = (recordUser.name != '');
 
@@ -87,35 +84,6 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 			}
 		}, 100, target);
 	}
-	schedule.openPopover = function() {
-	}
-
-
-	class ClassName {
-
-		templateUrl: 'popoverTemplate';
-		title: '';
-		time: '';
-		user: {
-			name:''
-		};
-		btnViewRecord: {
-			title: 'Просмотреть запись',
-			icon: '',
-			isView: false
-		};
-		btnCreateRecord: {
-			title: 'Создать запись',
-			icon: '',
-			isView: false
-		};
-		btnDeleteRecord: {
-			title: 'Отменить запись',
-			icon: '',
-			isView: false
-		};
-	}
-
 
 	function getPopupDate() {
 		let data = {
@@ -154,7 +122,7 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 				let options = dataService.get('listOption');
 				let dataRecord = {idUser:0, time:0, user:{}, dateRecord:0};
 
-				if (options.user == '') {
+				if (!ckeckAllowedCreateRecord(cell, item, options)) {
 					return false;
 				}
 
@@ -176,17 +144,6 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 				renderList();
 				schedule.openModalOk();
 			},
-			confirmDeleteRecord: function(cell, item) {
-				schedule.dataPopup.isViewConfirmCancel = true;
-				schedule.dataPopup.isViewMenu = false;
-			},
-			returnToSchedule: function() {
-				schedule.dataPopup.isViewConfirmCancel = false;
-				schedule.dataPopup.isViewMenu = true;
-				if (schedule.openedCell != '') {
-					schedule.openedCell.isOpenPopup = false;
-				}
-			},
 			deleteRecord: function(cell, item) {
 				// cell.isOpenPopup = false;
 				// $('.b-schedule__item-step').attr('popover-is-open', false);
@@ -206,6 +163,20 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 
 				dataService.set('listOption', options);
 				renderList();
+			},
+			confirmDeleteRecord: function(cell, item) {
+				schedule.dataPopup.isViewConfirmCancel = true;
+				schedule.dataPopup.isViewMenu = false;
+			},
+			returnToSchedule: function() {
+				schedule.dataPopup.isViewConfirmCancel = false;
+				schedule.dataPopup.isViewMenu = true;
+				if (schedule.openedCell != '') {
+					schedule.openedCell.isOpenPopup = false;
+				}
+			},
+			closePopup: function() {
+				schedule.openedCell.isOpenPopup = false;
 			}
 		};
 		return data;
@@ -338,6 +309,7 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 	}
 	function setCellData(qoute, timeStart, item, day){
 		let time = (timeStart*1000)+( new Date((timeStart*1000)).getTimezoneOffset()*60*1000 );
+		let now = new Date().getTime()/1000;
 		let date = new Date(day);
 		let cell = {
 			isOpenPopup: false,
@@ -346,6 +318,7 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 			hour: new Date(time).getHours(),
 			minute: new Date(time).getMinutes(),
 			label: '',
+			title: '',
 			isPopup: true,
 			elemClass: qoute.name != 'Запись на прием' ? 'b-schedule__item-step-notrec' : 'b-schedule__item-step',
 			records: []
@@ -360,9 +333,14 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 			if (item.listRecords) {
 				for (var kRec in item.listRecords) {
 					if (cell.date == item.listRecords[kRec].dateRecord) {
+						let userRecord = item.listRecords[kRec].user;
 						cell.records.push(item.listRecords[kRec]);
+						cell.title += userRecord.surname + ' ' + userRecord.name.charAt(0) + '.' + userRecord.patron.charAt(0) + '.; ';
 					}
 				}
+			}
+			if (cell.records.length < 1) {
+				cell.title = (now < cell.date ? 'Время доступно для записи' : 'Запись на прошедший временной интервал недоступна');
 			}
 		} else {
 			cell.label = qoute.name;
@@ -371,6 +349,31 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 
 		item.listCells.push(cell);
 	}
+
+	// Проверка на доступность записи на выбранный интервал
+	function ckeckAllowedCreateRecord(cell, item, options) {
+		let now = new Date().getTime()/1000;
+		if (cell.time && (now+item.stepSchedule) > cell.time) {
+			return false;
+		}
+		if (options.user == '') {
+			return false;
+		}
+		if (cell.records) {
+			if (cell.records.length > 1) {
+				return false;
+			}
+			for (var kRec in cell.records) {
+				if (cell.records[kRec].idUser == options.user.id) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+
+
 
 	$scope.$on('renderSchedule', function(){
 		renderList();
