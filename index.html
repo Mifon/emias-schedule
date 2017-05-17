@@ -135,14 +135,14 @@
 	<div class="col-md-9 col-sm-9 p-center">
 
 		<!-- #Блок заголовка сетки расписния -->
-		<div class="p-block" ng-controller="DaysController">
+		<div class="p-block p-block--days" ng-controller="DaysController">
 			<div class="btn-group p-block__r-btns" style="float:right;">
 				<label class="btn btn-success" ng-model="radioModel" btn-radio="1" ng-change="changeDays()" uncheckable>1 день</label>
 				<label class="btn btn-success" ng-model="radioModel" btn-radio="2" ng-change="changeDays()" uncheckable>2 дня</label>
 				<label class="btn btn-success" ng-model="radioModel" btn-radio="7" ng-change="changeDays()" uncheckable>Неделя</label>
 			</div>
-			<div class="b-block__title">
-				<label>Расписане специалистов</label>
+			<div class="b-block__title b-block__title--days">
+				<label>Расписание специалистов</label>
 			</div>
 		</div>
 		<!-- /Блок заголовка сетки расписния -->
