@@ -11,6 +11,10 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 	schedule.infoTextEmptySchedule = schedule.defaultInfoTextEmptySchedule;
 	schedule.textError = '';
 	schedule.textInfo = '';
+	schedule.maxHeightHead = 0;
+
+	// schedule.heightHead = '';
+	// schedule.marginTopHead = '';
 
 	schedule.openModalOk = function() {
 		var modalInstance = $modal.open({
@@ -112,6 +116,10 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 		// 		$(target).addClass('js-popup-open');
 		// 	}
 		// }, 100, target);
+	}
+
+	schedule.expandGraf = function(event) {
+		$(event.target).parent().removeClass('collapsed');
 	}
 
 	function getPopupDate() {
@@ -219,6 +227,7 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 	function renderList() {
 		let options = dataService.get('listOption');
 		let today = new Date();
+		schedule.heightHead = '';
 		schedule.infoTextEmptySchedule = schedule.defaultInfoTextEmptySchedule;
 
 		schedule.list   = [];
@@ -288,7 +297,7 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 
 		setTimeout(function() {
 			maxScheduleHeader();
-		}, 1);
+		});
 	}
 
 	function sortScheduleCells(a, b) {
@@ -454,35 +463,66 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 		return true;
 	}
 	function maxScheduleHeader() {
-		var maxHeader = 0;
-		var listHeader = $('.b-schedule__item-head-cnt');
-		for (var i = listHeader.length - 1; i >= 0; i--) {
-			var heightHeader = $(listHeader[i]).outerHeight();
-			if (maxHeader < heightHeader) {
-				maxHeader = heightHeader;
-			}
-		}
-		$('.b-schedule__item-head-cnt').css('height', maxHeader+'px');
+		let maxHeader = Math.max.apply(Math, $(".b-schedule__item-head-cnt").map(function(){
+			return $(this).outerHeight()
+		}).get());
+		schedule.maxHeightHead = maxHeader;
+		// TODO переделать, долго и видно прыги
 		$('.b-schedule__item-cntnt').css('margin-top', maxHeader+'px');
-		// $('.b-schedule__item-head-cnt').css('background', '#d4e0e2');
 
-		$('.b-schedule__list').scrollTop(1);$('.b-schedule__list').scrollTop(0);
+		$('.b-schedule__list').scrollTop(1);
+		$('.b-schedule__list').scrollTop(0);
+
+		schedule.maxHeigthName = Math.max.apply(Math, $(".b-schedule__item-name").map(function(){
+			return $(this).height()
+		}).get());
+		schedule.maxHeigthSpec = Math.max.apply(Math, $(".b-schedule__item-spec").map(function(){
+			return $(this).height()
+		}).get());
+		schedule.maxHeigthAdrec = Math.max.apply(Math, $(".b-schedule__item-adrec").map(function(){
+			return $(this).height()
+		}).get());
 	}
 
 	$('.b-schedule__list').scroll(function(){
 		let scrollTop = $('.b-schedule__list').scrollTop();
+
 		$('.b-schedule__item-head').css('top', scrollTop+'px');
-		// console.log($('.b-schedule__list').scrollTop());
 
-		// var listItem = $('.b-schedule__item');
-		// for (var i = listItem.length - 1; i >= 0; i--) {
-		// 	var heightHeader = $(listItem[i]).outerHeight();
-		// 	if (maxHeader < heightHeader) {
-		// 		maxHeader = heightHeader;
-		// 	}
-		// }
+		if ($(".b-schedule__item .b-schedule__item-graf:not(.collapsed)").length < 1) {
+			$(".b-schedule__item-name").height(schedule.maxHeigthName);
+			$(".b-schedule__item-spec").height(schedule.maxHeigthSpec);
+			$(".b-schedule__item-adrec").height(schedule.maxHeigthAdrec);
+		} else {
+			$(".b-schedule__item-name").height('');
+			$(".b-schedule__item-spec").height('');
+			$(".b-schedule__item-adrec").height('');
+		}
+
+		$(".b-schedule__item").each(function(){
+			// let marginTop = $(this).find('.b-schedule__item-head-cnt').outerHeight();
+			let blockGraf = $(this).find('.b-schedule__item-graf');
+
+			if (!blockGraf.attr('data-height')) {
+				let heightHeaden = 0;
+				let maxHeight = Math.max.apply(Math, $(".b-schedule__item").map(function(){
+					return $(this).outerHeight()
+				}).get());
+				$(this).find('.b-schedule__item-head-cnt > div').each(function() {
+					heightHeaden += $(this).outerHeight();
+				});
+				blockGraf.attr('data-height', $(blockGraf).outerHeight());
+				blockGraf.attr('data-marginhead', schedule.maxHeightHead-heightHeaden);
+				$(".b-schedule__item").height(maxHeight);
+			}
+
+			if (scrollTop > (blockGraf.attr('data-height')/2 + parseInt(blockGraf.attr('data-marginhead')))) {
+				$(blockGraf).addClass('collapsed');
+			} else {
+				$(blockGraf).removeClass('collapsed');
+			}
+		});
 	});
-
 
 	$scope.$on('renderSchedule', function(){
 		renderList();

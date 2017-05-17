@@ -20,7 +20,7 @@
 				<label>Пациент</label>
 				<div class="p-block__r-btns" ng-controller="DropdownCtrl">
 					<div class="btn-group" dropdown>
-						<button type="button" class="btn btn-success btn-sm {{patient.btnDisabled}} dropdown-toggle">
+						<button type="button" class="btn btn-success btn-sm {{patient.btnDisabled}}" dropdown-toggle>
 								<span class="glyphicon glyphicon-user"></span>
 								<span class="caret"></span>
 								<span class="sr-only">Split button!</span>
@@ -159,28 +159,33 @@
 
 				<div class="b-schedule__item" ng-repeat="item in schedule.list">
 					<div class="b-schedule__item-head">
-						<div class="b-schedule__item-head-cnt">
+						<div class="b-schedule__item-head-cnt" style="{{schedule.heightHead}};">
 							<div class="b-schedule__item-date">
 								{{item.dateDay | date:'EEE. dd MMM'}}
 							</div>
 							<div class="b-schedule__item-name">
-								{{item.name}}
+								<label>{{item.name}}</label>
 							</div>
 							<div class="b-schedule__item-spec">
-								{{item.specialty}}
+								<label>{{item.specialty}}</label>
 							</div>
 							<div class="b-schedule__item-adrec">
-								{{item.institution}} (к{{item.room}})
+								<label>{{item.institution}} (к{{item.room}})</label>
 							</div>
 							<div class="b-schedule__item-graf">
-								{{item.timeWorking}}
-								<div ng-repeat="quote in item.listQuotsWorking">
-									({{quote.name}} <br> {{quote.labelTime}})
+								<div class="container-time">
+									{{item.timeWorking}}
+									<div ng-repeat="quote in item.listQuotsWorking">
+										({{quote.name}} <br> {{quote.labelTime}})
+									</div>
+								</div>
+								<div class="container-collapsed" ng-click="schedule.expandGraf($event)">
+									<i class="glyphicon glyphicon-triangle-right"></i> Врач работает
 								</div>
 							</div>
 						</div>
 					</div>
-					<div class="b-schedule__item-cntnt">
+					<div class="b-schedule__item-cntnt" style="{{schedule.marginTopHead}};">
 						<div ng-repeat="cell in item.listCells" class="{{cell.elemClass}}" ng-click="schedule.cellOpen(item, cell, $event)"
 							title="{{cell.title}}"
 							data-date="{{cell.date}}"

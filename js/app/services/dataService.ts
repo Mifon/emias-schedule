@@ -142,7 +142,7 @@ angular.module('root').service('dataService', function() {
 		{
 			id:5,
 			name: 'Константинова-Щедрина А.А.',
-			specialty: 'Офтальмоло',
+			specialty: 'Офтальмолог',
 			institution: 'ГП №128', // Муниципальное Учреждение
 			room: '150',
 			dateStartWork: (dateNow - (60*60*24)), // вчера

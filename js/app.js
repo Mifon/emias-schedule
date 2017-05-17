@@ -1,9 +1,27 @@
+'use strict';
 angular.module('root', ['ui.bootstrap'])
     .constant('CONFIG', {
     DebugMode: true,
     StepCounter: 0,
 });
-'use strict';
+angular.module('root').controller('DropdownCtrl', function ($scope, $log) {
+    $scope.items = [
+        'The first choice!',
+        'And another choice for you.',
+        'but wait! A third!'
+    ];
+    $scope.status = {
+        isopen: false
+    };
+    $scope.toggled = function (open) {
+        $log.log('Dropdown is now: ', open);
+    };
+    $scope.toggleDropdown = function ($event) {
+        $event.preventDefault();
+        $event.stopPropagation();
+        $scope.status.isopen = !$scope.status.isopen;
+    };
+});
 angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope, dataService) {
     var dpicker = this;
     dpicker.dateOptions = {
@@ -103,7 +121,6 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope
         dpicker.select();
     });
 });
-'use strict';
 angular.module('root').controller('DaysController', function ($scope, $rootScope, dataService) {
     var options = dataService.get('listOption');
     $scope.radioModel = options.viewDays;
@@ -114,7 +131,6 @@ angular.module('root').controller('DaysController', function ($scope, $rootScope
         $rootScope.$broadcast('updateDatepicker');
     };
 });
-'use strict';
 angular.module('root').controller('PatientController', function (dataService) {
     var patient = this;
     patient.user = '';
@@ -146,7 +162,6 @@ angular.module('root').controller('PatientController', function (dataService) {
         dataService.set('listOption', option);
     };
 });
-'use strict';
 angular.module('root').controller('ScheduleController', function ($scope, $modal, dataService) {
     var schedule = this;
     schedule.showList = false;
@@ -157,6 +172,7 @@ angular.module('root').controller('ScheduleController', function ($scope, $modal
     schedule.infoTextEmptySchedule = schedule.defaultInfoTextEmptySchedule;
     schedule.textError = '';
     schedule.textInfo = '';
+    schedule.maxHeightHead = 0;
     schedule.openModalOk = function () {
         var modalInstance = $modal.open({
             animation: true,
@@ -238,6 +254,9 @@ angular.module('root').controller('ScheduleController', function ($scope, $modal
         schedule.dataPopup.btnCreateRecord.isView = ckeckAllowedCreateRecord(cell, item, options);
         schedule.dataPopup.btnDeleteRecord.isView = ckeckAllowedDeleteRecord(cell, item);
         schedule.dataPopup.btnViewRecord.isView = (cell.recordUser.name != '');
+    };
+    schedule.expandGraf = function (event) {
+        $(event.target).parent().removeClass('collapsed');
     };
     function getPopupDate() {
         var data = {
@@ -332,6 +351,7 @@ angular.module('root').controller('ScheduleController', function ($scope, $modal
     function renderList() {
         var options = dataService.get('listOption');
         var today = new Date();
+        schedule.heightHead = '';
         schedule.infoTextEmptySchedule = schedule.defaultInfoTextEmptySchedule;
         schedule.list = [];
         schedule.listDr = options.listDr;
@@ -380,7 +400,7 @@ angular.module('root').controller('ScheduleController', function ($scope, $modal
         schedule.showList = schedule.list && schedule.list.length > 0;
         setTimeout(function () {
             maxScheduleHeader();
-        }, 1);
+        });
     }
     function sortScheduleCells(a, b) {
         if (a.hour < b.hour)
@@ -544,22 +564,57 @@ angular.module('root').controller('ScheduleController', function ($scope, $modal
         return true;
     }
     function maxScheduleHeader() {
-        var maxHeader = 0;
-        var listHeader = $('.b-schedule__item-head-cnt');
-        for (var i = listHeader.length - 1; i >= 0; i--) {
-            var heightHeader = $(listHeader[i]).outerHeight();
-            if (maxHeader < heightHeader) {
-                maxHeader = heightHeader;
-            }
-        }
-        $('.b-schedule__item-head-cnt').css('height', maxHeader + 'px');
+        var maxHeader = Math.max.apply(Math, $(".b-schedule__item-head-cnt").map(function () {
+            return $(this).outerHeight();
+        }).get());
+        schedule.maxHeightHead = maxHeader;
         $('.b-schedule__item-cntnt').css('margin-top', maxHeader + 'px');
         $('.b-schedule__list').scrollTop(1);
         $('.b-schedule__list').scrollTop(0);
+        schedule.maxHeigthName = Math.max.apply(Math, $(".b-schedule__item-name").map(function () {
+            return $(this).height();
+        }).get());
+        schedule.maxHeigthSpec = Math.max.apply(Math, $(".b-schedule__item-spec").map(function () {
+            return $(this).height();
+        }).get());
+        schedule.maxHeigthAdrec = Math.max.apply(Math, $(".b-schedule__item-adrec").map(function () {
+            return $(this).height();
+        }).get());
     }
     $('.b-schedule__list').scroll(function () {
         var scrollTop = $('.b-schedule__list').scrollTop();
         $('.b-schedule__item-head').css('top', scrollTop + 'px');
+        if ($(".b-schedule__item .b-schedule__item-graf:not(.collapsed)").length < 1) {
+            $(".b-schedule__item-name").height(schedule.maxHeigthName);
+            $(".b-schedule__item-spec").height(schedule.maxHeigthSpec);
+            $(".b-schedule__item-adrec").height(schedule.maxHeigthAdrec);
+        }
+        else {
+            $(".b-schedule__item-name").height('');
+            $(".b-schedule__item-spec").height('');
+            $(".b-schedule__item-adrec").height('');
+        }
+        $(".b-schedule__item").each(function () {
+            var blockGraf = $(this).find('.b-schedule__item-graf');
+            if (!blockGraf.attr('data-height')) {
+                var heightHeaden_1 = 0;
+                var maxHeight = Math.max.apply(Math, $(".b-schedule__item").map(function () {
+                    return $(this).outerHeight();
+                }).get());
+                $(this).find('.b-schedule__item-head-cnt > div').each(function () {
+                    heightHeaden_1 += $(this).outerHeight();
+                });
+                blockGraf.attr('data-height', $(blockGraf).outerHeight());
+                blockGraf.attr('data-marginhead', schedule.maxHeightHead - heightHeaden_1);
+                $(".b-schedule__item").height(maxHeight);
+            }
+            if (scrollTop > (blockGraf.attr('data-height') / 2 + parseInt(blockGraf.attr('data-marginhead')))) {
+                $(blockGraf).addClass('collapsed');
+            }
+            else {
+                $(blockGraf).removeClass('collapsed');
+            }
+        });
     });
     $scope.$on('renderSchedule', function () {
         renderList();
@@ -567,7 +622,6 @@ angular.module('root').controller('ScheduleController', function ($scope, $modal
     var el = document.querySelector('.b-schedule__list');
     Ps.initialize(el);
 });
-'use strict';
 angular.module('root')
     .controller('specialistController', function specialistController($rootScope, dataService) {
     var special = this;
@@ -617,26 +671,6 @@ angular.module('root')
     var el = document.querySelector('.b-spec__list');
     Ps.initialize(el);
 });
-'use strict';
-angular.module('root').controller('DropdownCtrl', function ($scope, $log) {
-    $scope.items = [
-        'The first choice!',
-        'And another choice for you.',
-        'but wait! A third!'
-    ];
-    $scope.status = {
-        isopen: false
-    };
-    $scope.toggled = function (open) {
-        $log.log('Dropdown is now: ', open);
-    };
-    $scope.toggleDropdown = function ($event) {
-        $event.preventDefault();
-        $event.stopPropagation();
-        $scope.status.isopen = !$scope.status.isopen;
-    };
-});
-'use strict';
 angular.module('root').service('dataService', function () {
     var self = this;
     var data = {
@@ -777,7 +811,7 @@ angular.module('root').service('dataService', function () {
         {
             id: 5,
             name: 'Константинова-Щедрина А.А.',
-            specialty: 'Офтальмоло',
+            specialty: 'Офтальмолог',
             institution: 'ГП №128',
             room: '150',
             dateStartWork: (dateNow - (60 * 60 * 24)),
