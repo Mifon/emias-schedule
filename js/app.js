@@ -1,27 +1,9 @@
-'use strict';
 angular.module('root', ['ui.bootstrap'])
     .constant('CONFIG', {
     DebugMode: true,
     StepCounter: 0,
 });
-angular.module('root').controller('DropdownCtrl', function ($scope, $log) {
-    $scope.items = [
-        'The first choice!',
-        'And another choice for you.',
-        'but wait! A third!'
-    ];
-    $scope.status = {
-        isopen: false
-    };
-    $scope.toggled = function (open) {
-        $log.log('Dropdown is now: ', open);
-    };
-    $scope.toggleDropdown = function ($event) {
-        $event.preventDefault();
-        $event.stopPropagation();
-        $scope.status.isopen = !$scope.status.isopen;
-    };
-});
+'use strict';
 angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope, dataService) {
     var dpicker = this;
     dpicker.dateOptions = {
@@ -121,6 +103,7 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope
         dpicker.select();
     });
 });
+'use strict';
 angular.module('root').controller('DaysController', function ($scope, $rootScope, dataService) {
     var options = dataService.get('listOption');
     $scope.radioModel = options.viewDays;
@@ -131,6 +114,7 @@ angular.module('root').controller('DaysController', function ($scope, $rootScope
         $rootScope.$broadcast('updateDatepicker');
     };
 });
+'use strict';
 angular.module('root').controller('PatientController', function (dataService) {
     var patient = this;
     patient.user = '';
@@ -162,6 +146,7 @@ angular.module('root').controller('PatientController', function (dataService) {
         dataService.set('listOption', option);
     };
 });
+'use strict';
 angular.module('root').controller('ScheduleController', function ($scope, $modal, dataService) {
     var schedule = this;
     schedule.showList = false;
@@ -582,6 +567,7 @@ angular.module('root').controller('ScheduleController', function ($scope, $modal
     var el = document.querySelector('.b-schedule__list');
     Ps.initialize(el);
 });
+'use strict';
 angular.module('root')
     .controller('specialistController', function specialistController($rootScope, dataService) {
     var special = this;
@@ -631,6 +617,26 @@ angular.module('root')
     var el = document.querySelector('.b-spec__list');
     Ps.initialize(el);
 });
+'use strict';
+angular.module('root').controller('DropdownCtrl', function ($scope, $log) {
+    $scope.items = [
+        'The first choice!',
+        'And another choice for you.',
+        'but wait! A third!'
+    ];
+    $scope.status = {
+        isopen: false
+    };
+    $scope.toggled = function (open) {
+        $log.log('Dropdown is now: ', open);
+    };
+    $scope.toggleDropdown = function ($event) {
+        $event.preventDefault();
+        $event.stopPropagation();
+        $scope.status.isopen = !$scope.status.isopen;
+    };
+});
+'use strict';
 angular.module('root').service('dataService', function () {
     var self = this;
     var data = {
