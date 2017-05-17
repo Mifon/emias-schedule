@@ -82,7 +82,7 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope
         var timeDate = date.getTime();
         var now = new Date().getTime();
         var strClass = 'b-date__select';
-        if (!changeWorkWeekDay(date)) {
+        if (changeWorkWeekDay(date)) {
             strClass += ' b-date__select-not-work';
         }
         if (timeDate > (now + (1000 * 60 * 60 * 24 * 14)) || timeDate < (now - (1000 * 60 * 60 * 24))) {
@@ -101,7 +101,7 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope
         for (var key in dpicker.options.listDr) {
             var specialist = dpicker.options.listDr[key];
             if (!specialist.listWorkWeekDay || specialist.listWorkWeekDay.indexOf(todayWeekDay) < 0) {
-                return false;
+                return true;
             }
         }
     }

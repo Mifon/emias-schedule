@@ -112,10 +112,13 @@
 	}
 
 	&-not-work {
-		background-color: #fff;
+		background: #fff;
 
 		button {
+			background: #fff;
+			border: 2px solid #fff;
 			&.active, &.active:focus {
+				color: #333;
 				background-color: #fff;
 			}
 		}

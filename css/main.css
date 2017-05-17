@@ -564,9 +564,13 @@ body {
       .b-date__select button:hover .text-info, .b-date__select button.active:hover .text-info, .b-date__select button.btn-default[disabled]:hover .text-info {
         color: #fff; }
   .b-date__select-not-work {
-    background-color: #fff; }
-    .b-date__select-not-work button.active, .b-date__select-not-work button.active:focus {
-      background-color: #fff; }
+    background: #fff; }
+    .b-date__select-not-work button {
+      background: #fff;
+      border: 2px solid #fff; }
+      .b-date__select-not-work button.active, .b-date__select-not-work button.active:focus {
+        color: #333;
+        background-color: #fff; }
   .b-date__select.disabled {
     background: #d4d4d4; }
     .b-date__select.disabled button {
