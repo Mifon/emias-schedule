@@ -10,7 +10,7 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 	schedule.defaultInfoTextEmptySchedule = 'Для просмотра расписания выберите хотя бы один Доступный ресурс.';
 	schedule.infoTextEmptySchedule = schedule.defaultInfoTextEmptySchedule;
 	schedule.textError = '';
-	schedule.textInfo = 'Rere';
+	schedule.textInfo = '';
 
 	schedule.openModalOk = function() {
 		var modalInstance = $modal.open({
@@ -138,7 +138,6 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 				isView: false
 			},
 			viewRecord: function(cell) {
-				schedule.openModalinfo('Oke');
 				if ($(cell.target).hasClass('b-schedule__item-cntnt-record')) {
 					schedule.dataPopup.isViewUser = true;
 					schedule.dataPopup.isViewMenu = false;
