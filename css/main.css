@@ -536,6 +536,9 @@ body {
 .modal-ok .modal-header {
   background-color: #689d41; }
 
+.modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.2); }
+
 .p-left {
   background-color: #e8e8eb;
   min-height: 100%;

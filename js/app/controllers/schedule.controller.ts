@@ -10,6 +10,7 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 	schedule.defaultInfoTextEmptySchedule = 'Для просмотра расписания выберите хотя бы один Доступный ресурс.';
 	schedule.infoTextEmptySchedule = schedule.defaultInfoTextEmptySchedule;
 	schedule.textError = '';
+	schedule.textInfo = 'Rere';
 
 	schedule.openModalOk = function() {
 		var modalInstance = $modal.open({
@@ -22,6 +23,30 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 				}, 3000, $modalInstance);
 			},
 			size: 'sm'
+		});
+	}
+
+	schedule.openModalinfo = function(text) {
+		var modalInstance = $modal.open({
+			animation: true,
+			templateUrl: 'modalInfo',
+			windowClass: 'modal-info',
+			// backdrop: false,
+			controller: function($scope, $modalInstance, schedule, text){
+				$scope.modalText = text;
+				setTimeout(function($modalInstance) {
+					$modalInstance.dismiss('cancel');
+				}, 3000, $modalInstance);
+			},
+			size: 'sm',
+			resolve: {
+				schedule: function () {
+					return schedule;
+				},
+				text: function() {
+					return text;
+				}
+			}
 		});
 	}
 
@@ -113,6 +138,7 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 				isView: false
 			},
 			viewRecord: function(cell) {
+				schedule.openModalinfo('Oke');
 				if ($(cell.target).hasClass('b-schedule__item-cntnt-record')) {
 					schedule.dataPopup.isViewUser = true;
 					schedule.dataPopup.isViewMenu = false;
@@ -375,7 +401,7 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 	// Проверка на доступность записи на выбранный интервал
 	function ckeckAllowedCreateRecord(cell, item, options) {
 		let now = new Date().getTime()/1000;
-		if (cell.time && (now+item.stepSchedule) > cell.time) {
+		if (cell.date && (now+item.stepSchedule) > cell.date) {
 			return false;
 		}
 		if (options.user == '') {
