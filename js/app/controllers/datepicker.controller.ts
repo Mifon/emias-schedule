@@ -21,6 +21,11 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope
 
 	dpicker.select = function(str){
 		let option = dataService.get('listOption');
+		// TODO костыль. датапикер почему то возврыщает дату на день больше
+		// if (option.viewDays > 1 && dpicker.dt != '') {
+		// 	dpicker.dt.setDate(dpicker.dt.getDate() - 1)
+		// }
+		console.log(dpicker.dt);
 		option.date = dpicker.dt;
 		if (str != 'change') {
 			dpicker.selectedDate = dpicker.dt;
@@ -35,6 +40,7 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope
 		option.date = dpicker.selectedDate;
 		$('.b-date ul.dropdown-menu').remove();
 		dataService.set('listOption', option);
+		$rootScope.$broadcast('renderSchedule');
 	}
 
 	dpicker.disabled = function(date, mode) {
@@ -66,7 +72,7 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope
 		let timeDate = date.getTime();
 		let now      = new Date().getTime();
 		let strClass = 'b-date__select';
-		if (timeDate > (now + (60000*60*24*14)) || timeDate < (now - (60000*60*24))) {
+		if (timeDate > (now + (1000*60*60*24*14)) || timeDate < (now - (1000*60*60*24))) {
 			strClass += ' disabled js-date-disabled';
 		} else if (date.getDay() === 0 || date.getDay() === 6) {
 			strClass += ' disabled-day-off';
@@ -81,7 +87,7 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope
 		if (options.listDr && options.listDr.length > 0) {
 			dpicker.btnDisabled = '';
 			dpicker.btnDisabledTitle = '';
-			dpicker.dt = dpicker.dt == '' ? new Date() : dpicker.dt;
+			dpicker.dt = (dpicker.dt == '' ? new Date() : dpicker.dt);
 		} else {
 			dpicker.btnDisabled = 'disabled';
 			dpicker.btnDisabledTitle = 'Выберите доступный ресурс';

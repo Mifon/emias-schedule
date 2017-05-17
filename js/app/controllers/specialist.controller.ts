@@ -32,7 +32,10 @@ angular.module('root')
 				}
 			}
 			options.listDr = selectedDr.length > 0 ? selectedDr : '';
-			dataService.set('options');
+			dataService.set('options', options);
 			$rootScope.$broadcast('updateDatepicker');
 		}
+
+		var el = document.querySelector('.b-spec__list');
+		Ps.initialize(el);
 	});

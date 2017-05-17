@@ -26,7 +26,7 @@
 								<span class="sr-only">Split button!</span>
 							</button>
 						<ul class="dropdown-menu" role="menu" aria-labelledby="split-button">
-							<li role="menuitem" ng-click="patient.relogUser()"><a href="">Завершить работу с пациентом</a></li>
+							<li role="menuitem" ng-click="patient.relogUser()"><a href=""><span class="glyphicon glyphicon-off"></span> Завершить работу с пациентом</a></li>
 						</ul>
 					</div>
 				</div>
@@ -62,7 +62,7 @@
 			<div class="b-cntnt">
 				<label for=""></label>
 				<div class="input-group">
-					<input type="text" class="form-control" placeholder="ДД.ММ.ГГГГ" readonly=""
+					<input type="text" class="form-control" placeholder="ДД.ММ.ГГГГ"
 						ng-change="dpicker.select('change')"
 						datepicker-popup="{{dpicker.format}}"
 						ng-model="dpicker.dt"
@@ -74,7 +74,7 @@
 						ng-required="true"
 						custom-class="dpicker.dayClass(date, mode)"
 						close-on-date-selection="false"
-						close-text="Ok" />
+						close-text="Ok" /><!-- readonly="" -->
 					<div id="split-button" class="btn input-group-addon {{dpicker.btnDisabled}}" ng-click="dpicker.open($event)" title="{{dpicker.btnDisabledTitle}}">
 						<span class="glyphicon glyphicon-calendar"></span>
 						<span class="caret"></span>
@@ -118,9 +118,12 @@
 					</div>
 				</div>-->
 				<div class="b-spec__list" id="Demo">
-					<label class="b-spec__list-item" ng-repeat="item in special.list">
+					<div style="padding-right:15px;">
+
+						<label class="b-spec__list-item" ng-repeat="item in special.list">
 								<input type="checkbox" ng-model="item.checked" ng-change="special.selected()"> {{item.name + ' (' + item.specialty + ')'}}
 						</label>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -132,11 +135,11 @@
 	<div class="col-md-9 col-sm-9 p-center">
 
 		<!-- #Блок заголовка сетки расписния -->
-		<div class="p-block">
+		<div class="p-block" ng-controller="DaysController">
 			<div class="btn-group p-block__r-btns" style="float:right;">
-				<label class="btn btn-success" ng-model="radioModel" btn-radio="'Left'" uncheckable>1 день</label>
-				<label class="btn btn-success" ng-model="radioModel" btn-radio="'Middle'" uncheckable>2 дня</label>
-				<label class="btn btn-success" ng-model="radioModel" btn-radio="'Right'" uncheckable>Неделя</label>
+				<label class="btn btn-success" ng-model="radioModel" btn-radio="1" ng-change="changeDays()" uncheckable>1 день</label>
+				<label class="btn btn-success" ng-model="radioModel" btn-radio="2" ng-change="changeDays()" uncheckable>2 дня</label>
+				<label class="btn btn-success" ng-model="radioModel" btn-radio="7" ng-change="changeDays()" uncheckable>Неделя</label>
 			</div>
 			<div class="b-block__title">
 				<label>Расписане специалистов</label>
@@ -146,16 +149,18 @@
 
 
 		<!-- #Блок сетки расписния -->
-		<div class="p-block b-last b-schedule {{scheduleList.classBlock}}" ng-controller="ScheduleController as scheduleList">
-			<div class="b-schedule__empty-list" ng-show="!scheduleList.showList">
-				<div>Для просмотра расписания выберите хотя бы один Доступный ресурс.</div>
+		<div class="p-block b-last b-schedule {{schedule.classBlock}}" ng-controller="ScheduleController as schedule">
+			<div class="b-schedule__empty-list" ng-show="!schedule.showList">
+				<div>{{schedule.infoTextEmptySchedule}}<!-- Для просмотра расписания выберите хотя бы один Доступный ресурс. --></div>
 			</div>
 
-			<div class="b-schedule__list" ng-show="scheduleList.showList">
-				<div class="b-schedule__item" ng-repeat="item in scheduleList.list">
+			<div class="b-schedule__list" ng-show="schedule.showList">
+				<div class="b-schedule__list-content">
+
+				<div class="b-schedule__item" ng-repeat="item in schedule.list">
 					<div class="b-schedule__item-head">
 						<div class="b-schedule__item-date">
-							Пт. 16 сен.
+							{{item.strDate | date:'EEE. dd MMM'}}
 						</div>
 						<div class="b-schedule__item-name">
 							{{item.name}}
@@ -171,12 +176,102 @@
 						</div>
 					</div>
 					<div class="b-schedule__item-cntnt">
-						<div ng-repeat="cell in item.schCells" class="{{cell.elemClass}}">
-							<label>{{cell.label}}</label>
+						<div ng-repeat="cell in item.listCells" class="{{cell.elemClass}}" ng-click="schedule.cellOpen(item, cell, $event)"
+							data-date="{{cell.date}}"
+							popover-template="schedule.dataPopup.templateUrl"
+							popover-animation="false"
+							popover-trigger="{{cell.isPopup ? 'click' : 'none'}}"
+							popover-is-open="cell.isOpenPopup"
+							popover-placement="right">
+							<label>{{cell.label}}</label><!-- popover-template="dynamicPopover.templateUrl" -->
+							<span class="b-schedule__item-cntnt-record" ng-repeat="record in cell.records" data-dateid="{{record.dateRecord + '_' + record.idUser}}">
+								{{record.user.surname}} {{record.user.name.charAt(0)}}.{{record.user.patron.charAt(0)}}.
+							</span>
 						</div>
 					</div>
 				</div>
+
+				</div>
 			</div>
+
+			<script type="text/ng-template" id="popoverTemplate">
+				<div class="s-popover" ng-if="schedule.dataPopup.isViewMenu">
+					<div class="s-popup__head">
+						<div>
+							<div class="s-popup__head-icon" ng-if="!schedule.dataPopup.isIconUser"><i class="glyphicon glyphicon-time"></i></div>
+							<div class="s-popup__head-icon-user" ng-if="schedule.dataPopup.isIconUser"> <img src="img/icon-user.png" alt=""> </div>
+							<div class="s-popup__head-title">{{schedule.dataPopup.title}} <br> {{schedule.dataPopup.time}}</div>
+						</div>
+					</div>
+					<div class="s-popup__content"></div>
+					<div class="s-popup__menu">
+						<div class="s-popup__menu-item">
+							<a href="" ng-click="schedule.dataPopup.viewRecord(cell)" data-btn-active="{{schedule.dataPopup.btnViewRecord.isView}}">
+								<div class="s-popup__menu-item-icon"><i class="glyphicon glyphicon-list-alt"></i></div>
+								<div class="s-popup__menu-item-title">{{schedule.dataPopup.btnViewRecord.title}}</div>
+							</a>
+						</div>
+						<div class="s-popup__menu-item">
+							<a href="" ng-click="schedule.dataPopup.createRecord(cell, item)" data-btn-active="{{schedule.dataPopup.btnCreateRecord.isView}}">
+								<div class="s-popup__menu-item-icon"><i class="glyphicon glyphicon-pencil"></i></div>
+								<div class="s-popup__menu-item-title">{{schedule.dataPopup.btnCreateRecord.title}}</div>
+							</a>
+						</div>
+						<div class="s-popup__menu-item">
+							<a href="" ng-click="schedule.dataPopup.confirmDeleteRecord(cell, item)" data-btn-active="{{schedule.dataPopup.btnDeleteRecord.isView}}">
+								<div class="s-popup__menu-item-icon"><i class="glyphicon glyphicon-trash"></i></div>
+								<div class="s-popup__menu-item-title">{{schedule.dataPopup.btnDeleteRecord.title}}</div>
+							</a>
+						</div>
+					</div>
+				</div>
+				<div class="s-popover s-popup-view-record" ng-if="schedule.dataPopup.isViewUser">
+					<div class="s-popup__head">
+						<div class="s-popup__head-icon"><i class="glyphicon glyphicon-list-alt"></i></div>
+						<div class="s-popup__head-title">{{cell.recordUser.surname + ' ' + cell.recordUser.name.charAt(0) + '.' + cell.recordUser.patron.charAt(0) + '.'}}</div>
+					</div>
+					<div class="s-popup-view-record__item"><label>Дата:</label> {{cell.recordUser.dateBD}}</div>
+					<div class="s-popup-view-record__item"><label>Врач:</label> {{cell.recordUser.doctorName}}</div>
+					<div class="s-popup-view-record__item"><label>Кабинет:</label> {{cell.recordUser.doctorRoom}}</div>
+					<div class="s-popup-view-record__item"><label>Полис ОМС:</label> {{cell.recordUser.numPolicOMS}}</div>
+				</div>
+				<div class="s-popover s-popup-confirm-cancel" ng-if="schedule.dataPopup.isViewConfirmCancel">
+					<div class="s-popup__head">
+						<div class="s-popup__head-icon"><img src="img/icon-danger.png" alt=""></div>
+						<div class="s-popup__head-title">Отмена записи</div>
+					</div>
+					<div class="s-popup__body">
+						<div class="s-popup__body-text">Врач и пациент будут уведомлены об отмене записи</div>
+						<div>
+							<button type="button" class="btn btn-danger" ng-click="schedule.dataPopup.deleteRecord(cell, item)">Отменить</button>
+							<br><br>
+							<div>
+								<a href="" ng-click="schedule.dataPopup.returnToSchedule()">Вернуться к расписанию</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</script>
+			<script type="text/ng-template" id="modalOk">
+				<img src="img/modal-ok.png" alt="">
+		        <!-- <div class="modal-header">
+		            <h3 class="modal-title">Запись создана</h3>
+		        </div>
+		        <div class="modal-body">
+		            <ul>
+		                <li ng-repeat="item in items">
+		                    <a href="#" ng-click="$event.preventDefault(); selected.item = item">{{ item }}</a>
+		                </li>
+		            </ul>
+		            Selected: <b>{{ selected.item }}</b>
+		        </div>
+		        <div class="modal-footer">
+		            <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+		            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+		        </div> -->
+		    </script>
+
+			<div id="schedulePopover" class="s-popover" style="display:none;"></div>
 		</div>
 		<!-- /Блок сетки расписния -->
 

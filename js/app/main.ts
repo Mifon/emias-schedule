@@ -22,10 +22,3 @@ angular.module('root').controller('DropdownCtrl', function ($scope, $log) {
 		$scope.status.isopen = !$scope.status.isopen;
 	};
 });
-
-
-
-
-
-var el = document.querySelector('.b-spec__list');
-Ps.initialize(el);

@@ -21,14 +21,18 @@
 }
 .b-spec__list-item {
 	padding: 10px 15px;
+	padding-left: 30px;
 	border-bottom: 1px solid rgba(220,220,220,.7);
 	display: block;
 	margin-bottom: 0;
 	font-weight: normal;
+	position: relative;
 
 	input {
-		vertical-align: middle;
-		margin-top: -2px;
+		position: absolute;
+		top: 50%;
+		left: 12px;
+		margin-top: -6px;
 	}
 }
 

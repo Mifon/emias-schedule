@@ -28,11 +28,13 @@
 	display: inline-block;
 	overflow: hidden;
 	margin-right: 10px;
+	vertical-align: top;
 
 	&-date {
 		color: #fff;
 		background-color: #000;
 		padding: 5px;
+		text-transform: capitalize;
 	}
 	&-name {
 		@extend .b-schedule__item-date;
@@ -62,20 +64,33 @@
 		text-align: left;
 	}
 	&-step {
-		padding: 3px 5px 0;
+		padding: 0px 5px 0;
 		background-color: #e8e8eb;
 		border-bottom: 1px dashed #000;
-		height: 25px;
+		height: 30px;
+		white-space: nowrap;
+
+		&:hover {
+			background-color: #d3e7f7;
+		}
 
 		label {
 			font-weight: normal;
+			padding-top: 6px;
+		}
+
+		span {
+			display: inline-block;
+			padding: 6px 3px 7px;
+			background-color: #eba740;
+			cursor: default;
 		}
 
 		&-notrec {
 			padding: 3px 5px 0;
 			background-color: #949494;
 			border-bottom: 1px dashed #000;
-			height: 50px;
+			height: 60px;
 		}
 	}
 }
@@ -92,3 +107,104 @@
 		text-align: center;
 		color: #777;
 	}
+
+
+.s-popover {
+	// border: 1px solid #999;
+	padding: 10px 10px;
+}
+	.s-popup__head {
+
+		&-icon {
+			display: inline-block;
+			width: 15px;
+			vertical-align: top;
+
+			&-user {
+				@extend .s-popup__head-icon;
+				width: 20px;
+				margin-left: 10px;
+				margin-right: 5px;
+
+				img {
+					width: 20px;
+				}
+			}
+		}
+		&-title {
+			display: inline-block;
+			text-align: center;
+			vertical-align: top;
+		}
+	}
+	.s-popup__content {
+		height: 20px;
+	}
+	.s-popup__menu-item {
+		text-align: center;
+		border-bottom: 1px solid #ccc;
+		padding: 5px 10px;
+
+		&:last-child {
+			border-bottom: 0;
+		}
+
+		a, a:hover, a:visited {
+			text-decoration: none;
+			color: #333;
+
+			&[data-btn-active="false"] {
+				opacity: .3;
+				cursor: default;
+			}
+		}
+
+
+		&-icon {
+			display: inline-block;
+		}
+		&-title {
+			display: inline-block;
+			width: 150px;
+			text-align: center;
+			cursor: pointer;
+		}
+	}
+
+
+.s-popup-view-record {
+	&__item {
+		label {
+			width: 90px;
+		}
+	}
+}
+
+.s-popup-confirm-cancel {
+	text-align: center;
+
+	.s-popup__head {
+		font-weight: bold;;
+		font-size: 16px;
+		margin: 0 0 15px;
+
+		.s-popup__head-icon {
+			width: 25px;
+			margin-right: 10px;
+			vertical-align: middle;
+		}
+		.s-popup__head-title {
+			vertical-align: middle;
+		}
+	}
+
+	.s-popup__body {
+		width: 240px;
+
+		&-text {
+			font-size: 13px;
+			color: #337ab7;
+			margin-bottom: 20px;
+		}
+	}
+}
