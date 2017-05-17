@@ -157,6 +157,7 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 
 				dataRecord.user = options.user;
 				dataRecord.idUser = options.user.id;
+				//
 				dataRecord.time = (60*60*cell.hour)+(60*cell.minute);
 				dataRecord.dateRecord = cell.date;
 
@@ -233,7 +234,7 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 			// по специалистам
 			for (var key in schedule.listDr) {
 				let specialist = schedule.listDr[key];
-				let item = {listCells:[], timeWorking:'', dateDay: new Date(), quots:{}, stepSchedule:0, listRecords:[]};
+				let item = {listCells:[], timeWorking:'', listQuotsWorking:[], dateDay: new Date(), quots:{}, stepSchedule:0, listRecords:[]};
 
 
 				let keyError = 0;
@@ -261,12 +262,17 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 				for (var k in item.quots) {
 					let qoute = item.quots[k];
 
+					item.quots[k].labelTime = getTimeWorcking(qoute);
+
+
 					if (qoute.name == 'Запись на прием') {
 						for (var i = qoute.start; i < qoute.end; i+=item.stepSchedule) {
 							setCellData(qoute, i, item, day);
 						}
 					} else {
 						setCellData(qoute, qoute.start, item, day);
+						item.listQuotsWorking.push(item.quots[k]);
+
 					}
 				}
 				item.listCells.sort(sortScheduleCells);
@@ -279,6 +285,10 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 		$('.b-schedule__list-content').css('width', (161*schedule.list.length)+'px');
 
 		schedule.showList = schedule.list && schedule.list.length > 0;
+
+		setTimeout(function() {
+			maxScheduleHeader();
+		}, 1);
 	}
 
 	function sortScheduleCells(a, b) {
@@ -326,6 +336,9 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 
 		return strTime;
 	}
+	// function getQuoteTimeWorking(spec) {
+	// 	spec.quots
+	// }
 	function addZIONTime(time) { // addZeroIfOneNumTime
 		return time < 10 ? '0' + time : time;
 	}
@@ -395,6 +408,9 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 			if (cell.records.length < 1) {
 				cell.title = (now < cell.date ? 'Время доступно для записи' : 'Запись на прошедший временной интервал недоступна');
 			}
+			if (cell.records.length > 0) {
+				cell.elemClass += ' b-schedule__item-record-true';
+			}
 		} else {
 			cell.label = qoute.name;
 			cell.isPopup = false;
@@ -437,6 +453,35 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 		}
 		return true;
 	}
+	function maxScheduleHeader() {
+		var maxHeader = 0;
+		var listHeader = $('.b-schedule__item-head-cnt');
+		for (var i = listHeader.length - 1; i >= 0; i--) {
+			var heightHeader = $(listHeader[i]).outerHeight();
+			if (maxHeader < heightHeader) {
+				maxHeader = heightHeader;
+			}
+		}
+		$('.b-schedule__item-head-cnt').css('height', maxHeader+'px');
+		$('.b-schedule__item-cntnt').css('margin-top', maxHeader+'px');
+		// $('.b-schedule__item-head-cnt').css('background', '#d4e0e2');
+
+		$('.b-schedule__list').scrollTop(1);$('.b-schedule__list').scrollTop(0);
+	}
+
+	$('.b-schedule__list').scroll(function(){
+		let scrollTop = $('.b-schedule__list').scrollTop();
+		$('.b-schedule__item-head').css('top', scrollTop+'px');
+		// console.log($('.b-schedule__list').scrollTop());
+
+		// var listItem = $('.b-schedule__item');
+		// for (var i = listItem.length - 1; i >= 0; i--) {
+		// 	var heightHeader = $(listItem[i]).outerHeight();
+		// 	if (maxHeader < heightHeader) {
+		// 		maxHeader = heightHeader;
+		// 	}
+		// }
+	});
 
 
 	$scope.$on('renderSchedule', function(){

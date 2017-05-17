@@ -16,7 +16,7 @@
     "gulp-sourcemaps": "latest",
     "gulp-typescript": "^3.1.4",
     "lite-server": "2.2.2",
-    "typescript": "2.1.6"
+    "typescript": "2.3.1"
   },
   "repository": {
     "type": "git",
