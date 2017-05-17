@@ -111,6 +111,16 @@
 		}
 	}
 
+	&-not-work {
+		background-color: #fff;
+
+		button {
+			&.active, &.active:focus {
+				background-color: #fff;
+			}
+		}
+	}
+
 	&.disabled {
 		background: #d4d4d4;
 

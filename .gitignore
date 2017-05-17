@@ -1,1 +1,16 @@
 /node_modules/
+.svn/
+bower_components/
+
+css/bootstrap-theme.css
+css/bootstrap-theme.css.map
+css/bootstrap-theme.min.css
+css/bootstrap-theme.min.css.map
+css/style.css
+js/bootstrap.js
+js/bootstrap.min.js
+js/main.js
+js/newapp.js
+js/newapp.ts
+js/npm.js
+schedule-list.html

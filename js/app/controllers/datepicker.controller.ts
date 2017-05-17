@@ -18,6 +18,7 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope
 	dpicker.btnDisabledTitle = 'Выберите доступный ресурс';
 	dpicker.selectedDate = '';
 	dpicker.dt = '';
+	dpicker.options = '';
 
 	dpicker.select = function(str){
 		let option = dataService.get('listOption');
@@ -30,8 +31,8 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope
 		$rootScope.$broadcast('renderSchedule');
 	}
 	dpicker.dateReset = function() {
-		let option = dataService.get('listOption');
-		dpicker.dt = dpicker.selectedDate;
+		let option  = dataService.get('listOption');
+		dpicker.dt  = dpicker.selectedDate;
 		option.date = dpicker.selectedDate;
 		$('.b-date ul.dropdown-menu').remove();
 		dataService.set('listOption', option);
@@ -67,6 +68,11 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope
 		let timeDate = date.getTime();
 		let now      = new Date().getTime();
 		let strClass = 'b-date__select';
+
+		if (!changeWorkWeekDay(date)) {
+			strClass += ' b-date__select-not-work';
+		}
+
 		if (timeDate > (now + (1000*60*60*24*14)) || timeDate < (now - (1000*60*60*24))) {
 			strClass += ' disabled js-date-disabled';
 		} else if (date.getDay() === 0 || date.getDay() === 6) {
@@ -77,8 +83,19 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope
 		return strClass;
 	}
 
+	function changeWorkWeekDay(day) {
+		let todayWeekDay = day.getDay()==0 ? 7 : day.getDay();
+		for (var key in dpicker.options.listDr) {
+			let specialist = dpicker.options.listDr[key];
+			if (!specialist.listWorkWeekDay || specialist.listWorkWeekDay.indexOf(todayWeekDay) < 0) {
+				return false;
+			}
+		}
+	}
+
 	$scope.$on('updateDatepicker', function(){
 		let options = dataService.get('listOption');
+		dpicker.options = options;
 		if (options.listDr && options.listDr.length > 0) {
 			dpicker.btnDisabled = '';
 			dpicker.btnDisabledTitle = '';

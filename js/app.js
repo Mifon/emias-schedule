@@ -39,6 +39,7 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope
     dpicker.btnDisabledTitle = 'Выберите доступный ресурс';
     dpicker.selectedDate = '';
     dpicker.dt = '';
+    dpicker.options = '';
     dpicker.select = function (str) {
         var option = dataService.get('listOption');
         option.date = dpicker.dt;
@@ -81,6 +82,9 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope
         var timeDate = date.getTime();
         var now = new Date().getTime();
         var strClass = 'b-date__select';
+        if (!changeWorkWeekDay(date)) {
+            strClass += ' b-date__select-not-work';
+        }
         if (timeDate > (now + (1000 * 60 * 60 * 24 * 14)) || timeDate < (now - (1000 * 60 * 60 * 24))) {
             strClass += ' disabled js-date-disabled';
         }
@@ -92,8 +96,18 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope
         }
         return strClass;
     };
+    function changeWorkWeekDay(day) {
+        var todayWeekDay = day.getDay() == 0 ? 7 : day.getDay();
+        for (var key in dpicker.options.listDr) {
+            var specialist = dpicker.options.listDr[key];
+            if (!specialist.listWorkWeekDay || specialist.listWorkWeekDay.indexOf(todayWeekDay) < 0) {
+                return false;
+            }
+        }
+    }
     $scope.$on('updateDatepicker', function () {
         var options = dataService.get('listOption');
+        dpicker.options = options;
         if (options.listDr && options.listDr.length > 0) {
             dpicker.btnDisabled = '';
             dpicker.btnDisabledTitle = '';
@@ -198,6 +212,9 @@ angular.module('root').controller('ScheduleController', function ($scope, $modal
         var elemCell = self.currentTarget;
         var target = self.target;
         var recordUser = { doctorName: '', doctorRoom: '', surname: '', name: '', patron: '' };
+        if (!cell.isOpenPopup) {
+            return false;
+        }
         if ($(target).hasClass('b-schedule__item-cntnt-record')) {
             var elemKey = $(target).attr('data-dateid');
             var dataKey = elemKey.split('_');
@@ -234,8 +251,8 @@ angular.module('root').controller('ScheduleController', function ($scope, $modal
             schedule.dataPopup.isIconUser = true;
         }
         schedule.dataPopup.btnCreateRecord.isView = ckeckAllowedCreateRecord(cell, item, options);
-        schedule.dataPopup.btnDeleteRecord.isView = (cell.records && cell.records.length > 0);
-        schedule.dataPopup.btnViewRecord.isView = (recordUser.name != '');
+        schedule.dataPopup.btnDeleteRecord.isView = ckeckAllowedDeleteRecord(cell, item);
+        schedule.dataPopup.btnViewRecord.isView = (cell.recordUser.name != '');
     };
     function getPopupDate() {
         var data = {
@@ -293,6 +310,9 @@ angular.module('root').controller('ScheduleController', function ($scope, $modal
             },
             deleteRecord: function (cell, item) {
                 var options = dataService.get('listOption');
+                if (!ckeckAllowedDeleteRecord(cell, item)) {
+                    return false;
+                }
                 for (var kDr in options.listDr) {
                     if (item.id == options.listDr[kDr].id) {
                         for (var kRec in options.listDr[kDr].listRecords) {
@@ -339,7 +359,6 @@ angular.module('root').controller('ScheduleController', function ($scope, $modal
                 var specialist = schedule.listDr[key];
                 var item = { listCells: [], timeWorking: '', dateDay: new Date(), quots: {}, stepSchedule: 0, listRecords: [] };
                 var keyError = 0;
-                specialist.listWorkWeekDay;
                 var todayWeekDay = day.getDay() == 0 ? 7 : day.getDay();
                 if (!specialist.listWorkWeekDay || specialist.listWorkWeekDay.indexOf(todayWeekDay) < 0) {
                     keyError = 1;
@@ -502,6 +521,7 @@ angular.module('root').controller('ScheduleController', function ($scope, $modal
     function ckeckAllowedCreateRecord(cell, item, options) {
         var now = new Date().getTime() / 1000;
         if (cell.date && (now + item.stepSchedule) > cell.date) {
+            schedule.openModalinfo('Интервал не доступен для записи');
             return false;
         }
         if (options.user == '') {
@@ -513,9 +533,20 @@ angular.module('root').controller('ScheduleController', function ($scope, $modal
             }
             for (var kRec in cell.records) {
                 if (cell.records[kRec].idUser == options.user.id) {
+                    schedule.openModalinfo('Интервал не доступен для записи');
                     return false;
                 }
             }
+        }
+        return true;
+    }
+    function ckeckAllowedDeleteRecord(cell, item) {
+        var now = new Date().getTime() / 1000;
+        if (cell.date && (now + item.stepSchedule) > cell.date) {
+            return false;
+        }
+        if (cell.recordUser && cell.recordUser.name == '') {
+            return false;
         }
         return true;
     }

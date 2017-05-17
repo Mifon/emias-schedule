@@ -39,9 +39,9 @@
 						<div class="input-group-addon"><span class="glyphicon glyphicon-search"></span></div>
 					</div>
 					<div class="b-patient__search-result" ng-if="patient.listRes">
-						<div class="b-patient__search-result-placeholder">Нет совпадений</div>
+						<div class="b-patient__search-result-placeholder">Совпадений не найдено</div>
 						<div class="b-patient__search-result-item" ng-repeat="item in patient.listRes | filter:patient.inputSearch" ng-click="patient.selectedUser(item)">
-							{{item.surname + ' ' + item.name}}
+							{{item.surname}} {{item.name}} {{item.patron}},<br>{{item.numPolicOMS}}
 						</div>
 					</div>
 				</div>
