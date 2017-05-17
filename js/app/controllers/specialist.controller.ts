@@ -5,6 +5,7 @@ angular.module('root')
 		var special = this;
 
 		special.list = dataService.get('listDr');
+		special.list.sort(sortSpecialist);
 
 		special.checkAll = function () {
 			setStateItems(true);
@@ -21,6 +22,20 @@ angular.module('root')
 			});
 
 			special.selected();
+		}
+		function sortSpecialist(a, b) {
+			var nameA = a.name.toUpperCase();
+			var nameB = b.name.toUpperCase();
+			var specialtyA = a.specialty.toUpperCase();
+			var specialtyB = b.specialty.toUpperCase();
+
+			if (nameA < nameB) return -1;
+			else if (nameA > nameB) return 1;
+
+			if (specialtyA < specialtyB) return -1;
+			else if (specialtyA > specialtyB) return 1;
+
+			return 0;
 		}
 
 		special.selected = function() {

@@ -13,7 +13,7 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope
 	};
 	dpicker.format = 'dd.MM.yyyy';
 	dpicker.minDate = dpicker.minDate ? null : new Date();
-	dpicker.maxDate = new Date(2020, 5, 22);
+	dpicker.maxDate = new Date(new Date().getTime()+(1000*60*60*24*365)); // доступные даты в календаре на год вперед
 	dpicker.btnDisabled = 'disabled';
 	dpicker.btnDisabledTitle = 'Выберите доступный ресурс';
 	dpicker.selectedDate = '';
@@ -40,7 +40,7 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope
 	}
 
 	dpicker.disabled = function(date, mode) {
-		return ( mode === 'day' && ( date.getDay() === 0 || date.getDay() === 6 ) );
+		return ( mode === 'day' && ( date.getDay() === 0 ) );
 	};
 
 	dpicker.open = function($event) {
@@ -69,13 +69,16 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope
 		let now      = new Date().getTime();
 		let strClass = 'b-date__select';
 
-		if (changeWorkWeekDay(date)) {
-			strClass += ' b-date__select-not-work';
+		// на две неделе вперед
+		if (changeWorkWeekDay(date) && (timeDate < (now + (1000*60*60*24*14)))) {
+			strClass += ' b-date__select-work';
 		}
 
-		if (timeDate > (now + (1000*60*60*24*14)) || timeDate < (now - (1000*60*60*24))) {
+		// if (changeWorkWeekDay(date) && (timeDate > (now + (1000*60*60*24*14)) || timeDate < (now - (1000*60*60*24))) {
+			// strClass += ' disabled js-date-disabled';
+		if (timeDate < (now - (1000*60*60*24)) || timeDate > (now + (1000*60*60*24*14))) {
 			strClass += ' disabled js-date-disabled';
-		} else if (date.getDay() === 0 || date.getDay() === 6) {
+		} else if (date.getDay() === 0) {
 			strClass += ' disabled-day-off';
 		} else {
 			strClass += ' js-date-select';
@@ -87,12 +90,13 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope
 		let todayWeekDay = day.getDay()==0 ? 7 : day.getDay();
 		for (var key in dpicker.options.listDr) {
 			let specialist = dpicker.options.listDr[key];
-			if (!specialist.listWorkWeekDay || specialist.listWorkWeekDay.indexOf(todayWeekDay) < 0) {
+			if (specialist.listWorkWeekDay && specialist.listWorkWeekDay.indexOf(todayWeekDay) >= 0) {
 				return true;
 			}
 		}
 	}
 
+	// обновление дата пикера и вызов из радительского контроллера
 	$scope.$on('updateDatepicker', function(){
 		let options = dataService.get('listOption');
 		dpicker.options = options;

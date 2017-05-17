@@ -1,9 +1,27 @@
+'use strict';
 angular.module('root', ['ui.bootstrap'])
     .constant('CONFIG', {
     DebugMode: true,
     StepCounter: 0,
 });
-'use strict';
+angular.module('root').controller('DropdownCtrl', function ($scope, $log) {
+    $scope.items = [
+        'The first choice!',
+        'And another choice for you.',
+        'but wait! A third!'
+    ];
+    $scope.status = {
+        isopen: false
+    };
+    $scope.toggled = function (open) {
+        $log.log('Dropdown is now: ', open);
+    };
+    $scope.toggleDropdown = function ($event) {
+        $event.preventDefault();
+        $event.stopPropagation();
+        $scope.status.isopen = !$scope.status.isopen;
+    };
+});
 angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope, dataService) {
     var dpicker = this;
     dpicker.dateOptions = {
@@ -16,7 +34,7 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope
     };
     dpicker.format = 'dd.MM.yyyy';
     dpicker.minDate = dpicker.minDate ? null : new Date();
-    dpicker.maxDate = new Date(2020, 5, 22);
+    dpicker.maxDate = new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 365));
     dpicker.btnDisabled = 'disabled';
     dpicker.btnDisabledTitle = 'Выберите доступный ресурс';
     dpicker.selectedDate = '';
@@ -41,7 +59,7 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope
         $rootScope.$broadcast('renderSchedule');
     };
     dpicker.disabled = function (date, mode) {
-        return (mode === 'day' && (date.getDay() === 0 || date.getDay() === 6));
+        return (mode === 'day' && (date.getDay() === 0));
     };
     dpicker.open = function ($event) {
         if (dpicker.btnDisabled != '') {
@@ -64,13 +82,13 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope
         var timeDate = date.getTime();
         var now = new Date().getTime();
         var strClass = 'b-date__select';
-        if (changeWorkWeekDay(date)) {
-            strClass += ' b-date__select-not-work';
+        if (changeWorkWeekDay(date) && (timeDate < (now + (1000 * 60 * 60 * 24 * 14)))) {
+            strClass += ' b-date__select-work';
         }
-        if (timeDate > (now + (1000 * 60 * 60 * 24 * 14)) || timeDate < (now - (1000 * 60 * 60 * 24))) {
+        if (timeDate < (now - (1000 * 60 * 60 * 24)) || timeDate > (now + (1000 * 60 * 60 * 24 * 14))) {
             strClass += ' disabled js-date-disabled';
         }
-        else if (date.getDay() === 0 || date.getDay() === 6) {
+        else if (date.getDay() === 0) {
             strClass += ' disabled-day-off';
         }
         else {
@@ -82,7 +100,7 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope
         var todayWeekDay = day.getDay() == 0 ? 7 : day.getDay();
         for (var key in dpicker.options.listDr) {
             var specialist = dpicker.options.listDr[key];
-            if (!specialist.listWorkWeekDay || specialist.listWorkWeekDay.indexOf(todayWeekDay) < 0) {
+            if (specialist.listWorkWeekDay && specialist.listWorkWeekDay.indexOf(todayWeekDay) >= 0) {
                 return true;
             }
         }
@@ -103,7 +121,6 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope
         dpicker.select();
     });
 });
-'use strict';
 angular.module('root').controller('DaysController', function ($scope, $rootScope, dataService) {
     var options = dataService.get('listOption');
     $scope.radioModel = options.viewDays;
@@ -114,7 +131,6 @@ angular.module('root').controller('DaysController', function ($scope, $rootScope
         $rootScope.$broadcast('updateDatepicker');
     };
 });
-'use strict';
 angular.module('root').controller('PatientController', function (dataService) {
     var patient = this;
     patient.user = '';
@@ -146,7 +162,6 @@ angular.module('root').controller('PatientController', function (dataService) {
         dataService.set('listOption', option);
     };
 });
-'use strict';
 angular.module('root').controller('ScheduleController', function ($scope, $modal, dataService) {
     var schedule = this;
     schedule.showList = false;
@@ -342,7 +357,7 @@ angular.module('root').controller('ScheduleController', function ($scope, $modal
             day.setDate(day.getDate() + d);
             for (var key in schedule.listDr) {
                 var specialist = schedule.listDr[key];
-                var item = { listCells: [], timeWorking: '', dateDay: new Date(), quots: {}, stepSchedule: 0, listRecords: [] };
+                var item = { listCells: [], timeWorking: '', listQuotsWorking: [], dateDay: new Date(), quots: {}, stepSchedule: 0, listRecords: [] };
                 var keyError = 0;
                 var todayWeekDay = day.getDay() == 0 ? 7 : day.getDay();
                 if (!specialist.listWorkWeekDay || specialist.listWorkWeekDay.indexOf(todayWeekDay) < 0) {
@@ -360,6 +375,7 @@ angular.module('root').controller('ScheduleController', function ($scope, $modal
                 item.dateDay = day;
                 for (var k in item.quots) {
                     var qoute = item.quots[k];
+                    item.quots[k].labelTime = getTimeWorcking(qoute);
                     if (qoute.name == 'Запись на прием') {
                         for (var i = qoute.start; i < qoute.end; i += item.stepSchedule) {
                             setCellData(qoute, i, item, day);
@@ -367,6 +383,7 @@ angular.module('root').controller('ScheduleController', function ($scope, $modal
                     }
                     else {
                         setCellData(qoute, qoute.start, item, day);
+                        item.listQuotsWorking.push(item.quots[k]);
                     }
                 }
                 item.listCells.sort(sortScheduleCells);
@@ -376,6 +393,9 @@ angular.module('root').controller('ScheduleController', function ($scope, $modal
         schedule.list.sort(sortScheduleColumn);
         $('.b-schedule__list-content').css('width', (161 * schedule.list.length) + 'px');
         schedule.showList = schedule.list && schedule.list.length > 0;
+        setTimeout(function () {
+            maxScheduleHeader();
+        }, 1);
     }
     function sortScheduleCells(a, b) {
         if (a.hour < b.hour)
@@ -496,6 +516,9 @@ angular.module('root').controller('ScheduleController', function ($scope, $modal
             if (cell.records.length < 1) {
                 cell.title = (now < cell.date ? 'Время доступно для записи' : 'Запись на прошедший временной интервал недоступна');
             }
+            if (cell.records.length > 0) {
+                cell.elemClass += ' b-schedule__item-record-true';
+            }
         }
         else {
             cell.label = qoute.name;
@@ -535,17 +558,35 @@ angular.module('root').controller('ScheduleController', function ($scope, $modal
         }
         return true;
     }
+    function maxScheduleHeader() {
+        var maxHeader = 0;
+        var listHeader = $('.b-schedule__item-head-cnt');
+        for (var i = listHeader.length - 1; i >= 0; i--) {
+            var heightHeader = $(listHeader[i]).outerHeight();
+            if (maxHeader < heightHeader) {
+                maxHeader = heightHeader;
+            }
+        }
+        $('.b-schedule__item-head-cnt').css('height', maxHeader + 'px');
+        $('.b-schedule__item-cntnt').css('margin-top', maxHeader + 'px');
+        $('.b-schedule__list').scrollTop(1);
+        $('.b-schedule__list').scrollTop(0);
+    }
+    $('.b-schedule__list').scroll(function () {
+        var scrollTop = $('.b-schedule__list').scrollTop();
+        $('.b-schedule__item-head').css('top', scrollTop + 'px');
+    });
     $scope.$on('renderSchedule', function () {
         renderList();
     });
     var el = document.querySelector('.b-schedule__list');
     Ps.initialize(el);
 });
-'use strict';
 angular.module('root')
     .controller('specialistController', function specialistController($rootScope, dataService) {
     var special = this;
     special.list = dataService.get('listDr');
+    special.list.sort(sortSpecialist);
     special.checkAll = function () {
         setStateItems(true);
     };
@@ -559,6 +600,21 @@ angular.module('root')
             element.checked = checked;
         });
         special.selected();
+    }
+    function sortSpecialist(a, b) {
+        var nameA = a.name.toUpperCase();
+        var nameB = b.name.toUpperCase();
+        var specialtyA = a.specialty.toUpperCase();
+        var specialtyB = b.specialty.toUpperCase();
+        if (nameA < nameB)
+            return -1;
+        else if (nameA > nameB)
+            return 1;
+        if (specialtyA < specialtyB)
+            return -1;
+        else if (specialtyA > specialtyB)
+            return 1;
+        return 0;
     }
     special.selected = function () {
         var options = dataService.get('listOption');
@@ -575,26 +631,6 @@ angular.module('root')
     var el = document.querySelector('.b-spec__list');
     Ps.initialize(el);
 });
-'use strict';
-angular.module('root').controller('DropdownCtrl', function ($scope, $log) {
-    $scope.items = [
-        'The first choice!',
-        'And another choice for you.',
-        'but wait! A third!'
-    ];
-    $scope.status = {
-        isopen: false
-    };
-    $scope.toggled = function (open) {
-        $log.log('Dropdown is now: ', open);
-    };
-    $scope.toggleDropdown = function ($event) {
-        $event.preventDefault();
-        $event.stopPropagation();
-        $scope.status.isopen = !$scope.status.isopen;
-    };
-});
-'use strict';
 angular.module('root').service('dataService', function () {
     var self = this;
     var data = {
