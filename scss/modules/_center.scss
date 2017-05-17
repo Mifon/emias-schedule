@@ -46,6 +46,7 @@
 		@extend .b-schedule__item-date;
 		background-color: #949494;
 		border-bottom: 1px solid #949494;
+		font-style: italic;
 	}
 
 	&-adrec {
@@ -67,7 +68,7 @@
 		padding: 0px 5px 0;
 		background-color: #e8e8eb;
 		border-bottom: 1px dashed #000;
-		height: 30px;
+		height: 21px;
 		white-space: nowrap;
 
 		&:hover {
@@ -76,12 +77,12 @@
 
 		label {
 			font-weight: normal;
-			padding-top: 6px;
 		}
 
 		span {
 			display: inline-block;
-			padding: 6px 3px 7px;
+			min-width: 110px;
+			padding: 1px 3px 3px;
 			background-color: #eba740;
 			cursor: default;
 		}
@@ -90,7 +91,7 @@
 			padding: 3px 5px 0;
 			background-color: #949494;
 			border-bottom: 1px dashed #000;
-			height: 60px;
+			height: 40px;
 		}
 	}
 }
