@@ -75,14 +75,14 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 		schedule.dataPopup.btnDeleteRecord.isView = (cell.records && cell.records.length > 0);
 		schedule.dataPopup.btnViewRecord.isView = (recordUser.name != '');
 
-		setTimeout(function(target){
-			console.log('OOOOOK__!');
-			if ($(target).hasClass('js-popup-open')) {
-				$(target).removeClass('js-popup-open');
-			} else {
-				$(target).addClass('js-popup-open');
-			}
-		}, 100, target);
+		// setTimeout(function(target){
+		// 	console.log('OOOOOK__!');
+		// 	if ($(target).hasClass('js-popup-open')) {
+		// 		$(target).removeClass('js-popup-open');
+		// 	} else {
+		// 		$(target).addClass('js-popup-open');
+		// 	}
+		// }, 100, target);
 	}
 
 	function getPopupDate() {
@@ -201,7 +201,7 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 			// по специалистам
 			for (var key in schedule.listDr) {
 				let specialist = schedule.listDr[key];
-				let item = {listCells:[], timeWorking:'', strDate: new Date(), quots:{}, stepSchedule:0, listRecords:[]};
+				let item = {listCells:[], timeWorking:'', dateDay: new Date(), quots:{}, stepSchedule:0, listRecords:[]};
 
 
 				let keyError = 0;
@@ -225,7 +225,7 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 
 				item.listCells = [];
 				item.timeWorking = getTimeWorcking(item);
-				item.strDate = day;
+				item.dateDay = day;
 
 				for (var k in item.quots) {
 					let qoute = item.quots[k];
@@ -238,22 +238,44 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 						setCellData(qoute, qoute.start, item, day);
 					}
 				}
-				item.listCells.sort(scheduleCellsSort);
+				item.listCells.sort(sortScheduleCells);
 				schedule.list.push(item);
 			}
 		}
+
+		schedule.list.sort(sortScheduleColumn);
 
 		$('.b-schedule__list-content').css('width', (161*schedule.list.length)+'px');
 
 		schedule.showList = schedule.list && schedule.list.length > 0;
 	}
 
-	function scheduleCellsSort(a, b) {
+	function sortScheduleCells(a, b) {
 		if (a.hour < b.hour) return -1;
 		else if (a.hour > b.hour) return 1;
 
 		if (a.minute < b.minute) return -1;
 		else if (a.minute > b.minute) return 1;
+
+		return 0;
+	}
+	function sortScheduleColumn(a, b) {
+		var nameA = a.name.toUpperCase();
+		var nameB = b.name.toUpperCase();
+		var specialtyA = a.specialty.toUpperCase();
+		var specialtyB = b.specialty.toUpperCase();
+
+		if (a.dateDay < b.dateDay) return -1;
+		else if (a.dateDay > b.dateDay) return 1;
+
+		if (nameA < nameB) return -1;
+		else if (nameA > nameB) return 1;
+
+		if (specialtyA < specialtyB) return -1;
+		else if (specialtyA > specialtyB) return 1;
+
+		if (a.start < b.start) return -1;
+		else if (a.start > b.start) return 1;
 
 		return 0;
 	}

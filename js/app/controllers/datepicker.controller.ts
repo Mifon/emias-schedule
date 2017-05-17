@@ -21,11 +21,6 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope
 
 	dpicker.select = function(str){
 		let option = dataService.get('listOption');
-		// TODO костыль. датапикер почему то возврыщает дату на день больше
-		// if (option.viewDays > 1 && dpicker.dt != '') {
-		// 	dpicker.dt.setDate(dpicker.dt.getDate() - 1)
-		// }
-		console.log(dpicker.dt);
 		option.date = dpicker.dt;
 		if (str != 'change') {
 			dpicker.selectedDate = dpicker.dt;
