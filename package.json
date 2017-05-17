@@ -1,0 +1,24 @@
+{
+  "name": "emias",
+  "version": "1.0.0",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "gulp": "latest",
+    "gulp-sass": "latest",
+    "gulp-sourcemaps": "latest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mifon/emias-schedule.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Mifon/emias-schedule/issues"
+  },
+  "homepage": "https://github.com/Mifon/emias-schedule#readme",
+  "description": ""
+}
