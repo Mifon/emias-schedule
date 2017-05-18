@@ -1,21 +1,9 @@
-'use strict';
 angular.module('root', ['ui.bootstrap'])
     .constant('CONFIG', {
     DebugMode: true,
     StepCounter: 0,
 });
-angular
-    .module('root')
-    .controller('DropdownMenuController', function DropdownMenuController($scope, $log) {
-    $scope.status = {
-        isopen: false
-    };
-    $scope.toggleDropdown = function ($event) {
-        $event.preventDefault();
-        $event.stopPropagation();
-        $scope.status.isopen = !$scope.status.isopen;
-    };
-});
+'use strict';
 angular
     .module('root')
     .controller('DpickerController', function DpickerController($scope, $rootScope, dataService) {
@@ -119,6 +107,7 @@ angular
         dpicker.select();
     });
 });
+'use strict';
 angular
     .module('root')
     .controller('DaysController', function DaysController($scope, $rootScope, dataService) {
@@ -131,6 +120,7 @@ angular
         $rootScope.$broadcast('updateDatepicker');
     };
 });
+'use strict';
 angular.module('root').controller('PatientController', function (dataService) {
     var patient = this;
     patient.user = '';
@@ -162,6 +152,7 @@ angular.module('root').controller('PatientController', function (dataService) {
         dataService.set('listOption', option);
     };
 });
+'use strict';
 angular
     .module('root')
     .controller('ScheduleController', function ($scope, $modal, dataService) {
@@ -708,6 +699,7 @@ angular
     var el = document.querySelector('.b-schedule__list');
     Ps.initialize(el);
 });
+'use strict';
 angular
     .module('root')
     .controller('SpecialistController', function SpecialistController($rootScope, dataService) {
@@ -766,6 +758,20 @@ angular
         }
     });
 });
+'use strict';
+angular
+    .module('root')
+    .controller('DropdownMenuController', function DropdownMenuController($scope, $log) {
+    $scope.status = {
+        isopen: false
+    };
+    $scope.toggleDropdown = function ($event) {
+        $event.preventDefault();
+        $event.stopPropagation();
+        $scope.status.isopen = !$scope.status.isopen;
+    };
+});
+'use strict';
 angular.module('root').service('dataService', function () {
     var self = this;
     var data = {
