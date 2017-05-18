@@ -81,7 +81,7 @@ body {
 }
 
 .calendar-cont .btn.btn-default[role="heading"],
-.calendar-cont .btn.btn-default.btn-dpicker {
+.calendar-cont .btn.btn-dpicker {
 	display: inline-block;
 	padding: 4px 12px;
 	margin-bottom: 0;
@@ -131,6 +131,24 @@ body {
 	    -moz-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
 	    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
 	}
+
+}
+
+.calendar-cont .btn.btn-default.btn-dpicker {
+	position: relative;
+	padding-left: 30px;
+	&:before {
+		content: '';
+		display: block;
+		position: absolute;
+		width: 10px;
+		height: 10px;
+		top: 50%;
+		left: 15px;
+		margin-top: -5px;
+		background: url('../img/delete.svg') no-repeat center center;
+		background-size: 100% 100%;
+	}
 }
 
 .calendar-cont .btn.btn-success.btn-dpicker {
@@ -148,6 +166,9 @@ body {
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff62c462', endColorstr='#ff51a351', GradientType=0);
     filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
     outline: none;
+    position: relative;
+    padding-left: 40px;
+    padding-right: 25px;
 
     &:hover, &:focus {
     	text-decoration: none;
@@ -166,6 +187,19 @@ body {
 	    -webkit-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
 	    -moz-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
 	    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+	}
+
+	&:before {
+		content: '';
+	    display: block;
+	    position: absolute;
+	    width: 13px;
+	    height: 13px;
+	    top: 50%;
+	    left: 23px;
+	    margin-top: -6px;
+	    background: url(../img/check-mark.svg) no-repeat center center;
+	    background-size: 100% 100%;
 	}
 }
 
