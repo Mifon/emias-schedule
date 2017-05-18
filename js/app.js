@@ -172,6 +172,10 @@ angular
     schedule.textError = '';
     schedule.textInfo = '';
     schedule.maxHeightHead = 0;
+    schedule.xScrollbar = '';
+    schedule.yScrollbar = '';
+    schedule.xScrollbarArrow = $('.b-schedule .scroll-x-arrow');
+    schedule.yScrollbarArrow = $('.b-schedule .scroll-y-arrow');
     schedule.openModalOk = function () {
         var modalInstance = $modal.open({
             animation: true,
@@ -257,96 +261,92 @@ angular
     schedule.expandGraf = function (event) {
         $(event.target).parent().removeClass('collapsed');
     };
-    function getPopupData() {
-        var data = {
-            templateUrl: 'popoverTemplate',
-            title: '',
-            time: '',
-            user: {
-                name: ''
-            },
-            isIconUser: false,
-            isViewUser: false,
-            isViewMenu: true,
-            isViewConfirmCancel: false,
-            btnViewRecord: {
-                title: 'Просмотреть запись',
-                icon: '',
-                isView: false
-            },
-            btnCreateRecord: {
-                title: 'Создать запись',
-                icon: '',
-                isView: false
-            },
-            btnDeleteRecord: {
-                title: 'Отменить запись',
-                icon: '',
-                isView: false
-            },
-            viewRecord: function (cell) {
-                if ($(cell.target).hasClass('b-schedule__item-cntnt-record')) {
-                    schedule.dataPopup.isViewUser = true;
-                    schedule.dataPopup.isViewMenu = false;
+    schedule.dataPopup = {
+        templateUrl: 'popoverTemplate',
+        title: '',
+        time: '',
+        user: {
+            name: ''
+        },
+        isIconUser: false,
+        isViewUser: false,
+        isViewMenu: true,
+        isViewConfirmCancel: false,
+        btnViewRecord: {
+            title: 'Просмотреть запись',
+            icon: '',
+            isView: false
+        },
+        btnCreateRecord: {
+            title: 'Создать запись',
+            icon: '',
+            isView: false
+        },
+        btnDeleteRecord: {
+            title: 'Отменить запись',
+            icon: '',
+            isView: false
+        },
+        viewRecord: function (cell) {
+            if ($(cell.target).hasClass('b-schedule__item-cntnt-record')) {
+                schedule.dataPopup.isViewUser = true;
+                schedule.dataPopup.isViewMenu = false;
+            }
+        },
+        createRecord: function (cell, item) {
+            var options = dataService.get('listOption');
+            var dataRecord = { idUser: 0, time: 0, user: {}, dateRecord: 0 };
+            if (!ckeckAllowedCreateRecord(cell, item, options)) {
+                return false;
+            }
+            dataRecord.user = options.user;
+            dataRecord.idUser = options.user.id;
+            dataRecord.time = (60 * 60 * cell.hour) + (60 * cell.minute);
+            dataRecord.dateRecord = cell.date;
+            item.listRecords.push(dataRecord);
+            cell.records.push(dataRecord);
+            for (var kDr in options.listDr) {
+                if (item.id == options.listDr[kDr].id) {
+                    options.listDr[kDr].listRecords.push(dataRecord);
                 }
-            },
-            createRecord: function (cell, item) {
-                var options = dataService.get('listOption');
-                var dataRecord = { idUser: 0, time: 0, user: {}, dateRecord: 0 };
-                if (!ckeckAllowedCreateRecord(cell, item, options)) {
-                    return false;
-                }
-                dataRecord.user = options.user;
-                dataRecord.idUser = options.user.id;
-                dataRecord.time = (60 * 60 * cell.hour) + (60 * cell.minute);
-                dataRecord.dateRecord = cell.date;
-                item.listRecords.push(dataRecord);
-                cell.records.push(dataRecord);
-                for (var kDr in options.listDr) {
-                    if (item.id == options.listDr[kDr].id) {
-                        options.listDr[kDr].listRecords.push(dataRecord);
-                    }
-                }
-                dataService.set('listOption', options);
-                renderList();
-                schedule.openModalOk();
-            },
-            deleteRecord: function (cell, item) {
-                var options = dataService.get('listOption');
-                if (!ckeckAllowedDeleteRecord(cell, item)) {
-                    return false;
-                }
-                for (var kDr in options.listDr) {
-                    if (item.id == options.listDr[kDr].id) {
-                        for (var kRec in options.listDr[kDr].listRecords) {
-                            if (cell.recordUser.id == options.listDr[kDr].listRecords[kRec].idUser
-                                && cell.date == options.listDr[kDr].listRecords[kRec].dateRecord) {
-                                options.listDr[kDr].listRecords.splice(kRec, 1);
-                            }
+            }
+            dataService.set('listOption', options);
+            renderList();
+            schedule.openModalOk();
+        },
+        deleteRecord: function (cell, item) {
+            var options = dataService.get('listOption');
+            if (!ckeckAllowedDeleteRecord(cell, item)) {
+                return false;
+            }
+            for (var kDr in options.listDr) {
+                if (item.id == options.listDr[kDr].id) {
+                    for (var kRec in options.listDr[kDr].listRecords) {
+                        if (cell.recordUser.id == options.listDr[kDr].listRecords[kRec].idUser
+                            && cell.date == options.listDr[kDr].listRecords[kRec].dateRecord) {
+                            options.listDr[kDr].listRecords.splice(kRec, 1);
                         }
                     }
                 }
-                dataService.set('listOption', options);
-                renderList();
-            },
-            confirmDeleteRecord: function (cell, item) {
-                schedule.dataPopup.isViewConfirmCancel = true;
-                schedule.dataPopup.isViewMenu = false;
-            },
-            returnToSchedule: function () {
-                schedule.dataPopup.isViewConfirmCancel = false;
-                schedule.dataPopup.isViewMenu = true;
-                if (schedule.openedCell != '') {
-                    schedule.openedCell.isOpenPopup = false;
-                }
-            },
-            closePopup: function () {
+            }
+            dataService.set('listOption', options);
+            renderList();
+        },
+        confirmDeleteRecord: function (cell, item) {
+            schedule.dataPopup.isViewConfirmCancel = true;
+            schedule.dataPopup.isViewMenu = false;
+        },
+        returnToSchedule: function () {
+            schedule.dataPopup.isViewConfirmCancel = false;
+            schedule.dataPopup.isViewMenu = true;
+            if (schedule.openedCell != '') {
                 schedule.openedCell.isOpenPopup = false;
             }
-        };
-        return data;
-    }
-    schedule.dataPopup = getPopupData();
+        },
+        closePopup: function () {
+            schedule.openedCell.isOpenPopup = false;
+        }
+    };
     function renderList() {
         var options = dataService.get('listOption');
         var today = new Date();
@@ -380,6 +380,8 @@ angular
         schedule.list.sort(sortScheduleColumn);
         $('.b-schedule__list-content').css('width', (161 * schedule.list.length) + 'px');
         schedule.showList = schedule.list && schedule.list.length > 0;
+        schedule.xScrollbar = $('.b-schedule__list .ps-scrollbar-x-rail');
+        schedule.yScrollbar = $('.b-schedule__list .ps-scrollbar-y-rail');
         setTimeout(function () {
             maxScheduleHeader();
         });
@@ -481,6 +483,7 @@ angular
         for (var i = item.start; i < item.end; i += item.stepSchedule) {
             var isNotRecordQuote = false;
             var isRecordQuota = false;
+            var isErrorRecord = false;
             for (var k in item.quots) {
                 var quota = item.quots[k];
                 if (quota.listDaysWeek && quota.listDaysWeek.indexOf(todayWeekDay) < 0) {
@@ -498,14 +501,33 @@ angular
                     if (i < quota.start && quota.start < (i + (item.stepSchedule * 0.8))) {
                         isNotRecordQuote = true;
                     }
+                    if (isNotRecordQuote && item.listRecords) {
+                        for (var kRec in item.listRecords) {
+                            var date = new Date(day);
+                            var timeStart = (quota.start * 1000) + (new Date((quota.start * 1000)).getTimezoneOffset() * 60 * 1000);
+                            var timeEnd = (quota.end * 1000) + (new Date((quota.end * 1000)).getTimezoneOffset() * 60 * 1000);
+                            var timeI = (i * 1000) + (new Date((i * 1000)).getTimezoneOffset() * 60 * 1000);
+                            var startDateQuota = date.setHours(new Date(timeStart).getHours(), new Date(timeStart).getMinutes(), 0, 0);
+                            var endDateQuota = date.setHours(new Date(timeEnd).getHours(), new Date(timeEnd).getMinutes(), 0, 0);
+                            var dateI = date.setHours(new Date(timeI).getHours(), new Date(timeI).getMinutes(), 0, 0);
+                            if (startDateQuota / 1000 < item.listRecords[kRec].dateRecord &&
+                                endDateQuota / 1000 > item.listRecords[kRec].dateRecord &&
+                                dateI / 1000 == item.listRecords[kRec].dateRecord) {
+                                setCellData({ name: 'Запись на прием' }, i, item, day);
+                                isErrorRecord = true;
+                            }
+                        }
+                    }
                 }
             }
-            if (isRecordQuota && !isNotRecordQuote) {
+            if (isRecordQuota && !isNotRecordQuote && !isErrorRecord) {
                 setCellData({ name: 'Запись на прием' }, i, item, day);
                 isEmptyRecord = false;
             }
-            else if (!isNotRecordQuote && !isRecordQuota) {
+            else if ((!isNotRecordQuote || isErrorRecord) && !isRecordQuota) {
+                console.log(new Date(i));
                 isEmptyRecord = true;
+                isErrorRecord = false;
                 listEmptyQuota.push({ start: i });
             }
             if (!isEmptyRecord && listEmptyQuota.length > 0) {
@@ -558,7 +580,7 @@ angular
                 }
             }
             if (cell.records.length < 1) {
-                cell.title = (now < cell.date ? 'Время доступно для записи' : 'Запись на прошедший временной интервал недоступна');
+                cell.title = (now + item.stepSchedule < cell.date ? 'Время доступно для записи' : 'Запись на прошедший временной интервал недоступна');
             }
             if (cell.records.length > 0) {
                 cell.elemClass += ' b-schedule__item-record-true';
@@ -625,6 +647,22 @@ angular
         $('.b-schedule__list').scrollTop(0);
         $('.b-schedule__list').scrollLeft(1);
         $('.b-schedule__list').scrollLeft(0);
+        if ($('.b-schedule__list').width() > $('.b-schedule__list-content').width()) {
+            schedule.xScrollbar.css('display', 'none');
+            schedule.xScrollbarArrow.css('display', 'none');
+        }
+        else {
+            schedule.xScrollbar.css('display', 'block');
+            schedule.xScrollbarArrow.css('display', 'block');
+        }
+        if ($('.b-schedule__list').height() > $('.b-schedule__list-content').height()) {
+            schedule.yScrollbar.css('display', 'none');
+            schedule.yScrollbarArrow.css('display', 'none');
+        }
+        else {
+            schedule.yScrollbar.css('display', 'block');
+            schedule.yScrollbarArrow.css('display', 'block');
+        }
     }
     $('.b-schedule__list').scroll(function () {
         var scrollTop = $('.b-schedule__list').scrollTop();
@@ -716,6 +754,14 @@ angular
     };
     var el = document.querySelector('.b-spec__list');
     Ps.initialize(el);
+    setTimeout(function () {
+        if ($('.b-spec__list').height() >= $('.b-spec__list > div').height()) {
+            $('.ps-scrollbar-y-rail').css('display', 'none');
+        }
+        else {
+            $('.ps-scrollbar-y-rail').css('display', 'block');
+        }
+    });
 });
 angular.module('root').service('dataService', function () {
     var self = this;

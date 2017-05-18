@@ -54,4 +54,13 @@ angular
 
 		var el = document.querySelector('.b-spec__list');
 		Ps.initialize(el);
+
+		setTimeout(function(){
+
+			if ($('.b-spec__list').height() >= $('.b-spec__list > div').height()) {
+				$('.ps-scrollbar-y-rail').css('display', 'none');
+			} else {
+				$('.ps-scrollbar-y-rail').css('display', 'block');
+			}
+		})
 	});

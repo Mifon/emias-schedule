@@ -18,6 +18,10 @@
 	border: 1px solid rgb(200,200,200);
 	overflow: hidden;
 	position: relative;
+
+	.ps-scrollbar-x-rail {
+		display: none!important;
+	}
 }
 .b-spec__list-item {
 	padding: 10px 15px;
