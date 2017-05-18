@@ -4,7 +4,6 @@
 <head>
 	<title>ЕМИАС</title>
 	<meta charset="utf-8">
-	<!-- <link rel="stylesheet" href="bower_components/angular-bootstrap/ui-bootstrap-csp.css" type="text/css">  -->
 	<link rel="stylesheet" href="css/bootstrap.css" type="text/css">
 	<link rel="stylesheet" href="css/perfect-scrollbar.min.css" type="text/css">
 	<link rel="stylesheet" href="css/main.css" type="text/css">
@@ -12,13 +11,13 @@
 
 <body ng-app="root">
 
-	<div class="col-md-3 col-sm-3 p-left">
+	<div class="col-md-3 col-sm-3 col-xs-3 p-left">
 
 		<!-- #Блок пациента -->
 		<div class="p-block b-patient" ng-controller="PatientController as patient">
 			<div class="b-block__title">
 				<label>Пациент</label>
-				<div class="p-block__r-btns" ng-controller="DropdownCtrl">
+				<div class="p-block__r-btns" ng-controller="DropdownMenuController">
 					<div class="btn-group" dropdown>
 						<button type="button" class="btn btn-success btn-sm {{patient.btnDisabled}}" dropdown-toggle>
 								<span class="glyphicon glyphicon-user"></span>
@@ -55,7 +54,7 @@
 
 
 		<!-- #Блок даты записи -->
-		<div class="p-block b-date" ng-controller="DatepickerCtrl as dpicker">
+		<div class="p-block b-date" ng-controller="DpickerController as dpicker">
 			<div class="b-block__title">
 				<label>Дата записи</label>
 			</div>
@@ -73,7 +72,7 @@
 						ng-required="true"
 						custom-class="dpicker.dayClass(date, mode)"
 						close-on-date-selection="false"
-						close-text="Ok" /><!-- readonly="" -->
+						close-text="Ok" />
 					<div id="split-button" class="btn input-group-addon {{dpicker.btnDisabled}}" ng-click="dpicker.open($event)" title="{{dpicker.btnDisabledTitle}}">
 						<span class="glyphicon glyphicon-calendar"></span>
 						<span class="caret"></span>
@@ -85,10 +84,10 @@
 		<!-- /Блок даты записи -->
 
 		<!-- #Блок специалиста -->
-		<div class="p-block b-spec b-last" ng-controller="specialistController as special">
+		<div class="p-block b-spec b-last" ng-controller="SpecialistController as special">
 			<div class="b-block__title">
 				<label>Специалисты</label>
-				<div class="p-block__r-btns" ng-controller="DropdownCtrl">
+				<div class="p-block__r-btns" ng-controller="DropdownMenuController">
 					<div class="btn-group" dropdown>
 						<button type="button" class="btn btn-success btn-sm" dropdown-toggle>
 								<span class="glyphicon glyphicon-filter"></span>
@@ -98,27 +97,13 @@
 						<ul class="dropdown-menu" role="menu" aria-labelledby="split-button">
 							<li role="menuitem" ng-click="special.checkAll()"><a href="#"><span class="glyphicon glyphicon-ok" ></span> Выбрать все</a></li>
 							<li role="menuitem" ng-click="special.uncheckAll()"><a href="#"><span class="glyphicon glyphicon-remove" ></span> Отменить все выбранные</a></li>
-							<!--<li role="menuitem"><a href="#">Something else here</a></li>-->
-							<!-- <li class="divider"></li> -->
 						</ul>
 					</div>
 				</div>
 			</div>
 			<div class="b-cntnt">
-				<!--<label for=""></label>
-				<div class="input-group">
-					<input type="text" class="form-control" placeholder="Введите текст для поиска" ng-change="special.inputChange()" ng-model="special.inputSearch">
-					<div class="input-group-addon"><span class="glyphicon glyphicon-search"></span></div>
-				</div>
-				<div class="b-patient__search-result" ng-if="special.listRes">
-					<div class="b-patient__search-result-placeholder">Нет совпадений</div>
-					<div class="b-patient__search-result-item" ng-repeat="item in special.listRes | filter:special.inputSearch" ng-click="special.selectedUser(item)">
-						{{item.name}}
-					</div>
-				</div>-->
-				<div class="b-spec__list" id="Demo">
+				<div class="b-spec__list">
 					<div style="padding-right:15px;">
-
 						<label class="b-spec__list-item" ng-repeat="item in special.list">
 								<input type="checkbox" ng-model="item.checked" ng-change="special.selected()"> {{item.name + ' (' + item.specialty + ')'}}
 						</label>
@@ -131,7 +116,7 @@
 
 
 
-	<div class="col-md-9 col-sm-9 p-center">
+	<div class="col-md-9 col-sm-9 col-xs-9 p-center">
 
 		<!-- #Блок заголовка сетки расписния -->
 		<div class="p-block p-block--days" ng-controller="DaysController">
@@ -150,15 +135,15 @@
 		<!-- #Блок сетки расписния -->
 		<div class="p-block b-last b-schedule {{schedule.classBlock}}" ng-controller="ScheduleController as schedule">
 			<div class="b-schedule__empty-list" ng-show="!schedule.showList">
-				<div>{{schedule.infoTextEmptySchedule}}<!-- Для просмотра расписания выберите хотя бы один Доступный ресурс. --></div>
+				<div>{{schedule.infoTextEmptySchedule}}</div>
 			</div>
 
-			<div class="b-schedule__list" ng-show="schedule.showList">
+			<div class="b-schedule__list" ng-show="schedule.showList" sty>
 				<div class="b-schedule__list-content">
 
 				<div class="b-schedule__item" ng-repeat="item in schedule.list">
 					<div class="b-schedule__item-head">
-						<div class="b-schedule__item-head-cnt" style="{{schedule.heightHead}};">
+						<div class="b-schedule__item-head-cnt">
 							<div class="b-schedule__item-date">
 								{{item.dateDay | date:'EEE. dd MMM'}}
 							</div>
@@ -184,8 +169,8 @@
 							</div>
 						</div>
 					</div>
-					<div class="b-schedule__item-cntnt" style="{{schedule.marginTopHead}};">
-						<div ng-repeat="cell in item.listCells" class="{{cell.elemClass}}" ng-click="schedule.cellOpen(item, cell, $event)"
+					<div class="b-schedule__item-cntnt">
+						<div ng-repeat="cell in item.listCells" class="{{cell.elemClass}}" ng-click="schedule.popupOpen(item, cell, $event)"
 							title="{{cell.title}}"
 							data-date="{{cell.date}}"
 							popover-template="schedule.dataPopup.templateUrl"

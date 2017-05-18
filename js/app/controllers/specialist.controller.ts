@@ -1,7 +1,8 @@
 'use strict';
 
-angular.module('root')
-	.controller('specialistController', function specialistController($rootScope, dataService) {
+angular
+	.module('root')
+	.controller('SpecialistController', function SpecialistController($rootScope, dataService) {
 		var special = this;
 
 		special.list = dataService.get('listDr');

@@ -4,17 +4,11 @@ angular.module('root', ['ui.bootstrap'])
     DebugMode: true,
     StepCounter: 0,
 });
-angular.module('root').controller('DropdownCtrl', function ($scope, $log) {
-    $scope.items = [
-        'The first choice!',
-        'And another choice for you.',
-        'but wait! A third!'
-    ];
+angular
+    .module('root')
+    .controller('DropdownMenuController', function DropdownMenuController($scope, $log) {
     $scope.status = {
         isopen: false
-    };
-    $scope.toggled = function (open) {
-        $log.log('Dropdown is now: ', open);
     };
     $scope.toggleDropdown = function ($event) {
         $event.preventDefault();
@@ -22,7 +16,9 @@ angular.module('root').controller('DropdownCtrl', function ($scope, $log) {
         $scope.status.isopen = !$scope.status.isopen;
     };
 });
-angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope, dataService) {
+angular
+    .module('root')
+    .controller('DpickerController', function DpickerController($scope, $rootScope, dataService) {
     var dpicker = this;
     dpicker.dateOptions = {
         formatYear: 'yyyy',
@@ -120,7 +116,9 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope
         dpicker.select();
     });
 });
-angular.module('root').controller('DaysController', function ($scope, $rootScope, dataService) {
+angular
+    .module('root')
+    .controller('DaysController', function DaysController($scope, $rootScope, dataService) {
     var options = dataService.get('listOption');
     $scope.radioModel = options.viewDays;
     $scope.changeDays = function () {
@@ -161,7 +159,9 @@ angular.module('root').controller('PatientController', function (dataService) {
         dataService.set('listOption', option);
     };
 });
-angular.module('root').controller('ScheduleController', function ($scope, $modal, dataService) {
+angular
+    .module('root')
+    .controller('ScheduleController', function ($scope, $modal, dataService) {
     var schedule = this;
     schedule.showList = false;
     schedule.list = {};
@@ -207,7 +207,7 @@ angular.module('root').controller('ScheduleController', function ($scope, $modal
             }
         });
     };
-    schedule.cellOpen = function (item, cell, self) {
+    schedule.popupOpen = function (item, cell, self) {
         var options = dataService.get('listOption');
         var elemCell = self.currentTarget;
         var target = self.target;
@@ -257,7 +257,7 @@ angular.module('root').controller('ScheduleController', function ($scope, $modal
     schedule.expandGraf = function (event) {
         $(event.target).parent().removeClass('collapsed');
     };
-    function getPopupDate() {
+    function getPopupData() {
         var data = {
             templateUrl: 'popoverTemplate',
             title: '',
@@ -346,7 +346,7 @@ angular.module('root').controller('ScheduleController', function ($scope, $modal
         };
         return data;
     }
-    schedule.dataPopup = getPopupDate();
+    schedule.dataPopup = getPopupData();
     function renderList() {
         var options = dataService.get('listOption');
         var today = new Date();
@@ -667,8 +667,9 @@ angular.module('root').controller('ScheduleController', function ($scope, $modal
     var el = document.querySelector('.b-schedule__list');
     Ps.initialize(el);
 });
-angular.module('root')
-    .controller('specialistController', function specialistController($rootScope, dataService) {
+angular
+    .module('root')
+    .controller('SpecialistController', function SpecialistController($rootScope, dataService) {
     var special = this;
     special.list = dataService.get('listDr');
     special.list.sort(sortSpecialist);
