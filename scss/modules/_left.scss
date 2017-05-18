@@ -92,24 +92,27 @@
 		box-shadow: none;
 
 		&.btn-sm, &.btn {
-			line-height: 1.8;
+			line-height: 1.2;
+    		padding: 10px 10px 9px;
 		}
 
 		&.active, &.active:focus {
-			color: #333;
+			outline: none;
+			color: #408f9c;
 			background-color: #fff;
 			border: 2px solid #fff;
 			border-radius: 50%;
-
+			span, &:hover span {
+				color: #408f9c;
+			}
 		}
 
-		&:hover, &.active:hover,
-		&.btn-default[disabled]:hover {
+		&:hover {
 			border: 2px solid #348396;
 			border-radius: 3px;
 			background-color: #348396;
 			color: #fff;
-
+		
 			.text-info {
 				color: #fff
 			}
@@ -129,35 +132,41 @@
 				border-radius: 50%;
 			}
 
-			&.btn-info:hover, &.btn-info.active:hover,
+			/* &.btn-info:hover, &.btn-info.active:hover,
 			&.btn-default[disabled]:hover {
 				border: 2px solid #348396;
 				border-radius: 3px;
 				background-color: #348396;
 				color: #fff;
-
+			
 				.text-info {
 					color: #fff
 				}
-			}
+			} */
 		}
 	}
 
 	&.disabled {
 		background: #d4d4d4;
 
-		button {
+		button, button:hover {
 			background: #d4d4d4;
 			border: 2px solid #d4d4d4;
+			span {
+				color: #333;
+			}
 		}
 	}
 
 	&.disabled-day-off {
 		background: #fff;
 
-		button {
+		button, button:hover {
 			background: #fff;
 			border: 2px solid #fff;
+			span {
+				color: #333;
+			}
 		}
 	}
 }

@@ -19,7 +19,7 @@
 				<label>Пациент</label>
 				<div class="p-block__r-btns" ng-controller="DropdownMenuController">
 					<div class="btn-group" dropdown>
-						<button type="button" class="btn btn-success btn-sm {{patient.btnDisabled}}" dropdown-toggle>
+						<button type="button" class="btn btn-success btn-sm {{patient.btnDisabled}} dropdown-toggle">
 								<span class="glyphicon glyphicon-user"></span>
 								<span class="caret"></span>
 								<span class="sr-only">Split button!</span>
@@ -60,7 +60,7 @@
 			</div>
 			<div class="b-cntnt">
 				<label for=""></label>
-				<div class="input-group">
+				<div class="input-group calendar-cont">
 					<input type="text" class="form-control" placeholder="ДД.ММ.ГГГГ"
 						ng-change="dpicker.select('change')"
 						datepicker-popup="{{dpicker.format}}"
