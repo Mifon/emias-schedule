@@ -19,7 +19,7 @@
 				<label>Пациент</label>
 				<div class="p-block__r-btns" ng-controller="DropdownMenuController">
 					<div class="btn-group" dropdown>
-						<button type="button" class="btn btn-success btn-sm {{patient.btnDisabled}} dropdown-toggle">
+						<button type="button" class="btn btn-success btn-sm dropdown-toggle {{patient.btnDisabled}}" dropdown-toggle>
 								<span class="glyphicon glyphicon-user"></span>
 								<span class="caret"></span>
 								<span class="sr-only">Split button!</span>
@@ -221,7 +221,7 @@
 					</div>
 				</div>
 				<div class="s-popover s-popup-view-record" ng-if="schedule.dataPopup.isViewUser">
-					<a href="" ng-click="schedule.dataPopup.closePopup()">X</a>
+					<a href="" class="s-popover__close" ng-click="schedule.dataPopup.closePopup()">X</a>
 					<div class="s-popup__head">
 						<div class="s-popup__head-icon"><i class="glyphicon glyphicon-list-alt"></i></div>
 						<div class="s-popup__head-title">{{cell.recordUser.surname + ' ' + cell.recordUser.name.charAt(0) + '.' + cell.recordUser.patron.charAt(0) + '.'}}</div>

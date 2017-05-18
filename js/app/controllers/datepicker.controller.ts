@@ -50,7 +50,7 @@ angular
 			}
 			dpicker.selectedDate = dpicker.dt;
 			dpicker.status.opened = true;
-			setTimeout(function(){
+			setTimeout(function() {
 				let btnCancel = $('<button type="button" class="btn btn-sm btn-default btn-dpicker">Отменить</button>');
 				let btnDone = $('<button type="button" class="btn btn-sm btn-success btn-dpicker">Ок</button>');
 				let block = $('.b-date ul.dropdown-menu .btn-group').parent();
@@ -71,19 +71,24 @@ angular
 			let strClass = 'b-date__select';
 
 			// на две неделе вперед
-			if (changeWorkWeekDay(date) && (timeDate < (now + (1000*60*60*24*14)))) {
+			if (changeWorkWeekDay(date) && (timeDate > (now - (1000*60*60*24))) && (timeDate < (now + (1000*60*60*24*14)))) {
 				strClass += ' b-date__select-work';
 			}
 
 			// if (changeWorkWeekDay(date) && (timeDate > (now + (1000*60*60*24*14)) || timeDate < (now - (1000*60*60*24))) {
 				// strClass += ' disabled js-date-disabled';
-			if (timeDate < (now - (1000*60*60*24)) || timeDate > (now + (1000*60*60*24*14))) {
-				strClass += ' disabled js-date-disabled';
-			} else if (date.getDay() === 0) {
-				strClass += ' disabled-day-off';
+			if (timeDate < (now - (1000*60*60*24))) {
+				strClass += ' before-today js-date-disabled';
+			} else if (timeDate > (now + (1000*60*60*24*14))) {
+				strClass += ' after-two-week js-date-disabled';
 			} else {
 				strClass += ' js-date-select';
 			}
+
+			if (date.getDay() === 0) {
+				strClass += ' disabled-day-off';
+			}
+
 			return strClass;
 		}
 
