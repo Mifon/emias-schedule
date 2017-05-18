@@ -40,24 +40,6 @@
 		@extend .b-schedule__item-date;
 		background-color: #949494;
 		border-bottom: 1px solid #fff;
-		position: relative;
-
-		&:before {
-			content: '';
-			position: relative;
-			height: 100%;
-			display: inline-block;
-			left: 0;
-			top: 0;
-			vertical-align: middle;
-		}
-
-		label {
-			display: inline-block;
-			vertical-align: middle;
-			width: 97%;
-			font-weight: normal;
-		}
 	}
 
 	&-spec {
@@ -65,32 +47,17 @@
 		background-color: #949494;
 		border-bottom: 1px solid #949494;
 		font-style: italic;
-		position: relative;
-
-		&:before {
-			content: '';
-			position: relative;
-			height: 100%;
-			display: inline-block;
-			left: 0;
-			top: 0;
-			vertical-align: middle;
-		}
-
-		label {
-			display: inline-block;
-			vertical-align: middle;
-			width: 97%;
-			font-weight: normal;
-		}
 	}
 
 	&-adrec {
 		background-color: #8ec8d6;
 		padding: 5px 3px 8px;
 		border-bottom: 1px solid #8ec8d6;
-		position: relative;
 
+	}
+
+	&-adrec, &-spec, &-name {
+		position: relative;
 		&:before {
 			content: '';
 			position: relative;
@@ -106,6 +73,7 @@
 			vertical-align: middle;
 			width: 97%;
 			font-weight: normal;
+			margin: 0;
 		}
 	}
 

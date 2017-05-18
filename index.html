@@ -68,7 +68,6 @@
 						ng-model="dpicker.dt"
 						is-open="dpicker.status.opened"
 						min-date="dpicker.minDate"
-						max-date="dpicker.maxDate"
 						datepicker-options="dpicker.dateOptions"
 						date-disabled="dpicker.disabled(date, mode)"
 						ng-required="true"
@@ -170,7 +169,7 @@
 								<label>{{item.specialty}}</label>
 							</div>
 							<div class="b-schedule__item-adrec">
-								<label>{{item.institution}} (к{{item.room}})</label>
+								<label>{{item.institution}} (к.{{item.room}})</label>
 							</div>
 							<div class="b-schedule__item-graf">
 								<div class="container-time">

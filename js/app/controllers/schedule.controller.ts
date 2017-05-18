@@ -243,48 +243,26 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 			// по специалистам
 			for (var key in schedule.listDr) {
 				let specialist = schedule.listDr[key];
-				let item = {listCells:[], timeWorking:'', listQuotsWorking:[], dateDay: new Date(), quots:{}, stepSchedule:0, listRecords:[]};
+				let item = {listCells:[], timeWorking:'', listQuotsWorking:[], dateDay: new Date(), quots:{}, stepSchedule:0, listRecords:[], start:0, end:0};
 
-
-				let keyError = 0;
 				// проверка работы специалиста в этот день
 				let todayWeekDay = day.getDay()==0 ? 7 : day.getDay();
 				if (!specialist.listWorkWeekDay || specialist.listWorkWeekDay.indexOf(todayWeekDay) < 0) {
-					keyError = 1;
-				}
-
-				if (keyError) {
-					if (keyError == 1) {
-						schedule.infoTextEmptySchedule = 'Выберете другую дату для отображения расписания';
-					}
+					schedule.infoTextEmptySchedule = 'Выберете другую дату для отображения расписания';
 					continue;
 				}
 
-
 				// забивка данных из специалиста в итем (если так не делать то из за хеша ангулара выходит дублирование данных)
 				item = dataItemFromSpectialist(item, specialist);
-
 				item.listCells = [];
 				item.timeWorking = getTimeWorcking(item);
 				item.dateDay = day;
 
-				for (var k in item.quots) {
-					let qoute = item.quots[k];
+				// список ячеек таблицы
+				setColumnList(item, day);
 
-					item.quots[k].labelTime = getTimeWorcking(qoute);
-
-
-					if (qoute.name == 'Запись на прием') {
-						for (var i = qoute.start; i < qoute.end; i+=item.stepSchedule) {
-							setCellData(qoute, i, item, day);
-						}
-					} else {
-						setCellData(qoute, qoute.start, item, day);
-						item.listQuotsWorking.push(item.quots[k]);
-
-					}
-				}
 				item.listCells.sort(sortScheduleCells);
+				item.listQuotsWorking.sort(sortQuotsWorking);
 				schedule.list.push(item);
 			}
 		}
@@ -329,6 +307,10 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 
 		return 0;
 	}
+	function sortQuotsWorking(a, b) {
+		return (a.start < b.start) ? -1 : (a.start > b.start ? 1 : 0);
+	}
+
 	function getTimeWorcking(spec) {
 		let strTime = '';
 		let start   = (spec.start*1000)+( new Date((spec.start*1000)).getTimezoneOffset()*60*1000 );
@@ -345,9 +327,6 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 
 		return strTime;
 	}
-	// function getQuoteTimeWorking(spec) {
-	// 	spec.quots
-	// }
 	function addZIONTime(time) { // addZeroIfOneNumTime
 		return time < 10 ? '0' + time : time;
 	}
@@ -381,6 +360,68 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 			}
 		}
 		return item;
+	}
+	// правила создания ячеек таблицы
+	function setColumnList(item, day){
+		let todayWeekDay = day.getDay()==0 ? 7 : day.getDay();
+		let isEmptyRecord = false;
+		let listEmptyQuota = [];
+		for (var i = item.start; i < item.end; i+=item.stepSchedule) {
+			let isNotRecordQuote = false;
+			let isRecordQuota = false;
+
+			for (var k in item.quots) {
+				let quota = item.quots[k];
+				// если квота не для этого дня недели
+				if (quota.listDaysWeek && quota.listDaysWeek.indexOf(todayWeekDay) < 0) {
+					continue;
+				}
+
+				if (quota.name == 'Запись на прием') {
+					if (i >= quota.start && i < quota.end) {
+						isRecordQuota = true;
+					}
+				}
+
+				if (quota.name != 'Запись на прием') {
+					if (i >= quota.start && i < quota.end) {
+						isNotRecordQuote = true;
+					}
+					if (i < quota.start && quota.start < (i + (item.stepSchedule*0.8))) {
+						isNotRecordQuote = true;
+					}
+				}
+			}
+
+			if (isRecordQuota && !isNotRecordQuote) {
+				setCellData({name:'Запись на прием'}, i, item, day);
+				isEmptyRecord = false;
+			} else if (!isNotRecordQuote && !isRecordQuota) {
+				isEmptyRecord = true;
+				listEmptyQuota.push({start:i});
+			}
+
+			if (!isEmptyRecord && listEmptyQuota.length > 0) {
+				setCellData({name:'Нет записи'}, listEmptyQuota.shift().start, item, day);
+				listEmptyQuota = [];
+			}
+		}
+
+		if (isEmptyRecord && listEmptyQuota.length > 0) {
+			setCellData({name:'Нет записи'}, listEmptyQuota.shift().start, item, day);
+			listEmptyQuota = [];
+		}
+
+		for (var k in item.quots) {
+			if (item.quots[k].listDaysWeek && item.quots[k].listDaysWeek.indexOf(todayWeekDay) < 0) {
+				continue;
+			}
+			if (item.quots[k].name != 'Запись на прием') {
+				item.quots[k].labelTime = getTimeWorcking(item.quots[k]);
+				setCellData(item.quots[k], item.quots[k].start, item, day);
+				item.listQuotsWorking.push(item.quots[k]);
+			}
+		}
 	}
 	function setCellData(qoute, timeStart, item, day){
 		let time = (timeStart*1000)+( new Date((timeStart*1000)).getTimezoneOffset()*60*1000 );
@@ -470,9 +511,6 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 		// TODO переделать, долго и видно прыги
 		$('.b-schedule__item-cntnt').css('margin-top', maxHeader+'px');
 
-		$('.b-schedule__list').scrollTop(1);
-		$('.b-schedule__list').scrollTop(0);
-
 		schedule.maxHeigthName = Math.max.apply(Math, $(".b-schedule__item-name").map(function(){
 			return $(this).height()
 		}).get());
@@ -482,8 +520,19 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 		schedule.maxHeigthAdrec = Math.max.apply(Math, $(".b-schedule__item-adrec").map(function(){
 			return $(this).height()
 		}).get());
+
+		let maxHeight = Math.max.apply(Math, $(".b-schedule__item").map(function(){
+			return $(this).outerHeight()
+		}).get());
+		$(".b-schedule__item").height(maxHeight);
+
+		$('.b-schedule__list').scrollTop(1);
+		$('.b-schedule__list').scrollTop(0);
+		$('.b-schedule__list').scrollLeft(1);
+		$('.b-schedule__list').scrollLeft(0);
 	}
 
+	// изменение шапок столбцов сетки при скроллинге
 	$('.b-schedule__list').scroll(function(){
 		let scrollTop = $('.b-schedule__list').scrollTop();
 
@@ -500,7 +549,6 @@ angular.module('root').controller('ScheduleController', function($scope, $modal,
 		}
 
 		$(".b-schedule__item").each(function(){
-			// let marginTop = $(this).find('.b-schedule__item-head-cnt').outerHeight();
 			let blockGraf = $(this).find('.b-schedule__item-graf');
 
 			if (!blockGraf.attr('data-height')) {

@@ -13,7 +13,6 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope
 	};
 	dpicker.format = 'dd.MM.yyyy';
 	dpicker.minDate = dpicker.minDate ? null : new Date();
-	dpicker.maxDate = new Date(new Date().getTime()+(1000*60*60*24*365)); // доступные даты в календаре на год вперед
 	dpicker.btnDisabled = 'disabled';
 	dpicker.btnDisabledTitle = 'Выберите доступный ресурс';
 	dpicker.selectedDate = '';

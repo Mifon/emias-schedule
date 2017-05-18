@@ -147,8 +147,8 @@ angular.module('root').service('dataService', function() {
 			room: '150',
 			dateStartWork: (dateNow - (60*60*24)), // вчера
 			dateEndWork: (dateNow + (60*60*24*60)), // через 2 месяца
-			start: (60*60*8),
-			end: (60*60*15),
+			start: (60*60*9),
+			end: (60*60*21),
 			listWorkWeekDay: [2,3,4,5,6],
 			startWD: 2,
 			endWD: 6,

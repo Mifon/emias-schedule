@@ -650,45 +650,18 @@ body {
     text-transform: capitalize; }
   .b-schedule__item-name {
     background-color: #949494;
-    border-bottom: 1px solid #fff;
-    position: relative; }
-    .b-schedule__item-name:before {
-      content: '';
-      position: relative;
-      height: 100%;
-      display: inline-block;
-      left: 0;
-      top: 0;
-      vertical-align: middle; }
-    .b-schedule__item-name label {
-      display: inline-block;
-      vertical-align: middle;
-      width: 97%;
-      font-weight: normal; }
+    border-bottom: 1px solid #fff; }
   .b-schedule__item-spec {
     background-color: #949494;
     border-bottom: 1px solid #949494;
-    font-style: italic;
-    position: relative; }
-    .b-schedule__item-spec:before {
-      content: '';
-      position: relative;
-      height: 100%;
-      display: inline-block;
-      left: 0;
-      top: 0;
-      vertical-align: middle; }
-    .b-schedule__item-spec label {
-      display: inline-block;
-      vertical-align: middle;
-      width: 97%;
-      font-weight: normal; }
+    font-style: italic; }
   .b-schedule__item-adrec {
     background-color: #8ec8d6;
     padding: 5px 3px 8px;
-    border-bottom: 1px solid #8ec8d6;
+    border-bottom: 1px solid #8ec8d6; }
+  .b-schedule__item-adrec, .b-schedule__item-spec, .b-schedule__item-name {
     position: relative; }
-    .b-schedule__item-adrec:before {
+    .b-schedule__item-adrec:before, .b-schedule__item-spec:before, .b-schedule__item-name:before {
       content: '';
       position: relative;
       height: 100%;
@@ -696,11 +669,12 @@ body {
       left: 0;
       top: 0;
       vertical-align: middle; }
-    .b-schedule__item-adrec label {
+    .b-schedule__item-adrec label, .b-schedule__item-spec label, .b-schedule__item-name label {
       display: inline-block;
       vertical-align: middle;
       width: 97%;
-      font-weight: normal; }
+      font-weight: normal;
+      margin: 0; }
   .b-schedule__item-graf {
     background-color: #a4c589;
     padding: 5px 3px 8px;

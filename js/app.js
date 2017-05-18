@@ -34,7 +34,6 @@ angular.module('root').controller('DatepickerCtrl', function ($scope, $rootScope
     };
     dpicker.format = 'dd.MM.yyyy';
     dpicker.minDate = dpicker.minDate ? null : new Date();
-    dpicker.maxDate = new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 365));
     dpicker.btnDisabled = 'disabled';
     dpicker.btnDisabledTitle = 'Выберите доступный ресурс';
     dpicker.selectedDate = '';
@@ -362,36 +361,19 @@ angular.module('root').controller('ScheduleController', function ($scope, $modal
             day.setDate(day.getDate() + d);
             for (var key in schedule.listDr) {
                 var specialist = schedule.listDr[key];
-                var item = { listCells: [], timeWorking: '', listQuotsWorking: [], dateDay: new Date(), quots: {}, stepSchedule: 0, listRecords: [] };
-                var keyError = 0;
+                var item = { listCells: [], timeWorking: '', listQuotsWorking: [], dateDay: new Date(), quots: {}, stepSchedule: 0, listRecords: [], start: 0, end: 0 };
                 var todayWeekDay = day.getDay() == 0 ? 7 : day.getDay();
                 if (!specialist.listWorkWeekDay || specialist.listWorkWeekDay.indexOf(todayWeekDay) < 0) {
-                    keyError = 1;
-                }
-                if (keyError) {
-                    if (keyError == 1) {
-                        schedule.infoTextEmptySchedule = 'Выберете другую дату для отображения расписания';
-                    }
+                    schedule.infoTextEmptySchedule = 'Выберете другую дату для отображения расписания';
                     continue;
                 }
                 item = dataItemFromSpectialist(item, specialist);
                 item.listCells = [];
                 item.timeWorking = getTimeWorcking(item);
                 item.dateDay = day;
-                for (var k in item.quots) {
-                    var qoute = item.quots[k];
-                    item.quots[k].labelTime = getTimeWorcking(qoute);
-                    if (qoute.name == 'Запись на прием') {
-                        for (var i = qoute.start; i < qoute.end; i += item.stepSchedule) {
-                            setCellData(qoute, i, item, day);
-                        }
-                    }
-                    else {
-                        setCellData(qoute, qoute.start, item, day);
-                        item.listQuotsWorking.push(item.quots[k]);
-                    }
-                }
+                setColumnList(item, day);
                 item.listCells.sort(sortScheduleCells);
+                item.listQuotsWorking.sort(sortQuotsWorking);
                 schedule.list.push(item);
             }
         }
@@ -435,6 +417,9 @@ angular.module('root').controller('ScheduleController', function ($scope, $modal
         else if (a.start > b.start)
             return 1;
         return 0;
+    }
+    function sortQuotsWorking(a, b) {
+        return (a.start < b.start) ? -1 : (a.start > b.start ? 1 : 0);
     }
     function getTimeWorcking(spec) {
         var strTime = '';
@@ -488,6 +473,60 @@ angular.module('root').controller('ScheduleController', function ($scope, $modal
             }
         }
         return item;
+    }
+    function setColumnList(item, day) {
+        var todayWeekDay = day.getDay() == 0 ? 7 : day.getDay();
+        var isEmptyRecord = false;
+        var listEmptyQuota = [];
+        for (var i = item.start; i < item.end; i += item.stepSchedule) {
+            var isNotRecordQuote = false;
+            var isRecordQuota = false;
+            for (var k in item.quots) {
+                var quota = item.quots[k];
+                if (quota.listDaysWeek && quota.listDaysWeek.indexOf(todayWeekDay) < 0) {
+                    continue;
+                }
+                if (quota.name == 'Запись на прием') {
+                    if (i >= quota.start && i < quota.end) {
+                        isRecordQuota = true;
+                    }
+                }
+                if (quota.name != 'Запись на прием') {
+                    if (i >= quota.start && i < quota.end) {
+                        isNotRecordQuote = true;
+                    }
+                    if (i < quota.start && quota.start < (i + (item.stepSchedule * 0.8))) {
+                        isNotRecordQuote = true;
+                    }
+                }
+            }
+            if (isRecordQuota && !isNotRecordQuote) {
+                setCellData({ name: 'Запись на прием' }, i, item, day);
+                isEmptyRecord = false;
+            }
+            else if (!isNotRecordQuote && !isRecordQuota) {
+                isEmptyRecord = true;
+                listEmptyQuota.push({ start: i });
+            }
+            if (!isEmptyRecord && listEmptyQuota.length > 0) {
+                setCellData({ name: 'Нет записи' }, listEmptyQuota.shift().start, item, day);
+                listEmptyQuota = [];
+            }
+        }
+        if (isEmptyRecord && listEmptyQuota.length > 0) {
+            setCellData({ name: 'Нет записи' }, listEmptyQuota.shift().start, item, day);
+            listEmptyQuota = [];
+        }
+        for (var k in item.quots) {
+            if (item.quots[k].listDaysWeek && item.quots[k].listDaysWeek.indexOf(todayWeekDay) < 0) {
+                continue;
+            }
+            if (item.quots[k].name != 'Запись на прием') {
+                item.quots[k].labelTime = getTimeWorcking(item.quots[k]);
+                setCellData(item.quots[k], item.quots[k].start, item, day);
+                item.listQuotsWorking.push(item.quots[k]);
+            }
+        }
     }
     function setCellData(qoute, timeStart, item, day) {
         var time = (timeStart * 1000) + (new Date((timeStart * 1000)).getTimezoneOffset() * 60 * 1000);
@@ -569,8 +608,6 @@ angular.module('root').controller('ScheduleController', function ($scope, $modal
         }).get());
         schedule.maxHeightHead = maxHeader;
         $('.b-schedule__item-cntnt').css('margin-top', maxHeader + 'px');
-        $('.b-schedule__list').scrollTop(1);
-        $('.b-schedule__list').scrollTop(0);
         schedule.maxHeigthName = Math.max.apply(Math, $(".b-schedule__item-name").map(function () {
             return $(this).height();
         }).get());
@@ -580,6 +617,14 @@ angular.module('root').controller('ScheduleController', function ($scope, $modal
         schedule.maxHeigthAdrec = Math.max.apply(Math, $(".b-schedule__item-adrec").map(function () {
             return $(this).height();
         }).get());
+        var maxHeight = Math.max.apply(Math, $(".b-schedule__item").map(function () {
+            return $(this).outerHeight();
+        }).get());
+        $(".b-schedule__item").height(maxHeight);
+        $('.b-schedule__list').scrollTop(1);
+        $('.b-schedule__list').scrollTop(0);
+        $('.b-schedule__list').scrollLeft(1);
+        $('.b-schedule__list').scrollLeft(0);
     }
     $('.b-schedule__list').scroll(function () {
         var scrollTop = $('.b-schedule__list').scrollTop();
@@ -816,8 +861,8 @@ angular.module('root').service('dataService', function () {
             room: '150',
             dateStartWork: (dateNow - (60 * 60 * 24)),
             dateEndWork: (dateNow + (60 * 60 * 24 * 60)),
-            start: (60 * 60 * 8),
-            end: (60 * 60 * 15),
+            start: (60 * 60 * 9),
+            end: (60 * 60 * 21),
             listWorkWeekDay: [2, 3, 4, 5, 6],
             startWD: 2,
             endWD: 6,
