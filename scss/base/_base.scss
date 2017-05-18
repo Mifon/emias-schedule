@@ -83,11 +83,8 @@ body {
 .calendar-cont .btn.btn-default[role="heading"],
 .calendar-cont .btn.btn-default.btn-dpicker {
 	display: inline-block;
-
 	padding: 4px 12px;
 	margin-bottom: 0;
-
-	margin-left: .3em;
 	font-size: 14px;
 	line-height: 20px;
 	color: #333333;
@@ -95,8 +92,6 @@ body {
 	text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
 	vertical-align: middle;
 	cursor: pointer;
-	background-color: #f5f5f5;
-
 	background-color: #e6e6e6;
 	background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6);
 	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#e6e6e6));
@@ -105,7 +100,6 @@ body {
 	background-image: linear-gradient(to bottom, #ffffff, #e6e6e6);
 	background-repeat: repeat-x;
 	border: 1px solid #cccccc;
-
 	border-color: #e6e6e6 #e6e6e6 #bfbfbf;
 	border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
 	border-bottom-color: #b3b3b3;
@@ -114,12 +108,10 @@ body {
 	border-radius: 4px;
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffe6e6e6', GradientType=0);
 	filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
-
 	zoom: 1;
 	-webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
 	-moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
 	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
-
 	outline: none;
 
 	&:hover, &:focus {

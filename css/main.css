@@ -484,7 +484,6 @@ body {
   display: inline-block;
   padding: 4px 12px;
   margin-bottom: 0;
-  margin-left: .3em;
   font-size: 14px;
   line-height: 20px;
   color: #333333;
@@ -492,7 +491,6 @@ body {
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
   vertical-align: middle;
   cursor: pointer;
-  background-color: #f5f5f5;
   background-color: #e6e6e6;
   background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6);
   background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#e6e6e6));
@@ -650,42 +648,42 @@ body {
     .b-date__select button.btn-sm, .b-date__select button.btn {
       line-height: 1.2;
       padding: 10px 10px 9px; }
-    .b-date__select button.active, .b-date__select button.active:focus {
-      outline: none;
-      color: #408f9c;
-      background-color: #fff;
-      border: 2px solid #fff;
-      border-radius: 50%; }
-      .b-date__select button.active span, .b-date__select button.active:hover span, .b-date__select button.active:focus span, .b-date__select button.active:focus:hover span {
-        color: #408f9c; }
+    .b-date__select button.active, .b-date__select button:active, .b-date__select button:focus, .b-date__select button.active:focus, .b-date__select button:active:focus, .b-date__select button.active:hover, .b-date__select button:active:hover, .b-date__select button:focus:hover {
+      background-color: inherit;
+      border-color: #348396;
+      outline: none; }
     .b-date__select button:hover {
       border: 2px solid #348396;
       border-radius: 3px;
       background-color: #348396;
       color: #fff; }
-      .b-date__select button:hover .text-info {
+      .b-date__select button:hover .text-info, .b-date__select button:hover .text-muted {
         color: #fff; }
+    .b-date__select button.btn-info, .b-date__select button.active.btn-info, .b-date__select button.active.btn-info:hover, .b-date__select button:active, .b-date__select button:focus {
+      color: #333;
+      border: 2px solid #408f9c;
+      border-radius: 50%; }
+    .b-date__select button.btn.active, .b-date__select button.btn:active {
+      box-shadow: none; }
   .b-date__select-work {
     background: #b3e3ef; }
     .b-date__select-work button {
       background: #b3e3ef;
       border: 2px solid #b3e3ef;
-      /* &.btn-info:hover, &.btn-info.active:hover,
-      &.btn-default[disabled]:hover {
-      	border: 2px solid #348396;
-      	border-radius: 3px;
-      	background-color: #348396;
-      	color: #fff;
-      
-      	.text-info {
-      		color: #fff
-      	}
-      } */ }
-      .b-date__select-work button.btn-info, .b-date__select-work button.active.btn-info, .b-date__select-work button.active.btn-info:hover {
+      color: #333; }
+      .b-date__select-work button .text-muted, .b-date__select-work button.active:hover .text-muted {
+        color: #333; }
+      .b-date__select-work button.btn-info, .b-date__select-work button.active.btn-info, .b-date__select-work button:active:hover, .b-date__select-work button.active.btn-info:hover {
+        outline: none;
         color: #333;
         background-color: #b3e3ef;
         border: 2px solid #408f9c;
         border-radius: 50%; }
+      .b-date__select-work button:active, .b-date__select-work button:focus, .b-date__select-work button:active:focus {
+        outline: none;
+        background-color: #b3e3ef; }
+      .b-date__select-work button:hover .text-info, .b-date__select-work button:focus:hover span {
+        color: #333; }
   .b-date__select.disabled {
     background: #d4d4d4; }
     .b-date__select.disabled button, .b-date__select.disabled button:hover {
@@ -700,6 +698,37 @@ body {
       border: 2px solid #fff; }
       .b-date__select.disabled-day-off button span, .b-date__select.disabled-day-off button:hover span {
         color: #333; }
+  .b-date__select.before-today {
+    background: #e0e0e0; }
+    .b-date__select.before-today button, .b-date__select.before-today button:hover {
+      background: #e0e0e0;
+      border-color: #e0e0e0; }
+      .b-date__select.before-today button span, .b-date__select.before-today button:hover span {
+        color: #adadad; }
+  .b-date__select.after-two-week {
+    background: #eeeeee; }
+    .b-date__select.after-two-week button {
+      background: #eeeeee;
+      border-color: #eeeeee;
+      outline: none; }
+      .b-date__select.after-two-week button:hover {
+        border-color: #348396;
+        background-color: #348396;
+        color: #fff; }
+        .b-date__select.after-two-week button:hover span {
+          color: #fff; }
+      .b-date__select.after-two-week button:focus:hover, .b-date__select.after-two-week button.active:hover, .b-date__select.after-two-week button.active:focus, .b-date__select.after-two-week button.active:active {
+        outline: none;
+        background: #eee; }
+        .b-date__select.after-two-week button:focus:hover span, .b-date__select.after-two-week button.active:hover span, .b-date__select.after-two-week button.active:focus span, .b-date__select.after-two-week button.active:active span {
+          color: #999; }
+      .b-date__select.after-two-week button span {
+        color: #999; }
+      .b-date__select.after-two-week button[disabled="disabled"]:hover {
+        background: #eeeeee;
+        border-color: #eeeeee; }
+        .b-date__select.after-two-week button[disabled="disabled"]:hover span {
+          color: #999; }
 
 .dropdown-menu table thead th:not([colspan="5"]) button {
   border: 1px solid #fff; }
@@ -836,13 +865,30 @@ body {
   text-align: center;
   color: #777; }
 
+.popover-content {
+  padding: 5px 5px; }
+  .popover-content .btn.btn-danger {
+    background-color: #f80018;
+    border-color: #f80018;
+    padding: 4px 21px; }
+    .popover-content .btn.btn-danger:hover {
+      background-color: #c9302c;
+      border-color: #ac2925; }
+
 .s-popover {
-  padding: 10px 10px; }
+  border: 1px solid #b3b3b3;
+  padding: 10px 10px;
+  position: relative; }
+  .s-popover__close {
+    position: absolute;
+    top: 3px;
+    right: 7px; }
 
 .s-popup__head-icon, .s-popup__head-icon-user {
   display: inline-block;
   width: 15px;
-  vertical-align: top; }
+  vertical-align: middle;
+  line-height: 1; }
   .s-popup__head-icon-user {
     width: 20px;
     margin-left: 10px;
@@ -852,7 +898,7 @@ body {
 .s-popup__head-title {
   display: inline-block;
   text-align: center;
-  vertical-align: top; }
+  vertical-align: middle; }
 
 .s-popup__content {
   height: 20px; }
@@ -877,8 +923,18 @@ body {
     text-align: center;
     cursor: pointer; }
 
-.s-popup-view-record__item label {
-  width: 90px; }
+.s-popup-view-record .s-popup__head {
+  margin-bottom: 10px;
+  color: #002248; }
+.s-popup-view-record .s-popup__head-icon, .s-popup-view-record .s-popup__head-icon-user {
+  width: auto;
+  font-size: 20px;
+  color: #666;
+  margin-right: 10px; }
+.s-popup-view-record__item {
+  color: #002248; }
+  .s-popup-view-record__item label {
+    width: 90px; }
 
 .s-popup-confirm-cancel {
   text-align: center; }

@@ -96,15 +96,10 @@
     		padding: 10px 10px 9px;
 		}
 
-		&.active, &.active:focus {
+		&.active, &:active, &:focus, &.active:focus, &:active:focus, &.active:hover, &:active:hover, &:focus:hover {
+			background-color: inherit;
+			border-color: #348396;
 			outline: none;
-			color: #408f9c;
-			background-color: #fff;
-			border: 2px solid #fff;
-			border-radius: 50%;
-			span, &:hover span {
-				color: #408f9c;
-			}
 		}
 
 		&:hover {
@@ -112,10 +107,19 @@
 			border-radius: 3px;
 			background-color: #348396;
 			color: #fff;
-		
-			.text-info {
-				color: #fff
+
+			.text-info, .text-muted {
+				color: #fff;
 			}
+		}
+
+		&.btn-info, &.active.btn-info, &.active.btn-info:hover, &:active, &:focus {
+			color: #333;
+			border: 2px solid #408f9c;
+			border-radius: 50%;
+		}
+		&.btn.active, &.btn:active {
+			box-shadow: none;
 		}
 	}
 
@@ -125,24 +129,24 @@
 		button {
 			background: #b3e3ef;
 			border: 2px solid #b3e3ef;
-			&.btn-info, &.active.btn-info, &.active.btn-info:hover {
+			color: #333;
+			.text-muted, &.active:hover .text-muted {
+				color: #333;
+			}
+			&.btn-info, &.active.btn-info, &:active:hover, &.active.btn-info:hover {
+				outline: none;
 				color: #333;
 				background-color: #b3e3ef;
 				border: 2px solid #408f9c;
 				border-radius: 50%;
 			}
-
-			/* &.btn-info:hover, &.btn-info.active:hover,
-			&.btn-default[disabled]:hover {
-				border: 2px solid #348396;
-				border-radius: 3px;
-				background-color: #348396;
-				color: #fff;
-			
-				.text-info {
-					color: #fff
-				}
-			} */
+			&:active, &:focus, &:active:focus {
+				outline: none;
+				background-color: #b3e3ef;
+			}
+			&:hover .text-info, &:focus:hover span {
+				color: #333;
+			}
 		}
 	}
 
@@ -166,6 +170,50 @@
 			border: 2px solid #fff;
 			span {
 				color: #333;
+			}
+		}
+	}
+
+	&.before-today {
+		background: #e0e0e0;
+		button, button:hover {
+			background: #e0e0e0;
+			border-color: #e0e0e0;
+			span {
+				color: #adadad;
+			}
+		}
+	}
+	&.after-two-week {
+		background: #eeeeee;
+		button {
+			background: #eeeeee;
+			border-color: #eeeeee;
+			outline: none;
+			&:hover {
+				border-color: #348396;
+				background-color: #348396;
+				color: #fff;
+				span {
+					color: #fff;
+				}
+			}
+			&:focus:hover, &.active:hover, &.active:focus, &.active:active {
+				outline: none;
+				background: #eee;
+				span {
+					color: #999;
+				}
+			}
+			span {
+				color: #999;
+			}
+			&[disabled="disabled"]:hover {
+				background: #eeeeee;
+				border-color: #eeeeee;
+				span {
+					color: #999;
+				}
 			}
 		}
 	}

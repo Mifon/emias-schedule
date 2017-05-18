@@ -77,17 +77,20 @@ angular
         var timeDate = date.getTime();
         var now = new Date().getTime();
         var strClass = 'b-date__select';
-        if (changeWorkWeekDay(date) && (timeDate < (now + (1000 * 60 * 60 * 24 * 14)))) {
+        if (changeWorkWeekDay(date) && (timeDate > (now - (1000 * 60 * 60 * 24))) && (timeDate < (now + (1000 * 60 * 60 * 24 * 14)))) {
             strClass += ' b-date__select-work';
         }
-        if (timeDate < (now - (1000 * 60 * 60 * 24)) || timeDate > (now + (1000 * 60 * 60 * 24 * 14))) {
-            strClass += ' disabled js-date-disabled';
+        if (timeDate < (now - (1000 * 60 * 60 * 24))) {
+            strClass += ' before-today js-date-disabled';
         }
-        else if (date.getDay() === 0) {
-            strClass += ' disabled-day-off';
+        else if (timeDate > (now + (1000 * 60 * 60 * 24 * 14))) {
+            strClass += ' after-two-week js-date-disabled';
         }
         else {
             strClass += ' js-date-select';
+        }
+        if (date.getDay() === 0) {
+            strClass += ' disabled-day-off';
         }
         return strClass;
     };
