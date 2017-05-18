@@ -8,8 +8,9 @@
 }
 
 .b-schedule {
-	height: calc( 100vh - 62px );
+	height: calc( 100vh - 52px );
 	background: #fff;
+	position: relative;
 
 	&.emptyBlock {
 		background: #efefef;
@@ -20,6 +21,10 @@
 	width: 100%;
 	overflow: hidden;
 	position: relative;
+
+	&-content {
+		margin-bottom: 25px;
+	}
 }
 .b-schedule__item {
 	width: 150px;

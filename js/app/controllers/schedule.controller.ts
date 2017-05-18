@@ -14,6 +14,10 @@ angular
 		schedule.textError = '';
 		schedule.textInfo = '';
 		schedule.maxHeightHead = 0;
+		schedule.xScrollbar = '';
+		schedule.yScrollbar = '';
+		schedule.xScrollbarArrow = $('.b-schedule .scroll-x-arrow');
+		schedule.yScrollbarArrow = $('.b-schedule .scroll-y-arrow');
 
 		schedule.openModalOk = function() {
 			var modalInstance = $modal.open({
@@ -112,107 +116,100 @@ angular
 			$(event.target).parent().removeClass('collapsed');
 		}
 
-		function getPopupData() {
-			let data = {
-				templateUrl: 'popoverTemplate',
-				title: '',
-				time: '',
-				user: {
-					name:''
-				},
-				isIconUser: false,
-				isViewUser: false,
-				isViewMenu: true,
-				isViewConfirmCancel: false,
-				btnViewRecord: {
-					title: 'Просмотреть запись',
-					icon: '',
-					isView: false
-				},
-				btnCreateRecord: {
-					title: 'Создать запись',
-					icon: '',
-					isView: false
-				},
-				btnDeleteRecord: {
-					title: 'Отменить запись',
-					icon: '',
-					isView: false
-				},
-				viewRecord: function(cell) {
-					if ($(cell.target).hasClass('b-schedule__item-cntnt-record')) {
-						schedule.dataPopup.isViewUser = true;
-						schedule.dataPopup.isViewMenu = false;
+		schedule.dataPopup = {
+			templateUrl: 'popoverTemplate',
+			title: '',
+			time: '',
+			user: {
+				name:''
+			},
+			isIconUser: false,
+			isViewUser: false,
+			isViewMenu: true,
+			isViewConfirmCancel: false,
+			btnViewRecord: {
+				title: 'Просмотреть запись',
+				icon: '',
+				isView: false
+			},
+			btnCreateRecord: {
+				title: 'Создать запись',
+				icon: '',
+				isView: false
+			},
+			btnDeleteRecord: {
+				title: 'Отменить запись',
+				icon: '',
+				isView: false
+			},
+			viewRecord: function(cell) {
+				if ($(cell.target).hasClass('b-schedule__item-cntnt-record')) {
+					schedule.dataPopup.isViewUser = true;
+					schedule.dataPopup.isViewMenu = false;
+				}
+			},
+			createRecord: function(cell, item) {
+				let options = dataService.get('listOption');
+				let dataRecord = {idUser:0, time:0, user:{}, dateRecord:0};
+
+				if (!ckeckAllowedCreateRecord(cell, item, options)) {
+					return false;
+				}
+
+				dataRecord.user = options.user;
+				dataRecord.idUser = options.user.id;
+				dataRecord.time = (60*60*cell.hour)+(60*cell.minute);
+				dataRecord.dateRecord = cell.date;
+
+				item.listRecords.push(dataRecord);
+				cell.records.push(dataRecord);
+
+				for (var kDr in options.listDr) {
+					if (item.id == options.listDr[kDr].id) {
+						options.listDr[kDr].listRecords.push(dataRecord);
 					}
-				},
-				createRecord: function(cell, item) {
-					let options = dataService.get('listOption');
-					let dataRecord = {idUser:0, time:0, user:{}, dateRecord:0};
+				}
 
-					if (!ckeckAllowedCreateRecord(cell, item, options)) {
-						return false;
-					}
+				dataService.set('listOption', options);
+				renderList();
+				schedule.openModalOk();
+			},
+			deleteRecord: function(cell, item) {
+				let options = dataService.get('listOption');
+				if (!ckeckAllowedDeleteRecord(cell, item)) {
+					return false;
+				}
 
-					dataRecord.user = options.user;
-					dataRecord.idUser = options.user.id;
-					//
-					dataRecord.time = (60*60*cell.hour)+(60*cell.minute);
-					dataRecord.dateRecord = cell.date;
+				for (var kDr in options.listDr) {
+					if (item.id == options.listDr[kDr].id) {
 
-					item.listRecords.push(dataRecord);
-					cell.records.push(dataRecord);
-
-					for (var kDr in options.listDr) {
-						if (item.id == options.listDr[kDr].id) {
-							options.listDr[kDr].listRecords.push(dataRecord);
-						}
-					}
-
-					dataService.set('listOption', options);
-					renderList();
-					schedule.openModalOk();
-				},
-				deleteRecord: function(cell, item) {
-					let options = dataService.get('listOption');
-					// cell.isOpenPopup = false;
-					// $('.b-schedule__item-step').attr('popover-is-open', false);
-					if (!ckeckAllowedDeleteRecord(cell, item)) {
-						return false;
-					}
-
-					for (var kDr in options.listDr) {
-						if (item.id == options.listDr[kDr].id) {
-
-							for (var kRec in options.listDr[kDr].listRecords) {
-								if (cell.recordUser.id == options.listDr[kDr].listRecords[kRec].idUser
-									&& cell.date == options.listDr[kDr].listRecords[kRec].dateRecord) {
-									options.listDr[kDr].listRecords.splice(kRec, 1);
-								}
+						for (var kRec in options.listDr[kDr].listRecords) {
+							if (cell.recordUser.id == options.listDr[kDr].listRecords[kRec].idUser
+								&& cell.date == options.listDr[kDr].listRecords[kRec].dateRecord) {
+								options.listDr[kDr].listRecords.splice(kRec, 1);
 							}
 						}
 					}
+				}
 
-					dataService.set('listOption', options);
-					renderList();
-				},
-				confirmDeleteRecord: function(cell, item) {
-					schedule.dataPopup.isViewConfirmCancel = true;
-					schedule.dataPopup.isViewMenu = false;
-				},
-				returnToSchedule: function() {
-					schedule.dataPopup.isViewConfirmCancel = false;
-					schedule.dataPopup.isViewMenu = true;
-					if (schedule.openedCell != '') {
-						schedule.openedCell.isOpenPopup = false;
-					}
-				},
-				closePopup: function() {
+				dataService.set('listOption', options);
+				renderList();
+			},
+			confirmDeleteRecord: function(cell, item) {
+				schedule.dataPopup.isViewConfirmCancel = true;
+				schedule.dataPopup.isViewMenu = false;
+			},
+			returnToSchedule: function() {
+				schedule.dataPopup.isViewConfirmCancel = false;
+				schedule.dataPopup.isViewMenu = true;
+				if (schedule.openedCell != '') {
 					schedule.openedCell.isOpenPopup = false;
 				}
-			};
-			return data;
-		}
-		schedule.dataPopup = getPopupData();
+			},
+			closePopup: function() {
+				schedule.openedCell.isOpenPopup = false;
+			}
+		};
 
 		function renderList() {
 			let options = dataService.get('listOption');
@@ -263,6 +260,8 @@ angular
 
 			schedule.showList = schedule.list && schedule.list.length > 0;
 
+			schedule.xScrollbar = $('.b-schedule__list .ps-scrollbar-x-rail');
+			schedule.yScrollbar = $('.b-schedule__list .ps-scrollbar-y-rail');
 			setTimeout(function() {
 				maxScheduleHeader();
 			});
@@ -356,9 +355,11 @@ angular
 			let todayWeekDay = day.getDay()==0 ? 7 : day.getDay();
 			let isEmptyRecord = false;
 			let listEmptyQuota = [];
+
 			for (var i = item.start; i < item.end; i+=item.stepSchedule) {
 				let isNotRecordQuote = false;
 				let isRecordQuota = false;
+				let isErrorRecord = false;
 
 				for (var k in item.quots) {
 					let quota = item.quots[k];
@@ -380,14 +381,37 @@ angular
 						if (i < quota.start && quota.start < (i + (item.stepSchedule*0.8))) {
 							isNotRecordQuote = true;
 						}
+
+						if (isNotRecordQuote && item.listRecords) {
+							for (var kRec in item.listRecords) {
+								let date = new Date(day);
+								let timeStart = (quota.start*1000)+( new Date((quota.start*1000)).getTimezoneOffset()*60*1000 );
+								let timeEnd = (quota.end*1000)+( new Date((quota.end*1000)).getTimezoneOffset()*60*1000 );
+								let timeI = (i*1000)+( new Date((i*1000)).getTimezoneOffset()*60*1000 );
+
+								let startDateQuota = date.setHours(new Date(timeStart).getHours(), new Date(timeStart).getMinutes(), 0, 0);
+								let endDateQuota = date.setHours(new Date(timeEnd).getHours(), new Date(timeEnd).getMinutes(), 0, 0);
+								let dateI = date.setHours(new Date(timeI).getHours(), new Date(timeI).getMinutes(), 0, 0);
+
+								if (startDateQuota/1000 < item.listRecords[kRec].dateRecord &&
+									endDateQuota/1000 > item.listRecords[kRec].dateRecord &&
+									dateI/1000 == item.listRecords[kRec].dateRecord) {
+									setCellData({name:'Запись на прием'}, i, item, day);
+									isErrorRecord = true;
+								}
+							}
+						}
 					}
 				}
 
-				if (isRecordQuota && !isNotRecordQuote) {
+
+				if (isRecordQuota && !isNotRecordQuote && !isErrorRecord) {
 					setCellData({name:'Запись на прием'}, i, item, day);
 					isEmptyRecord = false;
-				} else if (!isNotRecordQuote && !isRecordQuota) {
+				} else if ((!isNotRecordQuote || isErrorRecord)  && !isRecordQuota) {
+					console.log(new Date(i));
 					isEmptyRecord = true;
+					isErrorRecord = false;
 					listEmptyQuota.push({start:i});
 				}
 
@@ -446,7 +470,7 @@ angular
 					}
 				}
 				if (cell.records.length < 1) {
-					cell.title = (now < cell.date ? 'Время доступно для записи' : 'Запись на прошедший временной интервал недоступна');
+					cell.title = (now+item.stepSchedule < cell.date ? 'Время доступно для записи' : 'Запись на прошедший временной интервал недоступна');
 				}
 				if (cell.records.length > 0) {
 					cell.elemClass += ' b-schedule__item-record-true';
@@ -501,6 +525,7 @@ angular
 			// TODO переделать, долго и видно прыги
 			$('.b-schedule__item-cntnt').css('margin-top', maxHeader+'px');
 
+			// вычесление максимальной выосты заголовка в шапке
 			schedule.maxHeigthName = Math.max.apply(Math, $(".b-schedule__item-name").map(function(){
 				return $(this).height()
 			}).get());
@@ -520,6 +545,21 @@ angular
 			$('.b-schedule__list').scrollTop(0);
 			$('.b-schedule__list').scrollLeft(1);
 			$('.b-schedule__list').scrollLeft(0);
+
+			if ($('.b-schedule__list').width() > $('.b-schedule__list-content').width()) {
+				schedule.xScrollbar.css('display', 'none');
+				schedule.xScrollbarArrow.css('display', 'none');
+			} else {
+				schedule.xScrollbar.css('display', 'block');
+				schedule.xScrollbarArrow.css('display', 'block');
+			}
+			if ($('.b-schedule__list').height() > $('.b-schedule__list-content').height()) {
+				schedule.yScrollbar.css('display', 'none');
+				schedule.yScrollbarArrow.css('display', 'none');
+			} else {
+				schedule.yScrollbar.css('display', 'block');
+				schedule.yScrollbarArrow.css('display', 'block');
+			}
 		}
 
 		// изменение шапок столбцов сетки при скроллинге
@@ -528,6 +568,7 @@ angular
 
 			$('.b-schedule__item-head').css('top', scrollTop+'px');
 
+			// высота заголовков в шапке. когда они компакты выравниваются
 			if ($(".b-schedule__item .b-schedule__item-graf:not(.collapsed)").length < 1) {
 				$(".b-schedule__item-name").height(schedule.maxHeigthName);
 				$(".b-schedule__item-spec").height(schedule.maxHeigthSpec);
