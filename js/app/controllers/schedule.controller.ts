@@ -10,8 +10,6 @@ angular
 		schedule.openedCell = '';
 		schedule.defaultInfoTextEmptySchedule = 'Для просмотра расписания выберите хотя бы один Доступный ресурс.';
 		schedule.infoTextEmptySchedule = schedule.defaultInfoTextEmptySchedule;
-		schedule.textError = '';
-		schedule.textInfo = '';
 		schedule.maxHeightHead = 0;
 		schedule.xScrollbar = '';
 		schedule.yScrollbar = '';
@@ -55,10 +53,12 @@ angular
 			});
 		}
 
+		// открытие свернутого при сколинде заголовка в расписании
 		schedule.expandGraf = function(event) {
 			$(event.target).parent().removeClass('collapsed');
 		}
 
+		// объект попап
 		schedule.dataPopup = {
 			templateUrl: 'popoverTemplate',
 			title: '',
@@ -164,6 +164,7 @@ angular
 				return false;
 			}
 
+			// данные записи на которую кликнули
 			if ($(target).hasClass('b-schedule__item-cntnt-record')) {
 				let elemKey = $(target).attr('data-dateid');
 				let dataKey = elemKey.split('_');
@@ -182,15 +183,18 @@ angular
 					schedule.openedCell.isOpenPopup = false;
 				}
 			}
-			schedule.openedCell = cell;
+
 
 			cell.target = target;
 			cell.parent = self.currentTarget;
 			cell.recordUser = recordUser;
 
+			schedule.openedCell = cell;
 			schedule.dataPopup.isViewMenu = true;
 			schedule.dataPopup.isViewUser = false;
 			schedule.dataPopup.isViewConfirmCancel = false;
+
+			// вывод заголовка меню
 			if (recordUser.name == '') {
 				schedule.dataPopup.title = 'Выбран интервал времени';
 				schedule.dataPopup.isIconUser = false;
@@ -209,12 +213,14 @@ angular
 			schedule.dataPopup.btnViewRecord.isView = (cell.recordUser.name != '');
 		}
 
+		// построение отображения расписания
 		function renderList() {
 			let options = DataService.get('listOption');
+			let listShedule = [];
 			let today = new Date();
+
 			schedule.heightHead = '';
 			schedule.infoTextEmptySchedule = schedule.defaultInfoTextEmptySchedule;
-
 			schedule.list   = [];
 			schedule.listDr = options.listDr;
 
@@ -254,6 +260,7 @@ angular
 			}
 
 			schedule.list.sort(ScheduleService.sortScheduleColumn);
+
 
 			// задаем ширину блока расписания
 			$('.b-schedule__list-content').css('width', (161*schedule.list.length)+'px');
@@ -390,6 +397,7 @@ angular
 			let cell = {
 				isOpenPopup: false,
 				isRecord: false,
+				popupPlacement: 'right',
 				date: 0,
 				time: time,
 				hour: new Date(time).getHours(),

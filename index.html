@@ -170,13 +170,14 @@
 						</div>
 						<div class="b-schedule__item-cntnt">
 							<div ng-repeat="cell in item.listCells" class="{{cell.elemClass}} {{!cell.isRecord ? 'not-record': ''}}" ng-click="schedule.popupOpen(item, cell, $event)"
+								ng-model="schedule.tooltip"
 								title="{{cell.title}}"
 								data-date="{{cell.date}}"
 								popover-template="schedule.dataPopup.templateUrl"
 								popover-animation="false"
 								popover-trigger="{{cell.isPopup ? 'click' : 'none'}}"
 								popover-is-open="cell.isOpenPopup"
-								popover-placement="right">
+								popover-placement="{{cell.popupPlacement}}">
 								<label>{{cell.label}}</label><!-- popover-template="dynamicPopover.templateUrl" -->
 								<span class="b-schedule__item-cntnt-record" ng-repeat="record in cell.records" data-dateid="{{record.dateRecord + '_' + record.idUser}}">
 									{{record.user.surname}} {{record.user.name.charAt(0)}}.{{record.user.patron.charAt(0)}}.

@@ -9,6 +9,7 @@ angular
 			options = DataService.get('listOption');
 			options.viewDays = $scope.radioModel;
 			DataService.set('options', options);
+			// вызов обновления даты и сетки
 			$rootScope.$broadcast('updateDatepicker');
 		}
 	});

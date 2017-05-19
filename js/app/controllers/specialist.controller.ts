@@ -52,11 +52,12 @@ angular
 			$rootScope.$broadcast('updateDatepicker');
 		}
 
+		// инициализация скролла
 		var el = document.querySelector('.b-spec__list');
 		Ps.initialize(el);
 
+		// отображение скролла
 		setTimeout(function(){
-
 			if ($('.b-spec__list').height() >= $('.b-spec__list > div').height()) {
 				$('.ps-scrollbar-y-rail').css('display', 'none');
 			} else {

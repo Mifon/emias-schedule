@@ -56,23 +56,6 @@ angular
     dpicker.disabled = function (date, mode) {
         return (mode === 'day' && (date.getDay() === 0));
     };
-    dpicker.open = function ($event) {
-        if (dpicker.btnDisabled != '') {
-            return false;
-        }
-        dpicker.selectedDate = dpicker.dt;
-        dpicker.status.opened = true;
-        setTimeout(function () {
-            var btnCancel = $('<button type="button" class="btn btn-sm btn-default btn-dpicker">Отменить</button>');
-            var btnDone = $('<button type="button" class="btn btn-sm btn-success btn-dpicker">Ок</button>');
-            var block = $('.b-date ul.dropdown-menu .btn-group').parent();
-            btnCancel.click(dpicker.dateReset);
-            btnDone.click(dpicker.select);
-            $(block).css('text-align', 'right');
-            $(block).html('').append(btnCancel).append(btnDone);
-            $('.b-date .js-date-disabled button').attr('disabled', 'disabled');
-        });
-    };
     dpicker.dayClass = function (date, mode) {
         var timeDate = date.getTime();
         var now = new Date().getTime();
@@ -93,6 +76,23 @@ angular
             strClass += ' disabled-day-off';
         }
         return strClass;
+    };
+    dpicker.open = function ($event) {
+        if (dpicker.btnDisabled != '') {
+            return false;
+        }
+        dpicker.selectedDate = dpicker.dt;
+        dpicker.status.opened = true;
+        setTimeout(function () {
+            var btnCancel = $('<button type="button" class="btn btn-sm btn-default btn-dpicker">Отменить</button>');
+            var btnDone = $('<button type="button" class="btn btn-sm btn-success btn-dpicker">Ок</button>');
+            var block = $('.b-date ul.dropdown-menu .btn-group').parent();
+            btnCancel.click(dpicker.dateReset);
+            btnDone.click(dpicker.select);
+            $(block).css('text-align', 'right');
+            $(block).html('').append(btnCancel).append(btnDone);
+            $('.b-date .js-date-disabled button').attr('disabled', 'disabled');
+        });
     };
     function changeWorkWeekDay(day) {
         var todayWeekDay = day.getDay() == 0 ? 7 : day.getDay();
@@ -171,8 +171,6 @@ angular
     schedule.openedCell = '';
     schedule.defaultInfoTextEmptySchedule = 'Для просмотра расписания выберите хотя бы один Доступный ресурс.';
     schedule.infoTextEmptySchedule = schedule.defaultInfoTextEmptySchedule;
-    schedule.textError = '';
-    schedule.textInfo = '';
     schedule.maxHeightHead = 0;
     schedule.xScrollbar = '';
     schedule.yScrollbar = '';
@@ -326,10 +324,10 @@ angular
                 schedule.openedCell.isOpenPopup = false;
             }
         }
-        schedule.openedCell = cell;
         cell.target = target;
         cell.parent = self.currentTarget;
         cell.recordUser = recordUser;
+        schedule.openedCell = cell;
         schedule.dataPopup.isViewMenu = true;
         schedule.dataPopup.isViewUser = false;
         schedule.dataPopup.isViewConfirmCancel = false;
@@ -351,6 +349,7 @@ angular
     };
     function renderList() {
         var options = DataService.get('listOption');
+        var listShedule = [];
         var today = new Date();
         schedule.heightHead = '';
         schedule.infoTextEmptySchedule = schedule.defaultInfoTextEmptySchedule;
@@ -490,6 +489,7 @@ angular
         var cell = {
             isOpenPopup: false,
             isRecord: false,
+            popupPlacement: 'right',
             date: 0,
             time: time,
             hour: new Date(time).getHours(),

@@ -5,6 +5,7 @@ angular
 	.service('ScheduleService', function ScheduleService(DataService) {
 		let self = this;
 
+		// сортировка интервалов
 		self.sortScheduleCells = function(a, b) {
 			if (a.hour < b.hour) return -1;
 			else if (a.hour > b.hour) return 1;
@@ -15,6 +16,7 @@ angular
 			return 0;
 		}
 
+		// сортировка отображаемх ДР в сетке (столбцов)
 		self.sortScheduleColumn = function(a, b) {
 			var nameA = a.name.toUpperCase();
 			var nameB = b.name.toUpperCase();

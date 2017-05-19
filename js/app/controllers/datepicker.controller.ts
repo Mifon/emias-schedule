@@ -21,6 +21,7 @@ angular
 		dpicker.dt = '';
 		dpicker.options = '';
 
+		// выбор даты
 		dpicker.select = function(str){
 			let option = DataService.get('listOption');
 			option.date = dpicker.dt;
@@ -31,6 +32,7 @@ angular
 			DataService.set('listOption', option);
 			$rootScope.$broadcast('renderSchedule');
 		}
+		// сброс даты при закрытии по "отмена"
 		dpicker.dateReset = function() {
 			let option  = DataService.get('listOption');
 			dpicker.dt  = dpicker.selectedDate;
@@ -40,16 +42,49 @@ angular
 			$rootScope.$broadcast('renderSchedule');
 		}
 
+		// разрешено ли выбрать дату в калдарике (вызывается для каждой даты при открытии)
 		dpicker.disabled = function(date, mode) {
+			// воскресение
 			return ( mode === 'day' && ( date.getDay() === 0 ) );
 		};
 
+		// класс ячейки дня при построении календаря (вызывается для каждой даты при открытии)
+		dpicker.dayClass = function(date, mode) {
+			let timeDate = date.getTime();
+			let now      = new Date().getTime();
+			let strClass = 'b-date__select';
+
+			// на две неделе вперед, проверка на существование расписания на дату
+			if (changeWorkWeekDay(date) && (timeDate > (now - (1000*60*60*24))) && (timeDate < (now + (1000*60*60*24*14)))) {
+				strClass += ' b-date__select-work';
+			}
+
+			// для прошедших дат
+			if (timeDate < (now - (1000*60*60*24))) {
+				strClass += ' before-today js-date-disabled';
+			// даты после двух недель
+			} else if (timeDate > (now + (1000*60*60*24*14))) {
+				strClass += ' after-two-week js-date-disabled';
+			} else {
+				strClass += ' js-date-select';
+			}
+
+			// воскресение
+			if (date.getDay() === 0) {
+				strClass += ' disabled-day-off';
+			}
+
+			return strClass;
+		}
+
+		// откртыие календаря
 		dpicker.open = function($event) {
 			if (dpicker.btnDisabled != '') {
 				return false;
 			}
 			dpicker.selectedDate = dpicker.dt;
 			dpicker.status.opened = true;
+			// поанель с кнопками
 			setTimeout(function() {
 				let btnCancel = $('<button type="button" class="btn btn-sm btn-default btn-dpicker">Отменить</button>');
 				let btnDone = $('<button type="button" class="btn btn-sm btn-success btn-dpicker">Ок</button>');
@@ -65,31 +100,7 @@ angular
 			});
 		};
 
-		dpicker.dayClass = function(date, mode) {
-			let timeDate = date.getTime();
-			let now      = new Date().getTime();
-			let strClass = 'b-date__select';
-
-			// на две неделе вперед
-			if (changeWorkWeekDay(date) && (timeDate > (now - (1000*60*60*24))) && (timeDate < (now + (1000*60*60*24*14)))) {
-				strClass += ' b-date__select-work';
-			}
-
-			if (timeDate < (now - (1000*60*60*24))) {
-				strClass += ' before-today js-date-disabled';
-			} else if (timeDate > (now + (1000*60*60*24*14))) {
-				strClass += ' after-two-week js-date-disabled';
-			} else {
-				strClass += ' js-date-select';
-			}
-
-			if (date.getDay() === 0) {
-				strClass += ' disabled-day-off';
-			}
-
-			return strClass;
-		}
-
+		// проверка существования расписания на дату
 		function changeWorkWeekDay(day) {
 			let todayWeekDay = day.getDay()==0 ? 7 : day.getDay();
 			for (var key in dpicker.options.listDr) {
@@ -104,6 +115,7 @@ angular
 		$scope.$on('updateDatepicker', function(){
 			let options = DataService.get('listOption');
 			dpicker.options = options;
+			// есть ли выбранные ДР
 			if (options.listDr && options.listDr.length > 0) {
 				dpicker.btnDisabled = '';
 				dpicker.btnDisabledTitle = '';
