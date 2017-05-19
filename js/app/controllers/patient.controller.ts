@@ -1,11 +1,11 @@
 'use strict';
 
 // блок пациента
-angular.module('root').controller('PatientController', function(dataService) {
+angular.module('root').controller('PatientController', function(DataService) {
 	let patient = this;
 
 	patient.user = '';
-	patient.list = dataService.get('listUser');
+	patient.list = DataService.get('listUser');
 	patient.listRes = '';
 	patient.btnDisabled = 'disabled';
 
@@ -18,7 +18,7 @@ angular.module('root').controller('PatientController', function(dataService) {
 	}
 
 	patient.selectedUser = function(item) {
-		let option = dataService.get('listOption');
+		let option = DataService.get('listOption');
 
 		patient.user = item;
 		patient.btnDisabled = '';
@@ -26,16 +26,16 @@ angular.module('root').controller('PatientController', function(dataService) {
 		patient.inputSearch = '';
 
 		option.user = item;
-		dataService.set('listOption', option);
+		DataService.set('listOption', option);
 	}
 
 	patient.relogUser = function() {
-		let option = dataService.get('listOption');
+		let option = DataService.get('listOption');
 
 		patient.user = '';
 		patient.btnDisabled = 'disabled';
 
 		option.user = '';
-		dataService.set('listOption', option);
+		DataService.set('listOption', option);
 	}
 })

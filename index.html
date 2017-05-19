@@ -133,7 +133,7 @@
 
 
 		<!-- #Блок сетки расписния -->
-		<div class="p-block b-last b-schedule {{schedule.classBlock}}" ng-controller="ScheduleController as schedule">
+		<div class="p-block b-last b-schedule" ng-controller="ScheduleController as schedule">
 			<div class="b-schedule__empty-list" ng-show="!schedule.showList">
 				<div>{{schedule.infoTextEmptySchedule}}</div>
 			</div>
@@ -169,7 +169,7 @@
 							</div>
 						</div>
 						<div class="b-schedule__item-cntnt">
-							<div ng-repeat="cell in item.listCells" class="{{cell.elemClass}}" ng-click="schedule.popupOpen(item, cell, $event)"
+							<div ng-repeat="cell in item.listCells" class="{{cell.elemClass}} {{!cell.isRecord ? 'not-record': ''}}" ng-click="schedule.popupOpen(item, cell, $event)"
 								title="{{cell.title}}"
 								data-date="{{cell.date}}"
 								popover-template="schedule.dataPopup.templateUrl"

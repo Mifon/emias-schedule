@@ -2,7 +2,7 @@
 
 angular
 	.module('root')
-	.controller('DpickerController', function DpickerController($scope, $rootScope, dataService) {
+	.controller('DpickerController', function DpickerController($scope, $rootScope, DataService) {
 		let dpicker = this;
 
 		dpicker.dateOptions = {
@@ -22,21 +22,21 @@ angular
 		dpicker.options = '';
 
 		dpicker.select = function(str){
-			let option = dataService.get('listOption');
+			let option = DataService.get('listOption');
 			option.date = dpicker.dt;
 			if (str != 'change') {
 				dpicker.selectedDate = dpicker.dt;
 				$('.b-date ul.dropdown-menu').remove();
 			}
-			dataService.set('listOption', option);
+			DataService.set('listOption', option);
 			$rootScope.$broadcast('renderSchedule');
 		}
 		dpicker.dateReset = function() {
-			let option  = dataService.get('listOption');
+			let option  = DataService.get('listOption');
 			dpicker.dt  = dpicker.selectedDate;
 			option.date = dpicker.selectedDate;
 			$('.b-date ul.dropdown-menu').remove();
-			dataService.set('listOption', option);
+			DataService.set('listOption', option);
 			$rootScope.$broadcast('renderSchedule');
 		}
 
@@ -75,8 +75,6 @@ angular
 				strClass += ' b-date__select-work';
 			}
 
-			// if (changeWorkWeekDay(date) && (timeDate > (now + (1000*60*60*24*14)) || timeDate < (now - (1000*60*60*24))) {
-				// strClass += ' disabled js-date-disabled';
 			if (timeDate < (now - (1000*60*60*24))) {
 				strClass += ' before-today js-date-disabled';
 			} else if (timeDate > (now + (1000*60*60*24*14))) {
@@ -104,7 +102,7 @@ angular
 
 		// обновление дата пикера и вызов из радительского контроллера
 		$scope.$on('updateDatepicker', function(){
-			let options = dataService.get('listOption');
+			let options = DataService.get('listOption');
 			dpicker.options = options;
 			if (options.listDr && options.listDr.length > 0) {
 				dpicker.btnDisabled = '';

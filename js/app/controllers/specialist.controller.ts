@@ -2,10 +2,10 @@
 
 angular
 	.module('root')
-	.controller('SpecialistController', function SpecialistController($rootScope, dataService) {
+	.controller('SpecialistController', function SpecialistController($rootScope, DataService) {
 		var special = this;
 
-		special.list = dataService.get('listDr');
+		special.list = DataService.get('listDr');
 		special.list.sort(sortSpecialist);
 
 		special.checkAll = function () {
@@ -40,7 +40,7 @@ angular
 		}
 
 		special.selected = function() {
-			let options = dataService.get('listOption');
+			let options = DataService.get('listOption');
 			let selectedDr = [];
 			for (var key in special.list) {
 				if (special.list[key].checked) {
@@ -48,7 +48,7 @@ angular
 				}
 			}
 			options.listDr = selectedDr.length > 0 ? selectedDr : '';
-			dataService.set('options', options);
+			DataService.set('options', options);
 			$rootScope.$broadcast('updateDatepicker');
 		}
 

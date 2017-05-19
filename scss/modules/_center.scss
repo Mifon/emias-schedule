@@ -11,10 +11,7 @@
 	height: calc( 100vh - 52px );
 	background: #fff;
 	position: relative;
-
-	&.emptyBlock {
-		background: #efefef;
-	}
+	background: #efefef;
 }
 .b-schedule__list {
 	height: 100%;

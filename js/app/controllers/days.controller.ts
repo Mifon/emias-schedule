@@ -2,13 +2,13 @@
 
 angular
 	.module('root')
-	.controller('DaysController', function DaysController($scope, $rootScope, dataService) {
-		let options = dataService.get('listOption');
+	.controller('DaysController', function DaysController($scope, $rootScope, DataService) {
+		let options = DataService.get('listOption');
 		$scope.radioModel = options.viewDays;
 		$scope.changeDays = function() {
-			options = dataService.get('listOption');
+			options = DataService.get('listOption');
 			options.viewDays = $scope.radioModel;
-			dataService.set('options', options);
+			DataService.set('options', options);
 			$rootScope.$broadcast('updateDatepicker');
 		}
 	});

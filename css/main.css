@@ -785,9 +785,8 @@ body {
 .b-schedule {
   height: calc( 100vh - 52px );
   background: #fff;
-  position: relative; }
-  .b-schedule.emptyBlock {
-    background: #efefef; }
+  position: relative;
+  background: #efefef; }
 
 .b-schedule__list {
   height: 100%;

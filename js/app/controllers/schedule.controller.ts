@@ -2,12 +2,11 @@
 
 angular
 	.module('root')
-	.controller('ScheduleController', function($scope, $modal, dataService) {
+	.controller('ScheduleController', function($scope, $modal, DataService, ScheduleService) {
 		let schedule = this;
 
 		schedule.showList = false;
 		schedule.list = {};
-		schedule.classBlock = "emptyBlock";
 		schedule.openedCell = '';
 		schedule.defaultInfoTextEmptySchedule = 'Для просмотра расписания выберите хотя бы один Доступный ресурс.';
 		schedule.infoTextEmptySchedule = schedule.defaultInfoTextEmptySchedule;
@@ -38,7 +37,6 @@ angular
 				animation: true,
 				templateUrl: 'modalInfo',
 				windowClass: 'modal-info',
-				// backdrop: false,
 				controller: function($scope, $modalInstance, schedule, text){
 					$scope.modalText = text;
 					setTimeout(function($modalInstance) {
@@ -94,7 +92,7 @@ angular
 				}
 			},
 			createRecord: function(cell, item) {
-				let options = dataService.get('listOption');
+				let options = DataService.get('listOption');
 				let dataRecord = {idUser:0, time:0, user:{}, dateRecord:0};
 
 				if (!ckeckAllowedCreateRecord(cell, item, options)) {
@@ -115,13 +113,13 @@ angular
 					}
 				}
 
-				dataService.set('listOption', options);
+				DataService.set('listOption', options);
 				renderList();
 				schedule.openModalOk();
 			},
 			deleteRecord: function(cell, item) {
-				let options = dataService.get('listOption');
-				if (!ckeckAllowedDeleteRecord(cell, item)) {
+				let options = DataService.get('listOption');
+				if (!ScheduleService.ckeckAllowedDeleteRecord(cell, item)) {
 					return false;
 				}
 
@@ -137,7 +135,7 @@ angular
 					}
 				}
 
-				dataService.set('listOption', options);
+				DataService.set('listOption', options);
 				renderList();
 			},
 			confirmDeleteRecord: function(cell, item) {
@@ -157,7 +155,7 @@ angular
 		};
 
 		schedule.popupOpen = function(item, cell, self) {
-			let options = dataService.get('listOption');
+			let options = DataService.get('listOption');
 			let elemCell = self.currentTarget;
 			let target = self.target;
 			let recordUser = {doctorName:'', doctorRoom:'', surname:'', name:'', patron:''};
@@ -197,8 +195,8 @@ angular
 				schedule.dataPopup.title = 'Выбран интервал времени';
 				schedule.dataPopup.isIconUser = false;
 				schedule.dataPopup.time = cell.label + ' - ';
-				schedule.dataPopup.time += addZIONTime(new Date(cell.time + (item.stepSchedule*1000)).getHours()) + ':';
-				schedule.dataPopup.time += addZIONTime(new Date(cell.time + (item.stepSchedule*1000)).getMinutes());
+				schedule.dataPopup.time += ScheduleService.addZIONTime(new Date(cell.time + (item.stepSchedule*1000)).getHours()) + ':';
+				schedule.dataPopup.time += ScheduleService.addZIONTime(new Date(cell.time + (item.stepSchedule*1000)).getMinutes());
 			} else {
 				schedule.dataPopup.title = recordUser.surname + ' ' + recordUser.name.charAt(0) + '.' + recordUser.patron.charAt(0) + '.';
 				schedule.dataPopup.time = '';
@@ -207,12 +205,12 @@ angular
 
 			// Проверка на доступность записи на выбранный интервал
 			schedule.dataPopup.btnCreateRecord.isView = ckeckAllowedCreateRecord(cell, item, options);
-			schedule.dataPopup.btnDeleteRecord.isView = ckeckAllowedDeleteRecord(cell, item);
+			schedule.dataPopup.btnDeleteRecord.isView = ScheduleService.ckeckAllowedDeleteRecord(cell, item);
 			schedule.dataPopup.btnViewRecord.isView = (cell.recordUser.name != '');
 		}
 
 		function renderList() {
-			let options = dataService.get('listOption');
+			let options = DataService.get('listOption');
 			let today = new Date();
 			schedule.heightHead = '';
 			schedule.infoTextEmptySchedule = schedule.defaultInfoTextEmptySchedule;
@@ -240,115 +238,34 @@ angular
 					}
 
 					// забивка данных из специалиста в итем (если так не делать то из за хеша ангулара выходит дублирование данных)
-					item = dataItemFromSpectialist(item, specialist);
+					item = ScheduleService.dataItemFromSpectialist(item, specialist);
 					item.listCells = [];
-					item.timeWorking = getTimeWorcking(item);
+					item.timeWorking = ScheduleService.getTimeWorcking(item);
 					item.dateDay = day;
 
-					// список ячеек таблицы
+					// построение списока интервалов таблицы
 					setColumnList(item, day);
 
-					item.listCells.sort(sortScheduleCells);
-					item.listQuotsWorking.sort(sortQuotsWorking);
+					item.listCells.sort(ScheduleService.sortScheduleCells);
+					item.listQuotsWorking.sort(ScheduleService.sortQuotsWorking);
+
 					schedule.list.push(item);
 				}
 			}
 
-			schedule.list.sort(sortScheduleColumn);
+			schedule.list.sort(ScheduleService.sortScheduleColumn);
 
+			// задаем ширину блока расписания
 			$('.b-schedule__list-content').css('width', (161*schedule.list.length)+'px');
 
 			schedule.showList = schedule.list && schedule.list.length > 0;
 
+			// фиксирование началных данных по сетке расписания для скроллинга
 			schedule.xScrollbar = $('.b-schedule__list .ps-scrollbar-x-rail');
 			schedule.yScrollbar = $('.b-schedule__list .ps-scrollbar-y-rail');
 			setTimeout(function() {
 				maxScheduleHeader();
 			});
-		}
-
-		function sortScheduleCells(a, b) {
-			if (a.hour < b.hour) return -1;
-			else if (a.hour > b.hour) return 1;
-
-			if (a.minute < b.minute) return -1;
-			else if (a.minute > b.minute) return 1;
-
-			return 0;
-		}
-		function sortScheduleColumn(a, b) {
-			var nameA = a.name.toUpperCase();
-			var nameB = b.name.toUpperCase();
-			var specialtyA = a.specialty.toUpperCase();
-			var specialtyB = b.specialty.toUpperCase();
-
-			if (a.dateDay < b.dateDay) return -1;
-			else if (a.dateDay > b.dateDay) return 1;
-
-			if (nameA < nameB) return -1;
-			else if (nameA > nameB) return 1;
-
-			if (specialtyA < specialtyB) return -1;
-			else if (specialtyA > specialtyB) return 1;
-
-			if (a.start < b.start) return -1;
-			else if (a.start > b.start) return 1;
-
-			return 0;
-		}
-		function sortQuotsWorking(a, b) {
-			return (a.start < b.start) ? -1 : (a.start > b.start ? 1 : 0);
-		}
-
-		function getTimeWorcking(spec) {
-			let strTime = '';
-			let start   = (spec.start*1000)+( new Date((spec.start*1000)).getTimezoneOffset()*60*1000 );
-			let end     = (spec.end*1000)+( new Date((spec.end*1000)).getTimezoneOffset()*60*1000 );
-			let startHour   = new Date(start).getHours();
-			let startMinute = new Date(start).getMinutes();
-			let endHour   = new Date(end).getHours();
-			let endMinute = new Date(end).getMinutes();
-
-			strTime += addZIONTime(startHour);
-			strTime += ':'+addZIONTime(startMinute);
-			strTime += '-'+addZIONTime(endHour);
-			strTime += ':'+addZIONTime(endMinute);
-
-			return strTime;
-		}
-		function addZIONTime(time) { // addZeroIfOneNumTime
-			return time < 10 ? '0' + time : time;
-		}
-		function dataItemFromSpectialist(item, specialist) {
-			for (var elem in specialist) {
-				if (elem.charAt(0) == '$') continue;
-				if (elem == 'quots') {
-					if (specialist[elem].length < 0) continue;
-					let qElem = [];
-					for (var kQElem = specialist[elem].length - 1; kQElem >= 0; kQElem--) {
-						let qElem2 = {};
-						for (var kQElem2 in specialist[elem][kQElem]) {
-							qElem2[kQElem2] = specialist[elem][kQElem][kQElem2];
-						}
-						qElem.push(qElem2);
-					}
-					item[elem] = qElem;
-				} else if (elem == 'listRecords') {
-					if (specialist[elem].length < 0) continue;
-					let qElem = [];
-					for (var kQElem = specialist[elem].length - 1; kQElem >= 0; kQElem--) {
-						let qElem2 = {};
-						for (var kQElem2 in specialist[elem][kQElem]) {
-							qElem2[kQElem2] = specialist[elem][kQElem][kQElem2];
-						}
-						qElem.push(qElem2);
-					}
-					item[elem] = qElem;
-				} else {
-					item[elem] = specialist[elem];
-				}
-			}
-			return item;
 		}
 
 		function addToViewColimnList(listQuotaCell, item, day) {
@@ -357,26 +274,13 @@ angular
 				setCellData(step, step.time, item, day);
 			}
 		}
-		// есть ли записи на время
-		function getRecordToStep(item, day, time){
-			let records = [];
-			for (var kRec in item.listRecords) {
-				let date = new Date(day);
-				let timeI = (time*1000)+( new Date((time*1000)).getTimezoneOffset()*60*1000 );
-				timeI = date.setHours(new Date(timeI).getHours(), new Date(timeI).getMinutes(), 0, 0);
 
-				if (timeI/1000 == item.listRecords[kRec].dateRecord) {
-					records.push(item.listRecords[kRec]);
-				}
-			}
-			return records;
-		}
 		// правила создания ячеек таблицы
 		function setColumnList(item, day){
 			let todayWeekDay = day.getDay()==0 ? 7 : day.getDay();
 			let listQuotaCell = [];
 			let listEmptyStep = [];
-			let tempQuota = {name:'', start:0, end:0};
+			let tempQuota = {name:'', start:0, end:0, time:0};
 
 			for (var i = item.start; i < item.end; i+=item.stepSchedule) {
 
@@ -396,11 +300,12 @@ angular
 
 							if (tempQuota.name == quota.name || tempQuota.name == '') {
 								// есть ли записи в квоте
-								if ( getRecordToStep(item, day, i).length > 0) {
-									listQuotaCell.push({name:'Запись на прием', time:i, styleClass:'not-record'});
+								if (ScheduleService.getRecordToStep(item, day, i).length > 0) {
+									listQuotaCell.push({name:'Запись на прием', time:i, isRecord:false});
 								}
 							} else {
-								listQuotaCell.push({name:tempQuota.name, time:i-1});
+								tempQuota.time = i-1; // интервал квоты на секунду меньше для корректной сортировки
+								listQuotaCell.push(tempQuota);
 								addToViewColimnList(listQuotaCell, item, day);
 								listQuotaCell = [];
 							}
@@ -414,14 +319,16 @@ angular
 							if (tempQuota.name != quota.name && tempQuota.name != '') {
 								setCellData({name:tempQuota.name}, tempQuota.start, item, day);
 								if (listQuotaCell.length > 0) {
-									listQuotaCell.push({name:tempQuota.name, time:i-1});
+									tempQuota.time = i-1; // интервал квоты на секунду меньше для корректной сортировки
+									listQuotaCell.push(tempQuota);
 									addToViewColimnList(listQuotaCell, item, day);
 								}
 								tempQuota = quota;
 								listQuotaCell = [];
 							}
 							if (i >= quota.start && i < quota.end) {
-								listQ.push({name:quota.name, time:i});
+								quota.time = i;
+								listQ.push(quota);
 							}
 							tempQuota = quota;
 							listEmptyStep = [];
@@ -438,13 +345,13 @@ angular
 						tempQuota.name = 'Нет записи';
 						if (listEmptyStep.length < 1) {
 							tempQuota.start = i;
-							listEmptyStep.push({name:'Нет записи', time:i});
+							listEmptyStep.push({name:'Нет записи', time:i, isRecord:false});
 						}
 						tempQuota.end = i+item.stepSchedule;
 					}
 					// есть ли записи в квоте
-					if ( getRecordToStep(item, day, i).length > 0) {
-						listQuotaCell.push({name:'Запись на прием', time:i, styleClass:'not-record'});
+					if (ScheduleService.getRecordToStep(item, day, i).length > 0) {
+						listQuotaCell.push({name:'Запись на прием', time:i, isRecord:false});
 					}
 				}
 
@@ -465,13 +372,13 @@ angular
 				setCellData({name:tempQuota.name}, tempQuota.end, item, day);
 			}
 
-			// Задаем промижутки квот для шапки столбца
+			// Задаем промежутки квот для шапки столбца
 			for (var k in item.quots) {
 				if (item.quots[k].listDaysWeek && item.quots[k].listDaysWeek.indexOf(todayWeekDay) < 0) {
 					continue;
 				}
 				if (item.quots[k].name != 'Запись на прием') {
-					item.quots[k].labelTime = getTimeWorcking(item.quots[k]);
+					item.quots[k].labelTime = ScheduleService.getTimeWorcking(item.quots[k]);
 					item.listQuotsWorking.push(item.quots[k]);
 				}
 			}
@@ -482,6 +389,7 @@ angular
 			let date = new Date(day);
 			let cell = {
 				isOpenPopup: false,
+				isRecord: false,
 				date: 0,
 				time: time,
 				hour: new Date(time).getHours(),
@@ -497,7 +405,7 @@ angular
 			cell.date = date.getTime()/1000;
 
 			if (qoute.name == 'Запись на прием') {
-				cell.label = addZIONTime(cell.hour) + ':' + addZIONTime(cell.minute);
+				cell.label = ScheduleService.addZIONTime(cell.hour) + ':' + ScheduleService.addZIONTime(cell.minute);
 
 				if (item.listRecords) {
 					for (var kRec in item.listRecords) {
@@ -514,8 +422,8 @@ angular
 				if (cell.records.length > 0) {
 					cell.elemClass += ' b-schedule__item-record-true';
 				}
-				if (qoute.styleClass) {
-					cell.elemClass += ' ' + qoute.styleClass;
+				if (qoute.isRecord) {
+					cell.isRecord = qoute.isRecord;
 				}
 			} else {
 				cell.label = qoute.name;
@@ -528,13 +436,15 @@ angular
 		// Проверка на доступность записи на выбранный интервал
 		function ckeckAllowedCreateRecord(cell, item, options) {
 			let now = new Date().getTime()/1000;
-			if (cell.date && (now+item.stepSchedule) > cell.date) {
+			// интервал в пределах шага от сейчас - запись запрещена
+			if ((cell.date && (now+item.stepSchedule) > cell.date) || !cell.isRecord) {
 				schedule.openModalinfo('Интервал не доступен для записи');
 				return false;
 			}
 			if (options.user == '') {
 				return false;
 			}
+			// если выбранный пациент уже записат или если записанных 2
 			if (cell.records) {
 				if (cell.records.length > 1) {
 					return false;
@@ -548,17 +458,8 @@ angular
 			}
 			return true;
 		}
-		// Проверка на доступность отмены в выбранный интервал
-		function ckeckAllowedDeleteRecord(cell, item) {
-			let now = new Date().getTime()/1000;
-			if (cell.date && (now+item.stepSchedule) > cell.date) {
-				return false;
-			}
-			if (cell.recordUser && cell.recordUser.name == '') {
-				return false;
-			}
-			return true;
-		}
+
+		// фиксирование начальных данных для скроллинга
 		function maxScheduleHeader() {
 			let maxHeader = Math.max.apply(Math, $(".b-schedule__item-head-cnt").map(function(){
 				return $(this).outerHeight()
