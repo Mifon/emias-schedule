@@ -275,10 +275,9 @@ angular
 		}
 
 		function addToViewColumnList(listQuotaCell, item, day) {
-			for (var k in listQuotaCell) {
-				let step = listQuotaCell[k];
-				setCellData(step, step.time, item, day);
-			}
+			listQuotaCell.forEach(cell => {
+				setCellData(cell.step, cell.step.time, item, day);
+			});
 		}
 
 		// правила создания ячеек таблицы
