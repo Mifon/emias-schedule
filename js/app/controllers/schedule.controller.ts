@@ -275,7 +275,7 @@ angular
 			});
 		}
 
-		function addToViewColimnList(listQuotaCell, item, day) {
+		function addToViewColumnList(listQuotaCell, item, day) {
 			for (var k in listQuotaCell) {
 				let step = listQuotaCell[k];
 				setCellData(step, step.time, item, day);
@@ -301,19 +301,20 @@ angular
 
 					if (quota.name != 'Запись на прием') {
 						// входит ли интервал в квоту и перекрывает ли квота интервал
-						if (	(i >= quota.start && i < quota.end) ||
-								(i < quota.start && quota.start < (i + (item.stepSchedule*0.8)))
+						if ((i >= quota.start && i < quota.end) ||
+							(i < quota.start && quota.start < (i + (item.stepSchedule*0.8)))
 							) {
-
 							if (tempQuota.name == quota.name || tempQuota.name == '') {
 								// есть ли записи в квоте
 								if (ScheduleService.getRecordToStep(item, day, i).length > 0) {
 									listQuotaCell.push({name:'Запись на прием', time:i, isRecord:false});
 								}
 							} else {
-								tempQuota.time = i-1; // интервал квоты на секунду меньше для корректной сортировки
-								listQuotaCell.push(tempQuota);
-								addToViewColimnList(listQuotaCell, item, day);
+								if (tempQuota.name != 'Запись на прием') {
+									tempQuota.time = i-1; // интервал квоты на секунду меньше для корректной сортировки
+									listQuotaCell.push(tempQuota);
+								}
+								addToViewColumnList(listQuotaCell, item, day);
 								listQuotaCell = [];
 							}
 							tempQuota = quota;
@@ -328,7 +329,7 @@ angular
 								if (listQuotaCell.length > 0) {
 									tempQuota.time = i-1; // интервал квоты на секунду меньше для корректной сортировки
 									listQuotaCell.push(tempQuota);
-									addToViewColimnList(listQuotaCell, item, day);
+									addToViewColumnList(listQuotaCell, item, day);
 								}
 								tempQuota = quota;
 								listQuotaCell = [];
@@ -364,7 +365,7 @@ angular
 
 				// если интервал для записи - выводим
 				if (listQ.length > 0 && listQuotaCell.length < 1) {
-					addToViewColimnList(listQ, item, day);
+					addToViewColumnList(listQ, item, day);
 				}
 
 			}
@@ -373,7 +374,7 @@ angular
 			if (listQuotaCell.length > 0) {
 				setCellData({name:tempQuota.name}, tempQuota.start, item, day);
 				listQuotaCell.push({name:tempQuota.name, time:i});
-				addToViewColimnList(listQuotaCell, item, day);
+				addToViewColumnList(listQuotaCell, item, day);
 			// последние интервалы были запрещающей квоте, выводим
 			} else if (tempQuota.name != 'Запись на прием' && tempQuota.name != 'Нет записи') {
 				setCellData({name:tempQuota.name}, tempQuota.end, item, day);
@@ -445,7 +446,7 @@ angular
 		function ckeckAllowedCreateRecord(cell, item, options) {
 			let now = new Date().getTime()/1000;
 			// интервал в пределах шага от сейчас - запись запрещена
-			if ((cell.date && (now+item.stepSchedule) > cell.date) || !cell.isRecord) {
+			if ((cell.date && (now+item.stepSchedule) > cell.date) || cell.isRecord) {
 				schedule.openModalinfo('Интервал не доступен для записи');
 				return false;
 			}

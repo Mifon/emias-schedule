@@ -42,11 +42,11 @@ angular
 		special.selected = function() {
 			let options = DataService.get('listOption');
 			let selectedDr = [];
-			for (var key in special.list) {
-				if (special.list[key].checked) {
-					selectedDr.push(special.list[key]);
+			special.list.forEach(specialist => {
+				if (specialist.checked) {
+					selectedDr.push(specialist);
 				}
-			}
+			});
 			options.listDr = selectedDr.length > 0 ? selectedDr : '';
 			DataService.set('options', options);
 			$rootScope.$broadcast('updateDatepicker');

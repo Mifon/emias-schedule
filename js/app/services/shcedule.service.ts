@@ -2,7 +2,7 @@
 
 angular
 	.module('root')
-	.service('ScheduleService', function ScheduleService(DataService) {
+	.service('ScheduleService', function ScheduleService(DataService, $filter) {
 		let self = this;
 
 		// сортировка интервалов
@@ -46,21 +46,12 @@ angular
 			return time < 10 ? '0' + time : time;
 		}
 
+		// вывод времени в виде 00:00 - 00:00
 		self.getTimeWorcking = function(spec) {
-			let strTime = '';
 			let start   = (spec.start*1000)+( new Date((spec.start*1000)).getTimezoneOffset()*60*1000 );
 			let end     = (spec.end*1000)+( new Date((spec.end*1000)).getTimezoneOffset()*60*1000 );
-			let startHour   = new Date(start).getHours();
-			let startMinute = new Date(start).getMinutes();
-			let endHour   = new Date(end).getHours();
-			let endMinute = new Date(end).getMinutes();
 
-			strTime += self.addZIONTime(startHour);
-			strTime += ':'+self.addZIONTime(startMinute);
-			strTime += '-'+self.addZIONTime(endHour);
-			strTime += ':'+self.addZIONTime(endMinute);
-
-			return strTime;
+			return $filter('date')(start,'HH:mm') + '-' + $filter('date')(end,'HH:mm');
 		}
 
 		self.dataItemFromSpectialist = function(item, specialist) {

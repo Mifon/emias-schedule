@@ -387,7 +387,7 @@ angular
             maxScheduleHeader();
         });
     }
-    function addToViewColimnList(listQuotaCell, item, day) {
+    function addToViewColumnList(listQuotaCell, item, day) {
         for (var k in listQuotaCell) {
             var step = listQuotaCell[k];
             setCellData(step, step.time, item, day);
@@ -414,9 +414,11 @@ angular
                             }
                         }
                         else {
-                            tempQuota.time = i - 1;
-                            listQuotaCell.push(tempQuota);
-                            addToViewColimnList(listQuotaCell, item, day);
+                            if (tempQuota.name != 'Запись на прием') {
+                                tempQuota.time = i - 1;
+                                listQuotaCell.push(tempQuota);
+                            }
+                            addToViewColumnList(listQuotaCell, item, day);
                             listQuotaCell = [];
                         }
                         tempQuota = quota;
@@ -432,7 +434,7 @@ angular
                             if (listQuotaCell.length > 0) {
                                 tempQuota.time = i - 1;
                                 listQuotaCell.push(tempQuota);
-                                addToViewColimnList(listQuotaCell, item, day);
+                                addToViewColumnList(listQuotaCell, item, day);
                             }
                             tempQuota = quota;
                             listQuotaCell = [];
@@ -461,13 +463,13 @@ angular
                 }
             }
             if (listQ.length > 0 && listQuotaCell.length < 1) {
-                addToViewColimnList(listQ, item, day);
+                addToViewColumnList(listQ, item, day);
             }
         }
         if (listQuotaCell.length > 0) {
             setCellData({ name: tempQuota.name }, tempQuota.start, item, day);
             listQuotaCell.push({ name: tempQuota.name, time: i });
-            addToViewColimnList(listQuotaCell, item, day);
+            addToViewColumnList(listQuotaCell, item, day);
         }
         else if (tempQuota.name != 'Запись на прием' && tempQuota.name != 'Нет записи') {
             setCellData({ name: tempQuota.name }, tempQuota.end, item, day);
@@ -531,7 +533,7 @@ angular
     }
     function ckeckAllowedCreateRecord(cell, item, options) {
         var now = new Date().getTime() / 1000;
-        if ((cell.date && (now + item.stepSchedule) > cell.date) || !cell.isRecord) {
+        if ((cell.date && (now + item.stepSchedule) > cell.date) || cell.isRecord) {
             schedule.openModalinfo('Интервал не доступен для записи');
             return false;
         }
@@ -670,11 +672,11 @@ angular
     special.selected = function () {
         var options = DataService.get('listOption');
         var selectedDr = [];
-        for (var key in special.list) {
-            if (special.list[key].checked) {
-                selectedDr.push(special.list[key]);
+        special.list.forEach(function (specialist) {
+            if (specialist.checked) {
+                selectedDr.push(specialist);
             }
-        }
+        });
         options.listDr = selectedDr.length > 0 ? selectedDr : '';
         DataService.set('options', options);
         $rootScope.$broadcast('updateDatepicker');
@@ -755,12 +757,7 @@ angular
                     dateRecord: dateNow + (60 * 60 * 10) + (60 * 30),
                     time: (60 * 60 * 10) + (60 * 30),
                     user: { id: 3, name: 'Петр', surname: 'Петров', patron: 'Петрович', dateBD: '01.01.1990', numPolicOMS: 3333333333333333 },
-                }, {
-                    idUser: 4,
-                    dateRecord: monday + (60 * 60 * 14) + (60 * 30),
-                    time: (60 * 60 * 14) + (60 * 30),
-                    user: { id: 4, name: 'Сергей', surname: 'Сергеев', patron: 'Сергеевич', dateBD: '02.02.2002', numPolicOMS: 4444444444444444 },
-                }
+                },
             ],
             checked: false
         },
@@ -788,12 +785,7 @@ angular
                     dateRecord: monday + (60 * 60 * 12),
                     time: (60 * 60 * 12),
                     user: { id: 4, name: 'Сергей', surname: 'Сергеев', patron: 'Сергеевич', dateBD: '02.02.2002', numPolicOMS: 4444444444444444 },
-                }, {
-                    idUser: 4,
-                    dateRecord: monday + (60 * 60 * 10),
-                    time: (60 * 60 * 10),
-                    user: { id: 4, name: 'Сергей', surname: 'Сергеев222', patron: 'Сергеевич', dateBD: '02.02.2002', numPolicOMS: 4444444444444444 },
-                }
+                },
             ],
             checked: false
         },
@@ -836,18 +828,7 @@ angular
                 { name: 'Работа с документами', start: (60 * 60 * 14 + (60 * 30)), end: (60 * 60 * 14 + (60 * 55)), isRecord: false },
                 { name: 'Работа с документами', start: (60 * 60 * 16 + (60 * 20)), end: (60 * 60 * 16 + (60 * 40)), isRecord: false },
             ],
-            listRecords: [{
-                    idUser: 4,
-                    dateRecord: monday + (60 * 60 * 16) + (60 * 30),
-                    time: (60 * 60 * 16) + (60 * 30),
-                    user: { id: 4, name: 'Сергей', surname: 'Сергеев', patron: 'Сергеевич', dateBD: '02.02.2002', numPolicOMS: 4444444444444444 },
-                },
-                {
-                    idUser: 4,
-                    dateRecord: monday + (60 * 60 * 8) + (60 * 30),
-                    time: (60 * 60 * 16) + (60 * 30),
-                    user: { id: 4, name: 'Сергей', surname: 'Сергеев', patron: 'Сергеевич', dateBD: '02.02.2002', numPolicOMS: 4444444444444444 },
-                }],
+            listRecords: [],
             checked: false
         },
         {
@@ -880,7 +861,7 @@ angular
 });
 angular
     .module('root')
-    .service('ScheduleService', function ScheduleService(DataService) {
+    .service('ScheduleService', function ScheduleService(DataService, $filter) {
     var self = this;
     self.sortScheduleCells = function (a, b) {
         if (a.hour < b.hour)
@@ -923,18 +904,9 @@ angular
         return time < 10 ? '0' + time : time;
     };
     self.getTimeWorcking = function (spec) {
-        var strTime = '';
         var start = (spec.start * 1000) + (new Date((spec.start * 1000)).getTimezoneOffset() * 60 * 1000);
         var end = (spec.end * 1000) + (new Date((spec.end * 1000)).getTimezoneOffset() * 60 * 1000);
-        var startHour = new Date(start).getHours();
-        var startMinute = new Date(start).getMinutes();
-        var endHour = new Date(end).getHours();
-        var endMinute = new Date(end).getMinutes();
-        strTime += self.addZIONTime(startHour);
-        strTime += ':' + self.addZIONTime(startMinute);
-        strTime += '-' + self.addZIONTime(endHour);
-        strTime += ':' + self.addZIONTime(endMinute);
-        return strTime;
+        return $filter('date')(start, 'HH:mm') + '-' + $filter('date')(end, 'HH:mm');
     };
     self.dataItemFromSpectialist = function (item, specialist) {
         for (var elem in specialist) {
