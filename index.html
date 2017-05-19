@@ -4,9 +4,9 @@
 <head>
 	<title>ЕМИАС</title>
 	<meta charset="utf-8">
-	<link rel="stylesheet" href="css/bootstrap.css" type="text/css">
-	<link rel="stylesheet" href="css/perfect-scrollbar.min.css" type="text/css">
-	<link rel="stylesheet" href="css/main.css" type="text/css">
+	<link rel="stylesheet" href="assets/css/bootstrap.css" type="text/css">
+	<link rel="stylesheet" href="assets/css/perfect-scrollbar.min.css" type="text/css">
+	<link rel="stylesheet" href="assets/css/main.css" type="text/css">
 </head>
 
 <body ng-app="root">
@@ -61,18 +61,10 @@
 			<div class="b-cntnt">
 				<label for=""></label>
 				<div class="input-group calendar-cont">
-					<input type="text" class="form-control" placeholder="ДД.ММ.ГГГГ"
-						ng-change="dpicker.select('change')"
-						datepicker-popup="{{dpicker.format}}"
-						ng-model="dpicker.dt"
-						is-open="dpicker.status.opened"
-						min-date="dpicker.minDate"
-						datepicker-options="dpicker.dateOptions"
-						date-disabled="dpicker.disabled(date, mode)"
-						ng-required="true"
-						custom-class="dpicker.dayClass(date, mode)"
-						close-on-date-selection="false"
-						close-text="Ok" />
+					<input type="text" class="form-control" placeholder="ДД.ММ.ГГГГ" ng-change="dpicker.select('change')" datepicker-popup="{{dpicker.format}}"
+					 ng-model="dpicker.dt" is-open="dpicker.status.opened" min-date="dpicker.minDate" datepicker-options="dpicker.dateOptions"
+					 date-disabled="dpicker.disabled(date, mode)" ng-required="true" custom-class="dpicker.dayClass(date, mode)" close-on-date-selection="false"
+					 close-text="Ok" />
 					<div id="split-button" class="btn input-group-addon {{dpicker.btnDisabled}}" ng-click="dpicker.open($event)" title="{{dpicker.btnDisabledTitle}}">
 						<span class="glyphicon glyphicon-calendar"></span>
 						<span class="caret"></span>
@@ -170,15 +162,11 @@
 						</div>
 						<div class="b-schedule__item-cntnt">
 							<div ng-repeat="cell in item.listCells" class="{{cell.elemClass}} {{!cell.isRecord ? 'not-record': ''}}" ng-click="schedule.popupOpen(item, cell, $event)"
-								ng-model="schedule.tooltip"
-								title="{{cell.title}}"
-								data-date="{{cell.date}}"
-								popover-template="schedule.dataPopup.templateUrl"
-								popover-animation="false"
-								popover-trigger="{{cell.isPopup ? 'click' : 'none'}}"
-								popover-is-open="cell.isOpenPopup"
-								popover-placement="{{cell.popupPlacement}}">
-								<label>{{cell.label}}</label><!-- popover-template="dynamicPopover.templateUrl" -->
+							 ng-model="schedule.tooltip" title="{{cell.title}}" data-date="{{cell.date}}" popover-template="schedule.dataPopup.templateUrl"
+							 popover-animation="false" popover-trigger="{{cell.isPopup ? 'click' : 'none'}}" popover-is-open="cell.isOpenPopup"
+							 popover-placement="{{cell.popupPlacement}}">
+								<label>{{cell.label}}</label>
+								<!-- popover-template="dynamicPopover.templateUrl" -->
 								<span class="b-schedule__item-cntnt-record" ng-repeat="record in cell.records" data-dateid="{{record.dateRecord + '_' + record.idUser}}">
 									{{record.user.surname}} {{record.user.name.charAt(0)}}.{{record.user.patron.charAt(0)}}.
 								</span>
@@ -257,7 +245,7 @@
 					<div class="modal-ok-box__body"></div>
 				</div>
 				<!-- <img src="img/modal-ok.png" alt=""> -->
-		        <!-- <div class="modal-header">
+				<!-- <div class="modal-header">
 		            <h3 class="modal-title">Запись создана</h3>
 		        </div>
 		        <div class="modal-body">
@@ -272,12 +260,12 @@
 		            <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
 		            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
 		        </div> -->
-		    </script>
-		    <script type="text/ng-template" id="modalInfo">
-		    	<div class="modal-body">
-		    		{{modalText}}
-		        </div>
-		    </script>
+			</script>
+			<script type="text/ng-template" id="modalInfo">
+				<div class="modal-body">
+					{{modalText}}
+				</div>
+			</script>
 
 			<div id="schedulePopover" class="s-popover" style="display:none;"></div>
 		</div>
@@ -286,13 +274,13 @@
 	</div>
 
 
-	<script type="text/javascript" src="js/jquery/jquery.min.js"></script>
-	<script type="text/javascript" src="js/angular.js"></script>
-	<script type="text/javascript" src="js/angular-locale_ru-ru.js"></script>
-	<script type="text/javascript" src="js/angular-route.js"></script>
-	<script type="text/javascript" src="js/perfect-scrollbar.js"></script>
-	<script type="text/javascript" src="js/ui-bootstrap-tpls-0.13.4.min.js"></script>
-	<script type="text/javascript" src="js/app.js"></script>
+	<script type="text/javascript" src="assets/js/jquery/jquery.min.js"></script>
+	<script type="text/javascript" src="assets/js/angular.js"></script>
+	<script type="text/javascript" src="assets/js/angular-locale_ru-ru.js"></script>
+	<script type="text/javascript" src="assets/js/angular-route.js"></script>
+	<script type="text/javascript" src="assets/js/perfect-scrollbar.js"></script>
+	<script type="text/javascript" src="assets/js/ui-bootstrap-tpls-0.13.4.min.js"></script>
+	<script type="text/javascript" src="assets/js/app.js"></script>
 
 </body>
 

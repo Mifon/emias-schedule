@@ -6,7 +6,7 @@ angular
 		let self = this;
 
 		// сортировка интервалов
-		self.sortScheduleCells = function(a, b) {
+		self.sortScheduleCells = function (a, b) {
 			if (a.hour < b.hour) return -1;
 			else if (a.hour > b.hour) return 1;
 
@@ -17,7 +17,7 @@ angular
 		}
 
 		// сортировка отображаемх ДР в сетке (столбцов)
-		self.sortScheduleColumn = function(a, b) {
+		self.sortScheduleColumn = function (a, b) {
 			var nameA = a.name.toUpperCase();
 			var nameB = b.name.toUpperCase();
 			var specialtyA = a.specialty.toUpperCase();
@@ -38,23 +38,23 @@ angular
 			return 0;
 		}
 
-		self.sortQuotsWorking = function(a, b) {
+		self.sortQuotsWorking = function (a, b) {
 			return (a.start < b.start) ? -1 : (a.start > b.start ? 1 : 0);
 		}
 
-		self.addZIONTime = function(time) { // addZeroIfOneNumTime
+		self.addZIONTime = function (time) { // addZeroIfOneNumTime
 			return time < 10 ? '0' + time : time;
 		}
 
 		// вывод времени в виде 00:00 - 00:00
-		self.getTimeWorcking = function(spec) {
-			let start   = (spec.start*1000)+( new Date((spec.start*1000)).getTimezoneOffset()*60*1000 );
-			let end     = (spec.end*1000)+( new Date((spec.end*1000)).getTimezoneOffset()*60*1000 );
+		self.getTimeWorcking = function (spec) {
+			let start = (spec.start * 1000) + (new Date((spec.start * 1000)).getTimezoneOffset() * 60 * 1000);
+			let end = (spec.end * 1000) + (new Date((spec.end * 1000)).getTimezoneOffset() * 60 * 1000);
 
-			return $filter('date')(start,'HH:mm') + '-' + $filter('date')(end,'HH:mm');
+			return $filter('date')(start, 'HH:mm') + '-' + $filter('date')(end, 'HH:mm');
 		}
 
-		self.dataItemFromSpectialist = function(item, specialist) {
+		self.dataItemFromSpectialist = function (item, specialist) {
 			for (var elem in specialist) {
 				if (elem.charAt(0) == '$') continue;
 				if (elem == 'quots') {
@@ -87,14 +87,14 @@ angular
 		}
 
 		// есть ли записи на время
-		self.getRecordToStep = function(item, day, time){
+		self.getRecordToStep = function (item, day, time) {
 			let records = [];
 			for (var kRec in item.listRecords) {
 				let date = new Date(day);
-				let timeI = (time*1000)+( new Date((time*1000)).getTimezoneOffset()*60*1000 );
+				let timeI = (time * 1000) + (new Date((time * 1000)).getTimezoneOffset() * 60 * 1000);
 				timeI = date.setHours(new Date(timeI).getHours(), new Date(timeI).getMinutes(), 0, 0);
 
-				if (timeI/1000 == item.listRecords[kRec].dateRecord) {
+				if (timeI / 1000 == item.listRecords[kRec].dateRecord) {
 					records.push(item.listRecords[kRec]);
 				}
 			}
@@ -102,9 +102,9 @@ angular
 		}
 
 		// Проверка на доступность отмены в выбранном интервале
-		self.ckeckAllowedDeleteRecord = function(cell, item) {
-			let now = new Date().getTime()/1000;
-			if (cell.date && (now+item.stepSchedule) > cell.date) {
+		self.ckeckAllowedDeleteRecord = function (cell, item) {
+			let now = new Date().getTime() / 1000;
+			if (cell.date && (now + item.stepSchedule) > cell.date) {
 				return false;
 			}
 			if (cell.recordUser && cell.recordUser.name == '') {

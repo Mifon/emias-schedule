@@ -39,7 +39,7 @@ angular
 			return 0;
 		}
 
-		special.selected = function() {
+		special.selected = function () {
 			let options = DataService.get('listOption');
 			let selectedDr = [];
 			special.list.forEach(specialist => {
@@ -57,7 +57,7 @@ angular
 		Ps.initialize(el);
 
 		// отображение скролла
-		setTimeout(function(){
+		setTimeout(function () {
 			if ($('.b-spec__list').height() >= $('.b-spec__list > div').height()) {
 				$('.ps-scrollbar-y-rail').css('display', 'none');
 			} else {

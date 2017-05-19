@@ -521,9 +521,7 @@ angular
             if (cell.records.length > 0) {
                 cell.elemClass += ' b-schedule__item-record-true';
             }
-            if (qoute.isRecord) {
-                cell.isRecord = qoute.isRecord;
-            }
+            cell.isRecord = qoute.isRecord;
         }
         else {
             cell.label = qoute.name;
@@ -533,7 +531,7 @@ angular
     }
     function ckeckAllowedCreateRecord(cell, item, options) {
         var now = new Date().getTime() / 1000;
-        if ((cell.date && (now + item.stepSchedule) > cell.date) || cell.isRecord) {
+        if ((cell.date && (now + item.stepSchedule) > cell.date) || !cell.isRecord) {
             schedule.openModalinfo('Интервал не доступен для записи');
             return false;
         }

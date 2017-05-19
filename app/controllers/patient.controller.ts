@@ -1,7 +1,7 @@
 'use strict';
 
 // блок пациента
-angular.module('root').controller('PatientController', function(DataService) {
+angular.module('root').controller('PatientController', function (DataService) {
 	let patient = this;
 
 	patient.user = '';
@@ -9,7 +9,7 @@ angular.module('root').controller('PatientController', function(DataService) {
 	patient.listRes = '';
 	patient.btnDisabled = 'disabled';
 
-	patient.inputChange = function(e) {
+	patient.inputChange = function (e) {
 		if (patient.inputSearch.length >= 3) {
 			patient.listRes = patient.list;
 		} else {
@@ -17,7 +17,7 @@ angular.module('root').controller('PatientController', function(DataService) {
 		}
 	}
 
-	patient.selectedUser = function(item) {
+	patient.selectedUser = function (item) {
 		let option = DataService.get('listOption');
 
 		patient.user = item;
@@ -29,7 +29,7 @@ angular.module('root').controller('PatientController', function(DataService) {
 		DataService.set('listOption', option);
 	}
 
-	patient.relogUser = function() {
+	patient.relogUser = function () {
 		let option = DataService.get('listOption');
 
 		patient.user = '';
