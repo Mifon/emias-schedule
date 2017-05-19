@@ -121,7 +121,8 @@
 		white-space: nowrap;
 
 		&:hover {
-			background-color: #d3e7f7;
+			cursor: pointer;
+			background-color: #e2e2e4;
 		}
 
 		label {
@@ -241,8 +242,11 @@
 			color: #333;
 
 			&[data-btn-active="false"] {
-				opacity: .3;
+				color: #cacaca;
 				cursor: default;
+				.s-popup__menu-item-title {
+					color: #cacaca;
+				}
 			}
 		}
 
@@ -255,6 +259,12 @@
 			width: 150px;
 			text-align: center;
 			cursor: pointer;
+			&.m--create {
+				color: #4ea8ff;
+			}
+			&.m--delete {
+				color: #db4a4a;
+			}
 		}
 	}
 
@@ -319,4 +329,30 @@
 .b-schedule__item-head-cnt {
 	position: absolute;
 	width: 100%;
+}
+
+
+
+
+.modal-ok-box {
+	width: 278px;
+	&__title {
+		background: #689d41;
+	    text-align: center;
+	    font-size: 30px;
+	    padding: 6px 5px;
+	    border-top-left-radius: 6px;
+	    border-top-right-radius: 6px;
+	}
+	&__body {
+		height: 158px;
+		border: 2px solid #689d41;
+		border-bottom-left-radius: 6px;
+	    border-bottom-right-radius: 6px;
+		background-image: url('../img/checked.svg');
+		background-repeat: no-repeat;
+		background-position: center center;
+		background-size: 91px 91px;
+		background-color: #e1ebd9;
+	}
 }

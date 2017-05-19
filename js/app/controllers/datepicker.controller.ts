@@ -51,8 +51,8 @@ angular
 			dpicker.selectedDate = dpicker.dt;
 			dpicker.status.opened = true;
 			setTimeout(function() {
-				let btnCancel = $('<button type="button" class="btn btn-sm btn-default btn-dpicker"><span class="glyphicon glyphicon-remove"></span> Отменить</button>');
-				let btnDone = $('<button type="button" class="btn btn-sm btn-success btn-dpicker"><span class="glyphicon glyphicon-ok"></span> Ок</button>');
+				let btnCancel = $('<button type="button" class="btn btn-sm btn-default btn-dpicker">Отменить</button>');
+				let btnDone = $('<button type="button" class="btn btn-sm btn-success btn-dpicker">Ок</button>');
 				let block = $('.b-date ul.dropdown-menu .btn-group').parent();
 
 				btnCancel.click(dpicker.dateReset);
