@@ -107,11 +107,10 @@ angular
 				item.listRecords.push(dataRecord);
 				cell.records.push(dataRecord);
 
-				for (var kDr in options.listDr) {
-					if (item.id == options.listDr[kDr].id) {
-						options.listDr[kDr].listRecords.push(dataRecord);
-					}
-				}
+				options.listDr.forEach(specialist => {
+					if (item.id == specialist.id)
+						specialist.listRecords.push(dataRecord);
+				});
 
 				DataService.set('listOption', options);
 				renderList();
