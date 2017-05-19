@@ -1,9 +1,21 @@
+'use strict';
 angular.module('root', ['ui.bootstrap'])
     .constant('CONFIG', {
     DebugMode: true,
     StepCounter: 0,
 });
-'use strict';
+angular
+    .module('root')
+    .controller('DropdownMenuController', function DropdownMenuController($scope, $log) {
+    $scope.status = {
+        isopen: false
+    };
+    $scope.toggleDropdown = function ($event) {
+        $event.preventDefault();
+        $event.stopPropagation();
+        $scope.status.isopen = !$scope.status.isopen;
+    };
+});
 angular
     .module('root')
     .controller('DpickerController', function DpickerController($scope, $rootScope, dataService) {
@@ -51,8 +63,8 @@ angular
         dpicker.selectedDate = dpicker.dt;
         dpicker.status.opened = true;
         setTimeout(function () {
-            var btnCancel = $('<button type="button" class="btn btn-sm btn-default btn-dpicker">Отменить</button>');
-            var btnDone = $('<button type="button" class="btn btn-sm btn-success btn-dpicker">Ок</button>');
+            var btnCancel = $('<button type="button" class="btn btn-sm btn-default btn-dpicker"><span class="glyphicon glyphicon-remove"></span> Отменить</button>');
+            var btnDone = $('<button type="button" class="btn btn-sm btn-success btn-dpicker"><span class="glyphicon glyphicon-ok"></span> Ок</button>');
             var block = $('.b-date ul.dropdown-menu .btn-group').parent();
             btnCancel.click(dpicker.dateReset);
             btnDone.click(dpicker.select);
@@ -107,7 +119,6 @@ angular
         dpicker.select();
     });
 });
-'use strict';
 angular
     .module('root')
     .controller('DaysController', function DaysController($scope, $rootScope, dataService) {
@@ -120,7 +131,6 @@ angular
         $rootScope.$broadcast('updateDatepicker');
     };
 });
-'use strict';
 angular.module('root').controller('PatientController', function (dataService) {
     var patient = this;
     patient.user = '';
@@ -152,7 +162,6 @@ angular.module('root').controller('PatientController', function (dataService) {
         dataService.set('listOption', option);
     };
 });
-'use strict';
 angular
     .module('root')
     .controller('ScheduleController', function ($scope, $modal, dataService) {
@@ -204,53 +213,6 @@ angular
                 }
             }
         });
-    };
-    schedule.popupOpen = function (item, cell, self) {
-        var options = dataService.get('listOption');
-        var elemCell = self.currentTarget;
-        var target = self.target;
-        var recordUser = { doctorName: '', doctorRoom: '', surname: '', name: '', patron: '' };
-        if (!cell.isOpenPopup) {
-            return false;
-        }
-        if ($(target).hasClass('b-schedule__item-cntnt-record')) {
-            var elemKey = $(target).attr('data-dateid');
-            var dataKey = elemKey.split('_');
-            for (var kRec in cell.records) {
-                if (cell.records[kRec].idUser == dataKey[1]) {
-                    recordUser = cell.records[kRec].user;
-                }
-            }
-            recordUser.doctorName = item.name;
-            recordUser.doctorRoom = item.room;
-        }
-        if (schedule.openedCell != cell) {
-            if (schedule.openedCell != '') {
-                schedule.openedCell.isOpenPopup = false;
-            }
-        }
-        schedule.openedCell = cell;
-        cell.target = target;
-        cell.parent = self.currentTarget;
-        cell.recordUser = recordUser;
-        schedule.dataPopup.isViewMenu = true;
-        schedule.dataPopup.isViewUser = false;
-        schedule.dataPopup.isViewConfirmCancel = false;
-        if (recordUser.name == '') {
-            schedule.dataPopup.title = 'Выбран интервал времени';
-            schedule.dataPopup.isIconUser = false;
-            schedule.dataPopup.time = cell.label + ' - ';
-            schedule.dataPopup.time += addZIONTime(new Date(cell.time + (item.stepSchedule * 1000)).getHours()) + ':';
-            schedule.dataPopup.time += addZIONTime(new Date(cell.time + (item.stepSchedule * 1000)).getMinutes());
-        }
-        else {
-            schedule.dataPopup.title = recordUser.surname + ' ' + recordUser.name.charAt(0) + '.' + recordUser.patron.charAt(0) + '.';
-            schedule.dataPopup.time = '';
-            schedule.dataPopup.isIconUser = true;
-        }
-        schedule.dataPopup.btnCreateRecord.isView = ckeckAllowedCreateRecord(cell, item, options);
-        schedule.dataPopup.btnDeleteRecord.isView = ckeckAllowedDeleteRecord(cell, item);
-        schedule.dataPopup.btnViewRecord.isView = (cell.recordUser.name != '');
     };
     schedule.expandGraf = function (event) {
         $(event.target).parent().removeClass('collapsed');
@@ -340,6 +302,53 @@ angular
         closePopup: function () {
             schedule.openedCell.isOpenPopup = false;
         }
+    };
+    schedule.popupOpen = function (item, cell, self) {
+        var options = dataService.get('listOption');
+        var elemCell = self.currentTarget;
+        var target = self.target;
+        var recordUser = { doctorName: '', doctorRoom: '', surname: '', name: '', patron: '' };
+        if (!cell.isOpenPopup) {
+            return false;
+        }
+        if ($(target).hasClass('b-schedule__item-cntnt-record')) {
+            var elemKey = $(target).attr('data-dateid');
+            var dataKey = elemKey.split('_');
+            for (var kRec in cell.records) {
+                if (cell.records[kRec].idUser == dataKey[1]) {
+                    recordUser = cell.records[kRec].user;
+                }
+            }
+            recordUser.doctorName = item.name;
+            recordUser.doctorRoom = item.room;
+        }
+        if (schedule.openedCell != cell) {
+            if (schedule.openedCell != '') {
+                schedule.openedCell.isOpenPopup = false;
+            }
+        }
+        schedule.openedCell = cell;
+        cell.target = target;
+        cell.parent = self.currentTarget;
+        cell.recordUser = recordUser;
+        schedule.dataPopup.isViewMenu = true;
+        schedule.dataPopup.isViewUser = false;
+        schedule.dataPopup.isViewConfirmCancel = false;
+        if (recordUser.name == '') {
+            schedule.dataPopup.title = 'Выбран интервал времени';
+            schedule.dataPopup.isIconUser = false;
+            schedule.dataPopup.time = cell.label + ' - ';
+            schedule.dataPopup.time += addZIONTime(new Date(cell.time + (item.stepSchedule * 1000)).getHours()) + ':';
+            schedule.dataPopup.time += addZIONTime(new Date(cell.time + (item.stepSchedule * 1000)).getMinutes());
+        }
+        else {
+            schedule.dataPopup.title = recordUser.surname + ' ' + recordUser.name.charAt(0) + '.' + recordUser.patron.charAt(0) + '.';
+            schedule.dataPopup.time = '';
+            schedule.dataPopup.isIconUser = true;
+        }
+        schedule.dataPopup.btnCreateRecord.isView = ckeckAllowedCreateRecord(cell, item, options);
+        schedule.dataPopup.btnDeleteRecord.isView = ckeckAllowedDeleteRecord(cell, item);
+        schedule.dataPopup.btnViewRecord.isView = (cell.recordUser.name != '');
     };
     function renderList() {
         var options = dataService.get('listOption');
@@ -470,68 +479,99 @@ angular
         }
         return item;
     }
+    function addToViewColimnList(listQuotaCell, item, day) {
+        for (var k in listQuotaCell) {
+            var step = listQuotaCell[k];
+            setCellData(step, step.time, item, day);
+        }
+    }
+    function getRecordToStep(item, day, time) {
+        var records = [];
+        for (var kRec in item.listRecords) {
+            var date = new Date(day);
+            var timeI = (time * 1000) + (new Date((time * 1000)).getTimezoneOffset() * 60 * 1000);
+            timeI = date.setHours(new Date(timeI).getHours(), new Date(timeI).getMinutes(), 0, 0);
+            if (timeI / 1000 == item.listRecords[kRec].dateRecord) {
+                records.push(item.listRecords[kRec]);
+            }
+        }
+        return records;
+    }
     function setColumnList(item, day) {
         var todayWeekDay = day.getDay() == 0 ? 7 : day.getDay();
-        var isEmptyRecord = false;
-        var listEmptyQuota = [];
+        var listQuotaCell = [];
+        var listEmptyStep = [];
+        var tempQuota = { name: '', start: 0, end: 0 };
         for (var i = item.start; i < item.end; i += item.stepSchedule) {
-            var isNotRecordQuote = false;
-            var isRecordQuota = false;
-            var isErrorRecord = false;
+            var listQ = [];
             for (var k in item.quots) {
                 var quota = item.quots[k];
                 if (quota.listDaysWeek && quota.listDaysWeek.indexOf(todayWeekDay) < 0) {
                     continue;
                 }
-                if (quota.name == 'Запись на прием') {
-                    if (i >= quota.start && i < quota.end) {
-                        isRecordQuota = true;
-                    }
-                }
                 if (quota.name != 'Запись на прием') {
-                    if (i >= quota.start && i < quota.end) {
-                        isNotRecordQuote = true;
-                    }
-                    if (i < quota.start && quota.start < (i + (item.stepSchedule * 0.8))) {
-                        isNotRecordQuote = true;
-                    }
-                    if (isNotRecordQuote && item.listRecords) {
-                        for (var kRec in item.listRecords) {
-                            var date = new Date(day);
-                            var timeStart = (quota.start * 1000) + (new Date((quota.start * 1000)).getTimezoneOffset() * 60 * 1000);
-                            var timeEnd = (quota.end * 1000) + (new Date((quota.end * 1000)).getTimezoneOffset() * 60 * 1000);
-                            var timeI = (i * 1000) + (new Date((i * 1000)).getTimezoneOffset() * 60 * 1000);
-                            var startDateQuota = date.setHours(new Date(timeStart).getHours(), new Date(timeStart).getMinutes(), 0, 0);
-                            var endDateQuota = date.setHours(new Date(timeEnd).getHours(), new Date(timeEnd).getMinutes(), 0, 0);
-                            var dateI = date.setHours(new Date(timeI).getHours(), new Date(timeI).getMinutes(), 0, 0);
-                            if (startDateQuota / 1000 < item.listRecords[kRec].dateRecord &&
-                                endDateQuota / 1000 > item.listRecords[kRec].dateRecord &&
-                                dateI / 1000 == item.listRecords[kRec].dateRecord) {
-                                setCellData({ name: 'Запись на прием' }, i, item, day);
-                                isErrorRecord = true;
+                    if ((i >= quota.start && i < quota.end) ||
+                        (i < quota.start && quota.start < (i + (item.stepSchedule * 0.8)))) {
+                        if (tempQuota.name == quota.name || tempQuota.name == '') {
+                            if (getRecordToStep(item, day, i).length > 0) {
+                                listQuotaCell.push({ name: 'Запись на прием', time: i, styleClass: 'not-record' });
                             }
                         }
+                        else {
+                            listQuotaCell.push({ name: tempQuota.name, time: i - 1 });
+                            addToViewColimnList(listQuotaCell, item, day);
+                            listQuotaCell = [];
+                        }
+                        tempQuota = quota;
+                        listQ = [];
+                        listEmptyStep = [];
+                        break;
+                    }
+                }
+                else {
+                    if (i >= quota.start && i < quota.end) {
+                        if (tempQuota.name != quota.name && tempQuota.name != '') {
+                            setCellData({ name: tempQuota.name }, tempQuota.start, item, day);
+                            if (listQuotaCell.length > 0) {
+                                listQuotaCell.push({ name: tempQuota.name, time: i - 1 });
+                                addToViewColimnList(listQuotaCell, item, day);
+                            }
+                            tempQuota = quota;
+                            listQuotaCell = [];
+                        }
+                        if (i >= quota.start && i < quota.end) {
+                            listQ.push({ name: quota.name, time: i });
+                        }
+                        tempQuota = quota;
+                        listEmptyStep = [];
+                        continue;
                     }
                 }
             }
-            if (isRecordQuota && !isNotRecordQuote && !isErrorRecord) {
-                setCellData({ name: 'Запись на прием' }, i, item, day);
-                isEmptyRecord = false;
+            if (listQ.length < 1 && listQuotaCell.length < 1) {
+                if (tempQuota.name == '') {
+                    tempQuota.name = 'Нет записи';
+                    if (listEmptyStep.length < 1) {
+                        tempQuota.start = i;
+                        listEmptyStep.push({ name: 'Нет записи', time: i });
+                    }
+                    tempQuota.end = i + item.stepSchedule;
+                }
+                if (getRecordToStep(item, day, i).length > 0) {
+                    listQuotaCell.push({ name: 'Запись на прием', time: i, styleClass: 'not-record' });
+                }
             }
-            else if ((!isNotRecordQuote || isErrorRecord) && !isRecordQuota) {
-                console.log(new Date(i));
-                isEmptyRecord = true;
-                isErrorRecord = false;
-                listEmptyQuota.push({ start: i });
-            }
-            if (!isEmptyRecord && listEmptyQuota.length > 0) {
-                setCellData({ name: 'Нет записи' }, listEmptyQuota.shift().start, item, day);
-                listEmptyQuota = [];
+            if (listQ.length > 0 && listQuotaCell.length < 1) {
+                addToViewColimnList(listQ, item, day);
             }
         }
-        if (isEmptyRecord && listEmptyQuota.length > 0) {
-            setCellData({ name: 'Нет записи' }, listEmptyQuota.shift().start, item, day);
-            listEmptyQuota = [];
+        if (listQuotaCell.length > 0) {
+            setCellData({ name: tempQuota.name }, tempQuota.start, item, day);
+            listQuotaCell.push({ name: tempQuota.name, time: i });
+            addToViewColimnList(listQuotaCell, item, day);
+        }
+        else if (tempQuota.name != 'Запись на прием' && tempQuota.name != 'Нет записи') {
+            setCellData({ name: tempQuota.name }, tempQuota.end, item, day);
         }
         for (var k in item.quots) {
             if (item.quots[k].listDaysWeek && item.quots[k].listDaysWeek.indexOf(todayWeekDay) < 0) {
@@ -539,7 +579,6 @@ angular
             }
             if (item.quots[k].name != 'Запись на прием') {
                 item.quots[k].labelTime = getTimeWorcking(item.quots[k]);
-                setCellData(item.quots[k], item.quots[k].start, item, day);
                 item.listQuotsWorking.push(item.quots[k]);
             }
         }
@@ -578,6 +617,9 @@ angular
             }
             if (cell.records.length > 0) {
                 cell.elemClass += ' b-schedule__item-record-true';
+            }
+            if (qoute.styleClass) {
+                cell.elemClass += ' ' + qoute.styleClass;
             }
         }
         else {
@@ -699,7 +741,6 @@ angular
     var el = document.querySelector('.b-schedule__list');
     Ps.initialize(el);
 });
-'use strict';
 angular
     .module('root')
     .controller('SpecialistController', function SpecialistController($rootScope, dataService) {
@@ -758,20 +799,6 @@ angular
         }
     });
 });
-'use strict';
-angular
-    .module('root')
-    .controller('DropdownMenuController', function DropdownMenuController($scope, $log) {
-    $scope.status = {
-        isopen: false
-    };
-    $scope.toggleDropdown = function ($event) {
-        $event.preventDefault();
-        $event.stopPropagation();
-        $scope.status.isopen = !$scope.status.isopen;
-    };
-});
-'use strict';
 angular.module('root').service('dataService', function () {
     var self = this;
     var data = {
@@ -835,6 +862,11 @@ angular.module('root').service('dataService', function () {
                     dateRecord: dateNow + (60 * 60 * 10) + (60 * 30),
                     time: (60 * 60 * 10) + (60 * 30),
                     user: { id: 3, name: 'Петр', surname: 'Петров', patron: 'Петрович', dateBD: '01.01.1990', numPolicOMS: 3333333333333333 },
+                }, {
+                    idUser: 4,
+                    dateRecord: monday + (60 * 60 * 14) + (60 * 30),
+                    time: (60 * 60 * 14) + (60 * 30),
+                    user: { id: 4, name: 'Сергей', surname: 'Сергеев', patron: 'Сергеевич', dateBD: '02.02.2002', numPolicOMS: 4444444444444444 },
                 }
             ],
             checked: false
@@ -863,6 +895,11 @@ angular.module('root').service('dataService', function () {
                     dateRecord: monday + (60 * 60 * 12),
                     time: (60 * 60 * 12),
                     user: { id: 4, name: 'Сергей', surname: 'Сергеев', patron: 'Сергеевич', dateBD: '02.02.2002', numPolicOMS: 4444444444444444 },
+                }, {
+                    idUser: 4,
+                    dateRecord: monday + (60 * 60 * 10),
+                    time: (60 * 60 * 10),
+                    user: { id: 4, name: 'Сергей', surname: 'Сергеев222', patron: 'Сергеевич', dateBD: '02.02.2002', numPolicOMS: 4444444444444444 },
                 }
             ],
             checked: false
@@ -906,7 +943,18 @@ angular.module('root').service('dataService', function () {
                 { name: 'Работа с документами', start: (60 * 60 * 14 + (60 * 30)), end: (60 * 60 * 14 + (60 * 55)) },
                 { name: 'Работа с документами', start: (60 * 60 * 16 + (60 * 20)), end: (60 * 60 * 16 + (60 * 40)) },
             ],
-            listRecords: [],
+            listRecords: [{
+                    idUser: 4,
+                    dateRecord: monday + (60 * 60 * 16) + (60 * 30),
+                    time: (60 * 60 * 16) + (60 * 30),
+                    user: { id: 4, name: 'Сергей', surname: 'Сергеев', patron: 'Сергеевич', dateBD: '02.02.2002', numPolicOMS: 4444444444444444 },
+                },
+                {
+                    idUser: 4,
+                    dateRecord: monday + (60 * 60 * 8) + (60 * 30),
+                    time: (60 * 60 * 16) + (60 * 30),
+                    user: { id: 4, name: 'Сергей', surname: 'Сергеев', patron: 'Сергеевич', dateBD: '02.02.2002', numPolicOMS: 4444444444444444 },
+                }],
             checked: false
         },
         {

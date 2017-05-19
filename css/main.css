@@ -530,6 +530,10 @@ body {
     -webkit-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
     -moz-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05); }
+  .calendar-cont .btn.btn-default[role="heading"] .glyphicon,
+  .calendar-cont .btn.btn-default.btn-dpicker .glyphicon {
+    vertical-align: top;
+    margin-top: 2px; }
 
 .calendar-cont .btn.btn-success.btn-dpicker {
   color: #ffffff;
@@ -839,17 +843,19 @@ body {
       display: inline-block;
       min-width: 110px;
       padding: 1px 3px 3px;
-      background-color: #eba740;
+      background-color: #ff5454;
       cursor: default; }
     .b-schedule__item-step-notrec {
       padding: 3px 5px 0;
       background-color: #949494;
       border-bottom: 1px dashed #000;
       height: 40px; }
-  .b-schedule__item-record-true {
+  .b-schedule__item-record-true:hover {
+    background-color: #e8e8eb; }
+  .b-schedule__item-record-true.not-record {
     border: 1px solid #000; }
-    .b-schedule__item-record-true:hover {
-      background-color: #e8e8eb; }
+    .b-schedule__item-record-true.not-record span {
+      background-color: #eba740; }
   .b-schedule__item-record-true .b-schedule__item-cntnt-record {
     font-weight: 600; }
 

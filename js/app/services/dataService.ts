@@ -65,6 +65,11 @@ angular.module('root').service('dataService', function() {
 					dateRecord: dateNow+(60*60*10)+(60*30),
 					time: (60*60*10)+(60*30),
 					user: {id:3, name:'Петр', surname:'Петров', patron:'Петрович', dateBD:'01.01.1990', numPolicOMS:3333333333333333},
+				},{
+					idUser: 4,
+					dateRecord: monday+(60*60*14)+(60*30),
+					time: (60*60*14)+(60*30),
+					user: {id:4, name:'Сергей', surname:'Сергеев', patron:'Сергеевич', dateBD:'02.02.2002', numPolicOMS:4444444444444444},
 				}
 			],
 			checked: false
@@ -93,6 +98,11 @@ angular.module('root').service('dataService', function() {
 					dateRecord: monday+(60*60*12),
 					time: (60*60*12),
 					user: {id:4, name:'Сергей', surname:'Сергеев', patron:'Сергеевич', dateBD:'02.02.2002', numPolicOMS:4444444444444444},
+				},{
+					idUser: 4,
+					dateRecord: monday+(60*60*10),
+					time: (60*60*10),
+					user: {id:4, name:'Сергей', surname:'Сергеев222', patron:'Сергеевич', dateBD:'02.02.2002', numPolicOMS:4444444444444444},
 				}
 			],
 			checked: false
@@ -136,7 +146,18 @@ angular.module('root').service('dataService', function() {
 				{name:'Работа с документами', start:(60*60*14+(60*30)), end:(60*60*14+(60*55))},
 				{name:'Работа с документами', start:(60*60*16+(60*20)), end:(60*60*16+(60*40))},
 			],
-			listRecords: [],
+			listRecords: [{
+					idUser: 4,
+					dateRecord: monday+(60*60*16)+(60*30),
+					time: (60*60*16)+(60*30),
+					user: {id:4, name:'Сергей', surname:'Сергеев', patron:'Сергеевич', dateBD:'02.02.2002', numPolicOMS:4444444444444444},
+				},
+				{
+					idUser: 4,
+					dateRecord: monday+(60*60*8)+(60*30),
+					time: (60*60*16)+(60*30),
+					user: {id:4, name:'Сергей', surname:'Сергеев', patron:'Сергеевич', dateBD:'02.02.2002', numPolicOMS:4444444444444444},
+				}],
 			checked: false
 		},
 		{
