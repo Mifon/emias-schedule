@@ -70,30 +70,50 @@
 	transform: rotate(90deg);
 }
 
+.b-schedule {
+	.scrollbar-x-arrow-left,
+	.scrollbar-x-arrow-right,
+	.scrollbar-y-arrow-top,
+	.scrollbar-y-arrow-bottom {
+		position: absolute;
+		display: inline-block;
+	    z-index: 999;
+	    font-size: 10px;
+	    display: none;
+	}
+	.scrollbar-y-arrow-bottom {
+	    right: 14px;
+	    bottom: 16px;
+	}
+	.scrollbar-y-arrow-top {
+		right: 14px;
+	    top: 18px;
+	}
+	.scrollbar-x-arrow-right {
+		right: 32px;
+		bottom: 16px;
+	}
+	.scrollbar-x-arrow-left {
+		left: 12px;
+		bottom: 16px;
+	}
+}
 
-.scrollbar-x-arrow-left,
-.scrollbar-x-arrow-right,
-.scrollbar-y-arrow-top,
-.scrollbar-y-arrow-bottom {
-	position: absolute;
-	display: inline-block;
-    z-index: 999;
-    font-size: 10px;
-    display: none;
-}
-.scrollbar-y-arrow-bottom {
-    right: 14px;
-    bottom: 16px;
-}
-.scrollbar-y-arrow-top {
-	right: 14px;
-    top: 18px;
-}
-.scrollbar-x-arrow-right {
-	right: 32px;
-	bottom: 16px;
-}
-.scrollbar-x-arrow-left {
-	left: 12px;
-	bottom: 16px;
+.b-spec {
+	.scrollbar-y-arrow-top,
+	.scrollbar-y-arrow-bottom {
+		position: absolute;
+		display: inline-block;
+	    z-index: 999;
+	    font-size: 10px;
+	    display: none;
+	}
+	.scrollbar-y-arrow-bottom {
+	    right: 7px;
+	    bottom: 4px;
+	}
+	.scrollbar-y-arrow-top {
+		right: 7px;
+	    top: 4px;
+	}
 }

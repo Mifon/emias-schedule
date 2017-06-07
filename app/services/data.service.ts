@@ -18,7 +18,7 @@ angular
 		let date = new Date();
 		date.setHours(0, 0, 0, 0);
 		let dateNow = date.getTime() / 1000;
-		date.setDate(22); // 22 мая, понедельник
+		date.setMonth(5, 5); // 22 мая, понедельник
 		let monday = date.getTime() / 1000;
 
 		data.listUser = [
@@ -67,7 +67,7 @@ angular
 						dateRecord: dateNow + (60 * 60 * 10) + (60 * 30),
 						time: (60 * 60 * 10) + (60 * 30),
 						user: { id: 3, name: 'Петр', surname: 'Петров', patron: 'Петрович', dateBD: '01.01.1990', numPolicOMS: 3333333333333333 },
-					},
+					}
 				],
 				checked: false
 			},
@@ -109,7 +109,7 @@ angular
 				dateEndWork: (dateNow + (60 * 60 * 24 * 30)), // через месяц
 				start: (60 * 60 * 14),
 				end: (60 * 60 * 18),
-				listWorkWeekDay: [5, 6],
+				listWorkWeekDay: [4 ,5, 6],
 				startWD: 5,
 				endWD: 6,
 				stepSchedule: 60 * 10, // 10 минут
@@ -156,7 +156,7 @@ angular
 				endWD: 6,
 				stepSchedule: 60 * 30, // 30 минут
 				quots: [
-					{ name: 'Запись на прием', start: (60 * 60 * 9), end: (60 * 60 * 21), listDaysWeek: [3, 4, 5, 6] },
+					{ name: 'Запись на прием', start: (60 * 60 * 9), end: (60 * 60 * 21), listDaysWeek: [3, 4, 5, 6], isRecord: true },
 				],
 				listRecords: [],
 				checked: false

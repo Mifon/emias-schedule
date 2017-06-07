@@ -604,7 +604,6 @@ body {
 .p-left {
   background-color: #e8e8eb;
   min-height: 100%;
-  /* TODO */
   padding: 0;
   z-index: 10;
   -webkit-box-shadow: 0px 0px 20px 0px rgba(10, 10, 10, 0.5);
@@ -612,15 +611,20 @@ body {
   box-shadow: 0px 0px 20px 0px rgba(10, 10, 10, 0.5);
   width: 281px; }
 
+.b-spec .p-block__r-btns {
+  margin-top: -7px; }
 .b-spec__list {
   margin-top: 30px;
   max-height: 390px;
   background-color: #fff;
   border: 1px solid #c8c8c8;
   overflow: hidden;
-  position: relative; }
+  position: relative;
+  height: 300px; }
   .b-spec__list .ps-scrollbar-x-rail {
     display: none !important; }
+.b-spec .b-cntnt {
+  position: relative; }
 
 .b-spec__list-item {
   padding: 10px 15px;
@@ -629,18 +633,24 @@ body {
   display: block;
   margin-bottom: 0;
   font-weight: normal;
-  position: relative; }
+  position: relative;
+  padding-right: 30px; }
   .b-spec__list-item input {
     position: absolute;
     top: 50%;
     left: 12px;
     margin-top: -6px; }
 
+.b-patient .p-block__r-btns {
+  margin-top: -7px; }
+
 .b-patient__search {
   position: relative; }
+  .b-patient__search .input-group {
+    margin-top: 7px; }
   .b-patient__search-result {
     position: absolute;
-    top: 48px;
+    top: 35px;
     left: 0;
     min-width: 100%;
     min-height: 30px;
@@ -668,6 +678,9 @@ body {
   padding-top: 10px;
   font-weight: bold;
   color: #1A6471; }
+
+.b-date .b-cntnt {
+  margin-top: 7px; }
 
 .b-date__select {
   background: #fff; }
@@ -862,7 +875,7 @@ body {
     white-space: nowrap; }
     .b-schedule__item-step:hover {
       cursor: pointer;
-      background-color: #e2e2e4; }
+      background-color: rgba(234, 248, 255, 0.19); }
     .b-schedule__item-step label {
       font-weight: normal;
       margin-bottom: 3px; }
@@ -899,7 +912,8 @@ body {
   color: #777; }
 
 .popover-content {
-  padding: 5px 5px; }
+  padding: 5px 5px;
+  width: 260px; }
   .popover-content .btn.btn-danger {
     background-color: #f80018;
     border-color: #f80018;
@@ -921,7 +935,10 @@ body {
   display: inline-block;
   width: 15px;
   vertical-align: middle;
-  line-height: 1; }
+  line-height: 1;
+  vertical-align: top;
+  font-size: 18px;
+  margin-right: 10px; }
   .s-popup__head-icon-user {
     width: 20px;
     margin-left: 10px;
@@ -1024,6 +1041,11 @@ body {
     background-size: 91px 91px;
     background-color: #e1ebd9; }
 
+.popover {
+  opacity: 0; }
+  .popover.open {
+    opacity: 1; }
+
 .ps-container > .ps-scrollbar-y-rail,
 .ps-container:hover > .ps-scrollbar-y-rail:hover {
   width: 20px;
@@ -1088,30 +1110,40 @@ body {
   background-image: url(../img/icon-scroll.png);
   transform: rotate(90deg); }
 
-.scrollbar-x-arrow-left,
-.scrollbar-x-arrow-right,
-.scrollbar-y-arrow-top,
-.scrollbar-y-arrow-bottom {
+.b-schedule .scrollbar-x-arrow-left,
+.b-schedule .scrollbar-x-arrow-right,
+.b-schedule .scrollbar-y-arrow-top,
+.b-schedule .scrollbar-y-arrow-bottom {
   position: absolute;
   display: inline-block;
   z-index: 999;
   font-size: 10px;
   display: none; }
-
-.scrollbar-y-arrow-bottom {
+.b-schedule .scrollbar-y-arrow-bottom {
   right: 14px;
   bottom: 16px; }
-
-.scrollbar-y-arrow-top {
+.b-schedule .scrollbar-y-arrow-top {
   right: 14px;
   top: 18px; }
-
-.scrollbar-x-arrow-right {
+.b-schedule .scrollbar-x-arrow-right {
   right: 32px;
   bottom: 16px; }
-
-.scrollbar-x-arrow-left {
+.b-schedule .scrollbar-x-arrow-left {
   left: 12px;
   bottom: 16px; }
+
+.b-spec .scrollbar-y-arrow-top,
+.b-spec .scrollbar-y-arrow-bottom {
+  position: absolute;
+  display: inline-block;
+  z-index: 999;
+  font-size: 10px;
+  display: none; }
+.b-spec .scrollbar-y-arrow-bottom {
+  right: 7px;
+  bottom: 4px; }
+.b-spec .scrollbar-y-arrow-top {
+  right: 7px;
+  top: 4px; }
 
 /*# sourceMappingURL=main.css.map */

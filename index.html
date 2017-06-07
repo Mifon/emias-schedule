@@ -20,10 +20,10 @@
 				<div class="p-block__r-btns" ng-controller="DropdownMenuController">
 					<div class="btn-group" dropdown>
 						<button type="button" class="btn btn-success btn-sm dropdown-toggle {{patient.btnDisabled}}" dropdown-toggle>
-								<span class="glyphicon glyphicon-user"></span>
-								<span class="caret"></span>
-								<span class="sr-only">Split button!</span>
-							</button>
+							<span class="glyphicon glyphicon-user"></span>
+							<span class="caret"></span>
+							<span class="sr-only">Split button!</span>
+						</button>
 						<ul class="dropdown-menu" role="menu" aria-labelledby="split-button">
 							<li role="menuitem" ng-click="patient.relogUser()"><a href=""><span class="glyphicon glyphicon-off"></span> Завершить работу с пациентом</a></li>
 						</ul>
@@ -32,14 +32,13 @@
 			</div>
 			<div class="b-cntnt">
 				<div class="b-patient__search" ng-if="!patient.user">
-					<label for=""></label>
 					<div class="input-group">
 						<input type="text" class="form-control" placeholder="Введите текст для поиска" ng-change="patient.inputChange()" ng-model="patient.inputSearch">
 						<div class="input-group-addon"><span class="glyphicon glyphicon-search"></span></div>
 					</div>
 					<div class="b-patient__search-result" ng-if="patient.listRes">
 						<div class="b-patient__search-result-placeholder">Совпадений не найдено</div>
-						<div class="b-patient__search-result-item" ng-repeat="item in patient.listRes | filter:patient.inputSearch" ng-click="patient.selectedUser(item)">
+						<div class="b-patient__search-result-item" ng-repeat="item in patient.listRes | searchPatient:patient.inputSearch" ng-click="patient.selectedUser(item)">
 							{{item.surname}} {{item.name}} {{item.patron}},<br>{{item.numPolicOMS}}
 						</div>
 					</div>
@@ -59,7 +58,6 @@
 				<label>Дата записи</label>
 			</div>
 			<div class="b-cntnt">
-				<label for=""></label>
 				<div class="input-group calendar-cont">
 					<input type="text" class="form-control" placeholder="ДД.ММ.ГГГГ" ng-change="dpicker.select('change')" datepicker-popup="{{dpicker.format}}"
 					 ng-model="dpicker.dt" is-open="dpicker.status.opened" min-date="dpicker.minDate" datepicker-options="dpicker.dateOptions"
@@ -95,12 +93,14 @@
 			</div>
 			<div class="b-cntnt">
 				<div class="b-spec__list">
-					<div style="padding-right:15px;">
+					<div>
 						<label class="b-spec__list-item" ng-repeat="item in special.list">
-								<input type="checkbox" ng-model="item.checked" ng-change="special.selected()"> {{item.name + ' (' + item.specialty + ')'}}
+								<input type="checkbox" ng-model="item.checked" ng-change="special.selected()"> {{item.name}}, к.{{item.room}} ({{item.specialty}})
 						</label>
 					</div>
 				</div>
+				<div class="scroll-y-arrow scrollbar-y-arrow-top"><i class="glyphicon glyphicon-triangle-top"></i></div>
+				<div class="scroll-y-arrow scrollbar-y-arrow-bottom"><i class="glyphicon glyphicon-triangle-bottom"></i></div>
 			</div>
 		</div>
 		<!-- /Блок специалиста -->
@@ -166,7 +166,6 @@
 							 popover-animation="false" popover-trigger="{{cell.isPopup ? 'click' : 'none'}}" popover-is-open="cell.isOpenPopup"
 							 popover-placement="{{cell.popupPlacement}}">
 								<label>{{cell.label}}</label>
-								<!-- popover-template="dynamicPopover.templateUrl" -->
 								<span class="b-schedule__item-cntnt-record" ng-repeat="record in cell.records" data-dateid="{{record.dateRecord + '_' + record.idUser}}">
 									{{record.user.surname}} {{record.user.name.charAt(0)}}.{{record.user.patron.charAt(0)}}.
 								</span>
@@ -184,8 +183,8 @@
 				<div class="s-popover" ng-if="schedule.dataPopup.isViewMenu">
 					<div class="s-popup__head">
 						<div>
-							<div class="s-popup__head-icon" ng-if="!schedule.dataPopup.isIconUser"><i class="glyphicon glyphicon-time"></i></div>
-							<div class="s-popup__head-icon-user" ng-if="schedule.dataPopup.isIconUser"> <img src="img/icon-user.png" alt=""> </div>
+							<div class="s-popup__head-icon" ng-if="!schedule.dataPopup.isIconUser"><img src="assets/img/icon-clock.png" alt=""></i></div>
+							<div class="s-popup__head-icon-user" ng-if="schedule.dataPopup.isIconUser"> <img src="assets/img/icon-user.png" alt=""> </div>
 							<div class="s-popup__head-title">{{schedule.dataPopup.title}} <br> {{schedule.dataPopup.time}}</div>
 						</div>
 					</div>
@@ -224,7 +223,7 @@
 				</div>
 				<div class="s-popover s-popup-confirm-cancel" ng-if="schedule.dataPopup.isViewConfirmCancel">
 					<div class="s-popup__head">
-						<div class="s-popup__head-icon"><img src="img/icon-danger.png" alt=""></div>
+						<div class="s-popup__head-icon"><img src="assets/img/icon-danger.png" alt=""></div>
 						<div class="s-popup__head-title">Отмена записи</div>
 					</div>
 					<div class="s-popup__body">
@@ -244,22 +243,6 @@
 					<div class="modal-ok-box__title">Запись создана</div>
 					<div class="modal-ok-box__body"></div>
 				</div>
-				<!-- <img src="img/modal-ok.png" alt=""> -->
-				<!-- <div class="modal-header">
-		            <h3 class="modal-title">Запись создана</h3>
-		        </div>
-		        <div class="modal-body">
-		            <ul>
-		                <li ng-repeat="item in items">
-		                    <a href="#" ng-click="$event.preventDefault(); selected.item = item">{{ item }}</a>
-		                </li>
-		            </ul>
-		            Selected: <b>{{ selected.item }}</b>
-		        </div>
-		        <div class="modal-footer">
-		            <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
-		            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
-		        </div> -->
 			</script>
 			<script type="text/ng-template" id="modalInfo">
 				<div class="modal-body">
@@ -267,7 +250,6 @@
 				</div>
 			</script>
 
-			<div id="schedulePopover" class="s-popover" style="display:none;"></div>
 		</div>
 		<!-- /Блок сетки расписния -->
 

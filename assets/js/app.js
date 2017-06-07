@@ -131,7 +131,9 @@ angular
         $rootScope.$broadcast('updateDatepicker');
     };
 });
-angular.module('root').controller('PatientController', function (DataService) {
+angular
+    .module('root')
+    .controller('PatientController', function PatientController(DataService) {
     var patient = this;
     patient.user = '';
     patient.list = DataService.get('listUser');
@@ -160,6 +162,20 @@ angular.module('root').controller('PatientController', function (DataService) {
         patient.btnDisabled = 'disabled';
         option.user = '';
         DataService.set('listOption', option);
+    };
+})
+    .filter('searchPatient', function () {
+    return function (input, uppercase) {
+        var listout = [];
+        var sting = parseInt(uppercase.charAt(0));
+        var isInt = !isNaN(sting);
+        input.forEach(function (user) {
+            var strSearch = isInt ? user.numPolicOMS : user.surname;
+            if (String(strSearch).toLowerCase().indexOf(uppercase.toLowerCase()) + 1) {
+                listout.push(user);
+            }
+        });
+        return listout;
     };
 });
 angular
@@ -258,11 +274,10 @@ angular
             dataRecord.dateRecord = cell.date;
             item.listRecords.push(dataRecord);
             cell.records.push(dataRecord);
-            for (var kDr in options.listDr) {
-                if (item.id == options.listDr[kDr].id) {
-                    options.listDr[kDr].listRecords.push(dataRecord);
-                }
-            }
+            options.listDr.forEach(function (specialist) {
+                if (item.id == specialist.id)
+                    specialist.listRecords.push(dataRecord);
+            });
             DataService.set('listOption', options);
             renderList();
             schedule.openModalOk();
@@ -286,6 +301,9 @@ angular
             renderList();
         },
         confirmDeleteRecord: function (cell, item) {
+            if (!ScheduleService.ckeckAllowedDeleteRecord(cell, item)) {
+                return false;
+            }
             schedule.dataPopup.isViewConfirmCancel = true;
             schedule.dataPopup.isViewMenu = false;
         },
@@ -346,6 +364,7 @@ angular
         schedule.dataPopup.btnCreateRecord.isView = ckeckAllowedCreateRecord(cell, item, options);
         schedule.dataPopup.btnDeleteRecord.isView = ScheduleService.ckeckAllowedDeleteRecord(cell, item);
         schedule.dataPopup.btnViewRecord.isView = (cell.recordUser.name != '');
+        $('.popover').addClass('open');
     };
     function renderList() {
         var options = DataService.get('listOption');
@@ -388,10 +407,9 @@ angular
         });
     }
     function addToViewColumnList(listQuotaCell, item, day) {
-        for (var k in listQuotaCell) {
-            var step = listQuotaCell[k];
-            setCellData(step, step.time, item, day);
-        }
+        listQuotaCell.forEach(function (cell) {
+            setCellData(cell, cell.time, item, day);
+        });
     }
     function setColumnList(item, day) {
         var todayWeekDay = day.getDay() == 0 ? 7 : day.getDay();
@@ -487,7 +505,7 @@ angular
     function setCellData(qoute, timeStart, item, day) {
         var time = (timeStart * 1000) + (new Date((timeStart * 1000)).getTimezoneOffset() * 60 * 1000);
         var now = new Date().getTime() / 1000;
-        var date = new Date(day);
+        var dateDay = new Date(day);
         var cell = {
             isOpenPopup: false,
             isRecord: false,
@@ -502,8 +520,8 @@ angular
             elemClass: qoute.name != 'Запись на прием' ? 'b-schedule__item-step-notrec' : 'b-schedule__item-step',
             records: []
         };
-        date.setHours(cell.hour, cell.minute, 0, 0);
-        cell.date = date.getTime() / 1000;
+        dateDay.setHours(cell.hour, cell.minute, 0, 0);
+        cell.date = dateDay.getTime() / 1000;
         if (qoute.name == 'Запись на прием') {
             cell.label = ScheduleService.addZIONTime(cell.hour) + ':' + ScheduleService.addZIONTime(cell.minute);
             if (item.listRecords) {
@@ -544,7 +562,6 @@ angular
             }
             for (var kRec in cell.records) {
                 if (cell.records[kRec].idUser == options.user.id) {
-                    schedule.openModalinfo('Интервал не доступен для записи');
                     return false;
                 }
             }
@@ -574,6 +591,9 @@ angular
         $('.b-schedule__list').scrollTop(0);
         $('.b-schedule__list').scrollLeft(1);
         $('.b-schedule__list').scrollLeft(0);
+        checkViewScroll();
+    }
+    function checkViewScroll() {
         if ($('.b-schedule__list').width() > $('.b-schedule__list-content').width()) {
             schedule.xScrollbar.css('display', 'none');
             schedule.xScrollbarArrow.css('display', 'none');
@@ -604,6 +624,7 @@ angular
             $(".b-schedule__item-spec").height('');
             $(".b-schedule__item-adrec").height('');
         }
+        checkViewScroll();
         $(".b-schedule__item").each(function () {
             var blockGraf = $(this).find('.b-schedule__item-graf');
             if (!blockGraf.attr('data-height')) {
@@ -636,6 +657,8 @@ angular
     .module('root')
     .controller('SpecialistController', function SpecialistController($rootScope, DataService) {
     var special = this;
+    special.yScrollbar = '';
+    special.yScrollbarArrow = $('.b-spec .scroll-y-arrow');
     special.list = DataService.get('listDr');
     special.list.sort(sortSpecialist);
     special.checkAll = function () {
@@ -682,11 +705,21 @@ angular
     var el = document.querySelector('.b-spec__list');
     Ps.initialize(el);
     setTimeout(function () {
+        var heightBlockToBottom = 0;
+        special.yScrollbar = $('.b-spec .ps-scrollbar-y-rail');
         if ($('.b-spec__list').height() >= $('.b-spec__list > div').height()) {
-            $('.ps-scrollbar-y-rail').css('display', 'none');
+            special.yScrollbar.css('display', 'none');
+            special.yScrollbarArrow.css('display', 'none');
         }
         else {
-            $('.ps-scrollbar-y-rail').css('display', 'block');
+            special.yScrollbar.css('display', 'block');
+            special.yScrollbarArrow.css('display', 'block');
+        }
+        $('.b-spec__list').scrollTop(1);
+        $('.b-spec__list').scrollTop(0);
+        heightBlockToBottom = $(window).height() - $('.b-spec__list').offset().top - 20;
+        if (heightBlockToBottom < $('.b-spec__list').height()) {
+            $('.b-spec__list').height(heightBlockToBottom);
         }
     });
 });
@@ -708,7 +741,7 @@ angular
     var date = new Date();
     date.setHours(0, 0, 0, 0);
     var dateNow = date.getTime() / 1000;
-    date.setDate(22);
+    date.setMonth(5, 5);
     var monday = date.getTime() / 1000;
     data.listUser = [
         { id: 1, name: 'Иван', surname: 'Иванов', patron: 'Иванович', dateBD: '11.11.2011', numPolicOMS: 1111111111111111 },
@@ -755,7 +788,7 @@ angular
                     dateRecord: dateNow + (60 * 60 * 10) + (60 * 30),
                     time: (60 * 60 * 10) + (60 * 30),
                     user: { id: 3, name: 'Петр', surname: 'Петров', patron: 'Петрович', dateBD: '01.01.1990', numPolicOMS: 3333333333333333 },
-                },
+                }
             ],
             checked: false
         },
@@ -797,7 +830,7 @@ angular
             dateEndWork: (dateNow + (60 * 60 * 24 * 30)),
             start: (60 * 60 * 14),
             end: (60 * 60 * 18),
-            listWorkWeekDay: [5, 6],
+            listWorkWeekDay: [4, 5, 6],
             startWD: 5,
             endWD: 6,
             stepSchedule: 60 * 10,
@@ -844,7 +877,7 @@ angular
             endWD: 6,
             stepSchedule: 60 * 30,
             quots: [
-                { name: 'Запись на прием', start: (60 * 60 * 9), end: (60 * 60 * 21), listDaysWeek: [3, 4, 5, 6] },
+                { name: 'Запись на прием', start: (60 * 60 * 9), end: (60 * 60 * 21), listDaysWeek: [3, 4, 5, 6], isRecord: true },
             ],
             listRecords: [],
             checked: false

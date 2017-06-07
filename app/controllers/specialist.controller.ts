@@ -5,6 +5,8 @@ angular
 	.controller('SpecialistController', function SpecialistController($rootScope, DataService) {
 		var special = this;
 
+		special.yScrollbar = '';
+		special.yScrollbarArrow = $('.b-spec .scroll-y-arrow');
 		special.list = DataService.get('listDr');
 		special.list.sort(sortSpecialist);
 
@@ -58,10 +60,23 @@ angular
 
 		// отображение скролла
 		setTimeout(function () {
+			let heightBlockToBottom = 0;
+			special.yScrollbar = $('.b-spec .ps-scrollbar-y-rail');
 			if ($('.b-spec__list').height() >= $('.b-spec__list > div').height()) {
-				$('.ps-scrollbar-y-rail').css('display', 'none');
+				special.yScrollbar.css('display', 'none');
+				special.yScrollbarArrow.css('display', 'none');
 			} else {
-				$('.ps-scrollbar-y-rail').css('display', 'block');
+				special.yScrollbar.css('display', 'block');
+				special.yScrollbarArrow.css('display', 'block');
+			}
+			$('.b-spec__list').scrollTop(1);
+			$('.b-spec__list').scrollTop(0);
+			//высота списка, если список уходит за экран - его высота уменьшается
+			heightBlockToBottom = $(window).height()-$('.b-spec__list').offset().top-20;
+			if (heightBlockToBottom < $('.b-spec__list').height()) {
+				$('.b-spec__list').height(heightBlockToBottom);
 			}
 		})
+
+
 	});

@@ -138,6 +138,9 @@ angular
 				renderList();
 			},
 			confirmDeleteRecord: function (cell, item) {
+				if (!ScheduleService.ckeckAllowedDeleteRecord(cell, item)) {
+					return false;
+				}
 				schedule.dataPopup.isViewConfirmCancel = true;
 				schedule.dataPopup.isViewMenu = false;
 			},
@@ -210,6 +213,8 @@ angular
 			schedule.dataPopup.btnCreateRecord.isView = ckeckAllowedCreateRecord(cell, item, options);
 			schedule.dataPopup.btnDeleteRecord.isView = ScheduleService.ckeckAllowedDeleteRecord(cell, item);
 			schedule.dataPopup.btnViewRecord.isView = (cell.recordUser.name != '');
+
+			$('.popover').addClass('open');
 		}
 
 		// построение отображения расписания
@@ -276,7 +281,7 @@ angular
 
 		function addToViewColumnList(listQuotaCell, item, day) {
 			listQuotaCell.forEach(cell => {
-				setCellData(cell.step, cell.step.time, item, day);
+				setCellData(cell, cell.time, item, day);
 			});
 		}
 
@@ -390,9 +395,10 @@ angular
 			}
 		}
 		function setCellData(qoute, timeStart, item, day) {
+			// корректируем время в соответствии с временной зоной
 			let time = (timeStart * 1000) + (new Date((timeStart * 1000)).getTimezoneOffset() * 60 * 1000);
 			let now = new Date().getTime() / 1000;
-			let date = new Date(day);
+			let dateDay = new Date(day);
 			let cell = {
 				isOpenPopup: false,
 				isRecord: false,
@@ -408,8 +414,8 @@ angular
 				records: []
 			};
 
-			date.setHours(cell.hour, cell.minute, 0, 0);
-			cell.date = date.getTime() / 1000;
+			dateDay.setHours(cell.hour, cell.minute, 0, 0);
+			cell.date = dateDay.getTime() / 1000;
 
 			if (qoute.name == 'Запись на прием') {
 				cell.label = ScheduleService.addZIONTime(cell.hour) + ':' + ScheduleService.addZIONTime(cell.minute);
@@ -456,7 +462,7 @@ angular
 				}
 				for (var kRec in cell.records) {
 					if (cell.records[kRec].idUser == options.user.id) {
-						schedule.openModalinfo('Интервал не доступен для записи');
+						// schedule.openModalinfo('Интервал не доступен для записи');
 						return false;
 					}
 				}
@@ -466,11 +472,11 @@ angular
 
 		// фиксирование начальных данных для скроллинга
 		function maxScheduleHeader() {
+			// максимальная высота заголовков сетки
 			let maxHeader = Math.max.apply(Math, $(".b-schedule__item-head-cnt").map(function () {
 				return $(this).outerHeight()
 			}).get());
 			schedule.maxHeightHead = maxHeader;
-			// TODO переделать, долго и видно прыги
 			$('.b-schedule__item-cntnt').css('margin-top', maxHeader + 'px');
 
 			// вычесление максимальной выосты заголовка в шапке
@@ -494,6 +500,10 @@ angular
 			$('.b-schedule__list').scrollLeft(1);
 			$('.b-schedule__list').scrollLeft(0);
 
+			checkViewScroll();
+		}
+
+		function checkViewScroll() {
 			if ($('.b-schedule__list').width() > $('.b-schedule__list-content').width()) {
 				schedule.xScrollbar.css('display', 'none');
 				schedule.xScrollbarArrow.css('display', 'none');
@@ -527,6 +537,8 @@ angular
 				$(".b-schedule__item-adrec").height('');
 			}
 
+			checkViewScroll();
+
 			$(".b-schedule__item").each(function () {
 				let blockGraf = $(this).find('.b-schedule__item-graf');
 
@@ -555,6 +567,7 @@ angular
 			renderList();
 		});
 
+		// инициоализация скроллинга
 		var el = document.querySelector('.b-schedule__list');
 		Ps.initialize(el);
 	});
